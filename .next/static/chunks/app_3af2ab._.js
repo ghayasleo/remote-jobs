@@ -391,7 +391,7 @@ function Home() {
                 "Home.useEffect": async ()=>{
                     if (jobs.length === 0) {
                         setJobs(await getJobs());
-                    // setIsAlertOpen(false)
+                        setIsAlertOpen(false);
                     }
                     setIsLoaded(true);
                 }
@@ -481,8 +481,9 @@ function Home() {
                     message: "Almost there! Gathering the newest remote job postings.",
                     action: action,
                     sx: {
-                        backgroundColor: 'white',
-                        color: 'black'
+                        ".MuiSnackbarContent-message": {
+                            fontSize: window.innerWidth < 600 ? 10 : 14
+                        }
                     }
                 }, "topright", false, {
                     fileName: "[project]/app/page.tsx",
@@ -524,17 +525,17 @@ function Home() {
                             }
                         }, void 0, false, {
                             fileName: "[project]/app/page.tsx",
-                            lineNumber: 115,
+                            lineNumber: 116,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 114,
+                        lineNumber: 115,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/page.tsx",
-                    lineNumber: 113,
+                    lineNumber: 114,
                     columnNumber: 9
                 }, this)
             ]
@@ -580,7 +581,7 @@ const columns = [
                 children: params.row.url
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 157,
+                lineNumber: 158,
                 columnNumber: 7
             }, this)
     },
@@ -601,12 +602,12 @@ const columns = [
                         }
                     }, idx, false, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 173,
+                        lineNumber: 174,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 168,
+                lineNumber: 169,
                 columnNumber: 7
             }, this)
     },
@@ -627,12 +628,12 @@ const columns = [
                     height: 15
                 }, void 0, false, {
                     fileName: "[project]/app/page.tsx",
-                    lineNumber: 195,
+                    lineNumber: 196,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 191,
+                lineNumber: 192,
                 columnNumber: 7
             }, this)
     }

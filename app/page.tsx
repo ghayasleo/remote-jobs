@@ -39,7 +39,7 @@ export default function Home() {
     (async () => {
       if (jobs.length === 0) {
         setJobs(await getJobs());
-        // setIsAlertOpen(false)
+        setIsAlertOpen(false)
       }
       setIsLoaded(true);
     })();
@@ -106,8 +106,9 @@ export default function Home() {
           key={"topright"}
           action={action}
           sx={{
-            backgroundColor: 'white',
-            color: 'black',
+            ".MuiSnackbarContent-message": {
+              fontSize: window.innerWidth < 600 ? 10 : 14
+            }
           }}
         />
         <div className="overflow-x-auto">
