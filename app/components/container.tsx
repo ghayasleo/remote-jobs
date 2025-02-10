@@ -11,7 +11,7 @@ const Container = memo(function Container({
   ...props
 }: ContainerProps) {
   return (
-    <div className={cn("mx-auto px-7 md:container", className)} {...props}>
+    <div className={cn("mx-auto px-7 lg:container", className)} {...props}>
       {children}
     </div>
   );

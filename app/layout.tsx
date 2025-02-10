@@ -39,11 +39,11 @@ export default function RootLayout({
           <footer className="pb-5 mt-auto">
             <Container className="border-t border-gray-200 py-5">
               <p>This project was made possible by contributions from the open-source community.</p>
-              <p className="flex items-center gap-1">
+              <p className="lg:lex items-center gap-1">
                 Special thanks to:
-                <a href="https://github.com/ghayasleo" target="_blank"><Image src={contributorAlpha} alt="Contributor" /></a>
+                <a className="inline-block align-middle" href="https://github.com/ghayasleo" target="_blank"><Image src={contributorAlpha} alt="Contributor" /></a>
                 {" and "}
-                <a href="https://github.com/remoteintech" target="_blank"><Image src={contributorBeta} alt="Contributor" /></a>
+                <a className="inline-block align-middle" href="https://github.com/remoteintech" target="_blank"><Image src={contributorBeta} alt="Contributor" /></a>
                 </p>
             </Container>
           </footer>

@@ -32,7 +32,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 const Container = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["memo"])(function Container({ children, className, ...props }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$cn$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("mx-auto px-7 md:container", className),
+        className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$lib$2f$cn$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["cn"])("mx-auto px-7 lg:container", className),
         ...props,
         children: children
     }, void 0, false, {
@@ -87,7 +87,6 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
         }
     };
     const onDelete = (tag)=>{
-        console.log("gg");
         if (name === "regions" || name === "technologies") {
             setValue((prev)=>({
                     ...prev,
@@ -100,11 +99,11 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
                 htmlFor: props.id,
-                className: "block mb-2 text-gray-500",
+                className: "block lg:mb-2 mb-1 text-gray-500 lg:text-base text-sm",
                 children: label
             }, void 0, false, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 55,
+                lineNumber: 53,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -116,14 +115,14 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                         value: val[name],
                         onChange: onChange,
                         onKeyUp: onKeyUp,
-                        className: "w-full px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                        className: "w-full px-4 py-2 border border-gray-300 lg:text-base text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     }, void 0, false, {
                         fileName: "[project]/app/components/searchField.tsx",
-                        lineNumber: 59,
+                        lineNumber: 57,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                        className: "absolute inset-y-0 right-0 flex items-center px-3 rounded-full",
+                        className: "absolute inset-y-[1px] right-[1px] flex items-center px-3 rounded-full bg-[#fafafa]",
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                             className: "h-5 w-5 text-gray-500",
                             xmlns: "http://www.w3.org/2000/svg",
@@ -137,23 +136,23 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                                 d: "M21 21l-4.35-4.35M9 17a8 8 0 100-16 8 8 0 000 16z"
                             }, void 0, false, {
                                 fileName: "[project]/app/components/searchField.tsx",
-                                lineNumber: 68,
+                                lineNumber: 66,
                                 columnNumber: 135
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/components/searchField.tsx",
-                            lineNumber: 68,
+                            lineNumber: 66,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/components/searchField.tsx",
-                        lineNumber: 67,
+                        lineNumber: 65,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 58,
+                lineNumber: 56,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("small", {
@@ -161,7 +160,7 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                 children: helperText
             }, void 0, false, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 71,
+                lineNumber: 69,
                 columnNumber: 7
             }, this),
             tags && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -177,18 +176,18 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                         onDelete: ()=>onDelete(tag)
                     }, idx, false, {
                         fileName: "[project]/app/components/searchField.tsx",
-                        lineNumber: 76,
+                        lineNumber: 74,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 74,
+                lineNumber: 72,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/components/searchField.tsx",
-        lineNumber: 54,
+        lineNumber: 52,
         columnNumber: 5
     }, this);
 }
@@ -209,7 +208,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$components$2f$searchF
 ;
 function Filter({ value, setValue }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "flex py-4 gap-10",
+        className: "flex flex-col md:flex-row py-4 md:gap-5 gap-3 lg:gap-10",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$components$2f$searchField$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
                 val: value,
@@ -476,7 +475,6 @@ function Home() {
         }
     });
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$components$2f$container$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
             children: [
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$components$2f$filter$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {
@@ -489,30 +487,37 @@ function Home() {
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "overflow-x-auto",
-                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$x$2d$data$2d$grid$2f$DataGrid$2f$DataGrid$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataGrid"], {
-                        rows: filteredJobs,
-                        columns: columns,
-                        initialState: {
-                            pagination: {
-                                paginationModel
+                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "min-w-[716px]",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$x$2d$data$2d$grid$2f$DataGrid$2f$DataGrid$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DataGrid"], {
+                            rows: filteredJobs,
+                            columns: columns,
+                            initialState: {
+                                pagination: {
+                                    paginationModel
+                                }
+                            },
+                            disableRowSelectionOnClick: true,
+                            disableColumnResize: true,
+                            disableColumnMenu: true,
+                            loading: !isLoaded,
+                            slotProps: {
+                                loadingOverlay: {
+                                    variant: 'linear-progress',
+                                    noRowsVariant: 'linear-progress'
+                                }
+                            },
+                            sx: {
+                                border: 0,
+                                ".MuiDataGrid-columnHeader:focus,.MuiDataGrid-cell:focus": {
+                                    outline: "none"
+                                }
                             }
-                        },
-                        disableRowSelectionOnClick: true,
-                        disableColumnResize: true,
-                        disableColumnMenu: true,
-                        loading: !isLoaded,
-                        slotProps: {
-                            loadingOverlay: {
-                                variant: 'linear-progress',
-                                noRowsVariant: 'linear-progress'
-                            }
-                        },
-                        sx: {
-                            border: 0,
-                            ".MuiDataGrid-columnHeader:focus,.MuiDataGrid-cell:focus": {
-                                outline: "none"
-                            }
-                        }
+                        }, void 0, false, {
+                            fileName: "[project]/app/page.tsx",
+                            lineNumber: 74,
+                            columnNumber: 13
+                        }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
                         lineNumber: 73,
@@ -558,7 +563,7 @@ const columns = [
                 children: params.row.url
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 109,
+                lineNumber: 111,
                 columnNumber: 7
             }, this)
     },
@@ -579,12 +584,12 @@ const columns = [
                         }
                     }, idx, false, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 125,
+                        lineNumber: 127,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 120,
+                lineNumber: 122,
                 columnNumber: 7
             }, this)
     },
@@ -605,12 +610,12 @@ const columns = [
                     height: 15
                 }, void 0, false, {
                     fileName: "[project]/app/page.tsx",
-                    lineNumber: 147,
+                    lineNumber: 149,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 143,
+                lineNumber: 145,
                 columnNumber: 7
             }, this)
     }

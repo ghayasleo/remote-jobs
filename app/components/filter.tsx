@@ -11,7 +11,7 @@ type Props = {
 
 function Filter({ value, setValue }: Props) {
   return (
-    <div className="flex py-4 gap-10">
+    <div className="flex flex-col md:flex-row py-4 md:gap-5 gap-3 lg:gap-10">
       <SearchField
         val={value}
         setValue={setValue}

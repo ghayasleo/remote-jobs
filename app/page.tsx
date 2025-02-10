@@ -65,32 +65,34 @@ export default function Home() {
   });
 
   return (
-    <div className="">
+    <div>
       <Container>
         <Filter value={value} setValue={setValue} />
 
         <div className="overflow-x-auto">
-          <DataGrid
-            rows={filteredJobs}
-            columns={columns}
-            initialState={{ pagination: { paginationModel } }}
-            disableRowSelectionOnClick
-            disableColumnResize
-            disableColumnMenu
-            loading={!isLoaded}
-            slotProps={{
-              loadingOverlay: {
-                variant: 'linear-progress',
-                noRowsVariant: 'linear-progress',
-              },
-            }}
-            sx={{
-              border: 0,
-              ".MuiDataGrid-columnHeader:focus,.MuiDataGrid-cell:focus": {
-                outline: "none",
-              },
-            }}
-          />
+          <div className="min-w-[716px]">
+            <DataGrid
+              rows={filteredJobs}
+              columns={columns}
+              initialState={{ pagination: { paginationModel } }}
+              disableRowSelectionOnClick
+              disableColumnResize
+              disableColumnMenu
+              loading={!isLoaded}
+              slotProps={{
+                loadingOverlay: {
+                  variant: 'linear-progress',
+                  noRowsVariant: 'linear-progress',
+                },
+              }}
+              sx={{
+                border: 0,
+                ".MuiDataGrid-columnHeader:focus,.MuiDataGrid-cell:focus": {
+                  outline: "none",
+                },
+              }}
+            />
+          </div>
         </div>
       </Container>
     </div>
