@@ -47,3 +47,9 @@ table {
     }
   }
 }
+
+@media (width < 768px) {
+  .MuiTablePagination-spacer {
+    display: none;
+  }
+}

@@ -552,6 +552,12 @@ table a:hover {
   text-decoration: underline;
 }
 
+@media (width < 768px) {
+  .MuiTablePagination-spacer {
+    display: none;
+  }
+}
+
 @media (width >= 1024px) {
   .lg\:container {
     width: 100%;
