@@ -6,6 +6,8 @@ import jobsIcon from "./assets/jobs.svg";
 import roboto from "./lib/font-family";
 import { ThemeProvider } from "@mui/material";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react"
+
 
 import theme from "./lib/theme";
 import Container from "./components/container";
@@ -50,7 +52,8 @@ export default function RootLayout({
             </Container>
           </footer>
         </AppRouterCacheProvider>
-        <SpeedInsights/>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
