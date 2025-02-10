@@ -5,11 +5,11 @@ import { jobsApi, getJobDetails } from "./lib/jobs-api";
 import Filter from "./components/filter";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import CloseIcon from '@mui/icons-material/Close';
 import linkIcon from "./assets/link.svg";
 import Image from "next/image";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Chip } from "@mui/material";
+import { Chip, IconButton, Snackbar } from "@mui/material";
 import Link from "next/link";
 import useStore from "./store";
 
@@ -30,16 +30,30 @@ export default function Home() {
     added_technologies: "",
   });
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
   const {jobs, setJobs} = useStore();
 
   useEffect(() => {
     (async () => {
       if (jobs.length === 0) {
         setJobs(await getJobs());
+        setIsAlertOpen(false)
       }
       setIsLoaded(true);
     })();
   }, [jobs, setJobs]);
+
+  useEffect(() => {
+    const tomeout = setTimeout(() => {
+      if (!isLoaded) {
+        setIsAlertOpen(true)
+      }
+    }, 5000);
+
+    return () => {
+      clearTimeout(tomeout);
+    };
+  }, [isLoaded]);
 
   const filteredJobs = jobs.filter((job) => {
     const name = job.company.toLowerCase();
@@ -64,11 +78,36 @@ export default function Home() {
     }
   });
 
+  const handleClose = () => setIsAlertOpen(false)
+
+  const action = (
+    <IconButton
+      size="small"
+      aria-label="close"
+      color="inherit"
+      onClick={handleClose}
+    >
+      <CloseIcon fontSize="small" />
+      </IconButton>
+  );
+
   return (
     <div>
       <Container>
         <Filter value={value} setValue={setValue} />
 
+        <Snackbar
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          open={isAlertOpen}
+          onClose={handleClose}
+          message="Almost there! Gathering the newest remote job postings."
+          key={"topright"}
+          action={action}
+          sx={{
+            backgroundColor: 'white',
+            color: 'black',
+          }}
+        />
         <div className="overflow-x-auto">
           <div className="min-w-[716px]">
             <DataGrid
