@@ -1,101 +1,191 @@
+"use client";
+
+import Container from "./components/container";
+import { jobsApi, getJobDetails } from "./lib/jobs-api";
+import Filter from "./components/filter";
+import axios from "axios";
+import { useEffect, useState } from "react";
+
+import linkIcon from "./assets/link.svg";
 import Image from "next/image";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { Chip } from "@mui/material";
+import Link from "next/link";
+import useStore from "./store";
+
+export type InputValues = {
+  name: string;
+  regions: string;
+  technologies: string;
+  added_regions: string;
+  added_technologies: string;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [value, setValue] = useState<InputValues>({
+    name: "",
+    regions: "",
+    technologies: "",
+    added_regions: "",
+    added_technologies: "",
+  });
+  const [isLoaded, setIsLoaded] = useState(false);
+  const {jobs, setJobs} = useStore();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    (async () => {
+      if (jobs.length === 0) {
+        setJobs(await getJobs());
+      }
+      setIsLoaded(true);
+    })();
+  }, [jobs, setJobs]);
+
+  const filteredJobs = jobs.filter((job) => {
+    const name = job.company.toLowerCase();
+    const regions = job.regions.toLowerCase();
+    const technologies = job.technologies.toLowerCase();
+
+    const added_technologies = value.added_technologies.toLowerCase().split(",");
+    const added_regions = value.added_regions.toLowerCase().split(",");
+    const searched_technologies = value.technologies.toLowerCase();
+    const searched_regions = value.regions.toLowerCase();
+    const technologies_keywords = value.added_technologies ? [...added_technologies] : [];
+    const regions_keywords = value.added_regions ? [...added_regions] : [];
+
+    if (searched_regions) regions_keywords.push(searched_regions);
+    if (searched_technologies) technologies_keywords.push(searched_technologies);
+
+    const nameCheck = name.includes(value.name.toLowerCase());
+    const technologiesCheck = technologies_keywords.length > 0 ? technologies_keywords.some(region => technologies.includes(region)) : true;
+    const regionsCheck = regions_keywords.length > 0 ? regions_keywords.some(region => regions.includes(region)) : true;
+    if (nameCheck && technologiesCheck && regionsCheck) {
+      return job;
+    }
+  });
+
+  return (
+    <div className="">
+      <Container>
+        <Filter value={value} setValue={setValue} />
+
+        <div className="overflow-x-auto">
+          <DataGrid
+            rows={filteredJobs}
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            disableRowSelectionOnClick
+            disableColumnResize
+            disableColumnMenu
+            loading={!isLoaded}
+            slotProps={{
+              loadingOverlay: {
+                variant: 'linear-progress',
+                noRowsVariant: 'linear-progress',
+              },
+            }}
+            sx={{
+              border: 0,
+              ".MuiDataGrid-columnHeader:focus,.MuiDataGrid-cell:focus": {
+                outline: "none",
+              },
+            }}
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </Container>
     </div>
   );
 }
+
+const columns: GridColDef[] = [
+  { field: "id", headerName: "ID", width: 50, sortable: false },
+  { field: "company", headerName: "Company", flex: 1 },
+  {
+    field: "url",
+    headerName: "Website",
+    flex: 1,
+    sortable: false,
+    renderCell: (params) => (
+      <a href={params.row.url} className="text-blue-600 hover:underline">
+        {params.row.url}
+      </a>
+    ),
+  },
+  {
+    field: "regions",
+    headerName: "Regions",
+    flex: 3,
+    sortable: false,
+    renderCell: (params) => (
+      <div className="flex flex-wrap gap-1 items-center h-full">
+        {params.row.regions
+          .split(",")
+          .map((region: string) => region.trim())
+          .map((region: string, idx: number) => (
+            <Chip
+              size="small"
+              key={idx}
+              label={region}
+              sx={{ fontSize: 12, paddingInline: 0.5, fontWeight: 500 }}
+            />
+          ))}
+      </div>
+    ),
+  },
+  {
+    field: "details",
+    headerName: "Details",
+    description: "This column has a value getter and is not sortable.",
+    sortable: false,
+    width: 100,
+    valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
+    renderCell: (params) => (
+      <Link
+        className="h-full mx-auto grid place-content-center"
+        href={params.row.details}
+      >
+        <Image src={linkIcon} alt="Link Icon" width={15} height={15} />
+      </Link>
+    ),
+  },
+];
+
+const paginationModel = { page: 0, pageSize: 10 };
+
+const getJobs = async () => {
+  const { data } = await axios.get(jobsApi());
+  const array: Array<string> = data
+    .split("------------ | ------- | -------\n")[1]
+    .split("\n");
+  const jobs = array.map(async (item, idx) => {
+    const [namePart, url, regions] = item.split("|");
+    const companyMatch = namePart.match(/\[(.*?)\]\((.*?)\)/);
+    let technologies = "";
+
+    if (companyMatch !== null) {
+      try {
+        const { data } = await axios.get(getJobDetails(companyMatch[2].trim()));
+        technologies = data
+          ?.split("Company technologies")[1]
+          ?.split("Office locations")[0];
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    return companyMatch && url && regions && technologies
+      ? {
+          id: idx + 1,
+          company: companyMatch ? companyMatch[1] : "",
+          url: url.trim(),
+          details: companyMatch ? companyMatch[2].trim() : "",
+          regions: regions,
+          technologies: technologies.toLowerCase(),
+        }
+      : "";
+  });
+
+  const filteredJobs = (await Promise.all(jobs)).filter((job) => job !== "");
+
+  return filteredJobs;
+};

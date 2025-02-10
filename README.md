@@ -24,5 +24,5 @@ Remote Job Navigator makes it simple for job seekers to browse companies that su
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
+   git clone https://github.com/ghayasleo/remote-jobs.git
    cd your-repo

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 55, "column": 0}, "map": {"version":3,"sources":["file:///Users/mac/Ghayas/Projects/react/remote-jobs/pages/about.tsx"],"sourcesContent":["import React from 'react';\n\nfunction About() {\n  return (\n    <div>About</div>\n  )\n}\n\nexport default About;"],"names":[],"mappings":";;;;;AAEA,SAAS;IACP,qBACE,qKAAC;kBAAI;;;;;;AAET;uCAEe"}},
+    {"offset": {"line": 70, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

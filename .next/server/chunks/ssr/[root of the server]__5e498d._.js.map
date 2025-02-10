@@ -1,0 +1,11 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 7, "column": 0}, "map": {"version":3,"sources":["file:///Users/mac/Ghayas/Projects/react/remote-jobs/app/lib/jobs-api.ts"],"sourcesContent":["const api = \"https://raw.githubusercontent.com/remoteintech/remote-jobs\";\n\nexport const jobsApi = () => `${api}/main/README.md`;\nexport const getJobDetails = (slug: string) => `${api}/main/${slug}`;\n"],"names":[],"mappings":";;;;AAAA,MAAM,MAAM;AAEL,MAAM,UAAU,IAAM,GAAG,IAAI,eAAe,CAAC;AAC7C,MAAM,gBAAgB,CAAC,OAAiB,GAAG,IAAI,MAAM,EAAE,MAAM"}},
+    {"offset": {"line": 14, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 84, "column": 0}, "map": {"version":3,"sources":["file:///Users/mac/Ghayas/Projects/react/remote-jobs/app/company-profiles/%5Bslug%5D/page.tsx"],"sourcesContent":["import React from \"react\";\nimport { getJobDetails } from \"../../lib/jobs-api\";\nimport axios from \"axios\";\nimport { marked } from \"marked\";\nimport Container from \"../../components/container\";\nimport 'github-markdown-css/github-markdown-light.css';\n\ntype Props = {\n  params: Promise<{ slug: string }>;\n};\n\nasync function Page({ params }: Props) {\n  const { slug } = await params;\n  const { data } = await axios.get(getJobDetails(\"company-profiles/\" + slug));\n  const html = marked.parse(data);\n\n  return (\n    <div className=\"py-10\">\n      <Container>\n        <div className=\"markdown-body\" dangerouslySetInnerHTML={{ __html: html }} />\n      </Container>\n    </div>\n  );\n}\n\nexport default Page;\n"],"names":[],"mappings":";;;;AACA;AAEA;AACA;AAFA;;;;;;;AASA,eAAe,KAAK,EAAE,MAAM,EAAS;IACnC,MAAM,EAAE,IAAI,EAAE,GAAG,MAAM;IACvB,MAAM,EAAE,IAAI,EAAE,GAAG,MAAM,qIAAA,CAAA,UAAK,CAAC,GAAG,CAAC,CAAA,GAAA,yHAAA,CAAA,gBAAa,AAAD,EAAE,sBAAsB;IACrE,MAAM,OAAO,8IAAA,CAAA,SAAM,CAAC,KAAK,CAAC;IAE1B,qBACE,8OAAC;QAAI,WAAU;kBACb,cAAA,8OAAC,+HAAA,CAAA,UAAS;sBACR,cAAA,8OAAC;gBAAI,WAAU;gBAAgB,yBAAyB;oBAAE,QAAQ;gBAAK;;;;;;;;;;;;;;;;AAI/E;uCAEe"}},
+    {"offset": {"line": 127, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}},
+    {"offset": {"line": 138, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":""}},
+    {"offset": {"line": 138, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
