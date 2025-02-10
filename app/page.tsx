@@ -147,7 +147,7 @@ const columns: GridColDef[] = [
     flex: 1,
     sortable: false,
     renderCell: (params) => (
-      <a href={params.row.url} className="text-blue-600 hover:underline">
+      <a href={params.row.url} target="_blank" className="text-blue-600 hover:underline">
         {params.row.url}
       </a>
     ),
