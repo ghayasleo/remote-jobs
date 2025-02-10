@@ -560,7 +560,7 @@ table a:hover {
 
 @media (width < 600px) {
   .MuiSnackbarContent-message {
-    font-size: 9px;
+    font-size: 9px !important;
   }
 }
 
