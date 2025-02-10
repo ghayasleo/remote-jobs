@@ -48,6 +48,14 @@ table {
   }
 }
 
+ul {
+  list-style: dics;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
 @media (width < 768px) {
   .MuiTablePagination-spacer {
     display: none;
