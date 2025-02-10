@@ -56,6 +56,6 @@ table {
 
 @media (width < 600) {
   .MuiSnackbarContent-message {
-    font-size: 11px;
+    font-size: 9px;
   }
 }
