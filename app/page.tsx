@@ -12,6 +12,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { Chip, IconButton, Snackbar } from "@mui/material";
 import Link from "next/link";
 import useStore from "./store";
+import { useRouter } from "next/navigation";
 
 export type InputValues = {
   name: string;
@@ -22,6 +23,7 @@ export type InputValues = {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [value, setValue] = useState<InputValues>({
     name: "",
     regions: "",
@@ -37,7 +39,7 @@ export default function Home() {
     (async () => {
       if (jobs.length === 0) {
         setJobs(await getJobs());
-        setIsAlertOpen(false)
+        // setIsAlertOpen(false)
       }
       setIsLoaded(true);
     })();
@@ -117,6 +119,11 @@ export default function Home() {
               disableRowSelectionOnClick
               disableColumnResize
               disableColumnMenu
+              onRowClick={(params, e) => {
+                if ((e.target as HTMLElement).tagName !== "A") {
+                  router.push(params.row.details);
+                }
+              }}
               loading={!isLoaded}
               slotProps={{
                 loadingOverlay: {
@@ -126,8 +133,8 @@ export default function Home() {
               }}
               sx={{
                 border: 0,
-                ".MuiDataGrid-columnHeader:focus,.MuiDataGrid-cell:focus": {
-                  outline: "none",
+                ".MuiDataGrid-columnHeader,.MuiDataGrid-cell": {
+                  outline: "none !important",
                 },
               }}
             />
@@ -155,7 +162,7 @@ const columns: GridColDef[] = [
   {
     field: "regions",
     headerName: "Regions",
-    flex: 3,
+    width: 350,
     sortable: false,
     renderCell: (params) => (
       <div className="flex flex-wrap gap-1 items-center h-full">

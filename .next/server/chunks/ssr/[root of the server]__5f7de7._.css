@@ -558,6 +558,12 @@ table a:hover {
   }
 }
 
+@media (width < 600px) {
+  .MuiSnackbarContent-message {
+    font-size: 11px;
+  }
+}
+
 @media (width >= 1024px) {
   .lg\:container {
     width: 100%;

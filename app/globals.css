@@ -53,3 +53,9 @@ table {
     display: none;
   }
 }
+
+@media (width < 600) {
+  .MuiSnackbarContent-message {
+    font-size: 11px;
+  }
+}
