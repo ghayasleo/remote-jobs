@@ -24,6 +24,7 @@ export type InputValues = {
 
 export default function Home() {
   const router = useRouter();
+  const [windowWidth, setWindowWidth] = useState(0);
   const [value, setValue] = useState<InputValues>({
     name: "",
     regions: "",
@@ -34,6 +35,15 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const {jobs, setJobs} = useStore();
+
+  useEffect(() => {
+    setWindowWidth(window.innerWidth); // Access `window` inside useEffect
+
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -107,7 +117,7 @@ export default function Home() {
           action={action}
           sx={{
             ".MuiSnackbarContent-message": {
-              fontSize: window.innerWidth < 600 ? 10 : 14
+              fontSize: windowWidth < 600 ? 10 : 14
             }
           }}
         />
