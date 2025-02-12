@@ -4,12 +4,12 @@ import Container from "./components/container";
 import { jobsApi, getJobDetails } from "./lib/jobs-api";
 import Filter from "./components/filter";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import CloseIcon from '@mui/icons-material/Close';
+import { MouseEventHandler, useEffect, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
 import linkIcon from "./assets/link.svg";
 import Image from "next/image";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Chip, IconButton, Snackbar } from "@mui/material";
+import { Backdrop, Chip, CircularProgress, IconButton, Snackbar } from "@mui/material";
 import Link from "next/link";
 import useStore from "./store";
 import { useRouter } from "next/navigation";
@@ -20,21 +20,15 @@ export type InputValues = {
   technologies: string;
   added_regions: string;
   added_technologies: string;
-}
+};
 
 export default function Home() {
   const router = useRouter();
+  const [fullscreenLoader, setFullscreenLoader] = useState(false);
   const [windowWidth, setWindowWidth] = useState(0);
-  const [value, setValue] = useState<InputValues>({
-    name: "",
-    regions: "",
-    technologies: "",
-    added_regions: "",
-    added_technologies: "",
-  });
   const [isLoaded, setIsLoaded] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const {jobs, setJobs} = useStore();
+  const { jobs, setJobs, value } = useStore();
 
   useEffect(() => {
     setWindowWidth(window.innerWidth); // Access `window` inside useEffect
@@ -49,7 +43,7 @@ export default function Home() {
     (async () => {
       if (jobs.length === 0) {
         setJobs(await getJobs());
-        setIsAlertOpen(false)
+        setIsAlertOpen(false);
       }
       setIsLoaded(true);
     })();
@@ -58,7 +52,7 @@ export default function Home() {
   useEffect(() => {
     const tomeout = setTimeout(() => {
       if (!isLoaded) {
-        setIsAlertOpen(true)
+        setIsAlertOpen(true);
       }
     }, 5000);
 
@@ -67,30 +61,111 @@ export default function Home() {
     };
   }, [isLoaded]);
 
+  const columns: GridColDef[] = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 50,
+      sortable: false,
+    },
+    {
+      field: "company",
+      headerName: "Company",
+      flex: 1,
+    },
+    {
+      field: "url",
+      headerName: "Website",
+      flex: 1,
+      sortable: false,
+      renderCell: (params) => (
+        <a
+          href={params.row.url}
+          target="_blank"
+          className="text-blue-600 hover:underline h-full w-full block relative z-10"
+        >
+          {params.row.url}
+        </a>
+      ),
+    },
+    {
+      field: "regions",
+      headerName: "Regions",
+      width: 350,
+      sortable: false,
+      renderCell: (params) => (
+        <div className="flex flex-wrap gap-1 items-center h-full">
+          {params.row.regions
+            .split(",")
+            .map((region: string) => region.trim())
+            .map((region: string, idx: number) => (
+              <Chip
+                size="small"
+                key={idx}
+                label={region}
+                sx={{ fontSize: 12, paddingInline: 0.5, fontWeight: 500 }}
+              />
+            ))}
+        </div>
+      ),
+    },
+    {
+      field: "details",
+      headerName: "Details",
+      description: "This column has a value getter and is not sortable.",
+      sortable: false,
+      width: 100,
+      valueGetter: (value, row) =>
+        `${row.firstName || ""} ${row.lastName || ""}`,
+      renderCell: (params) => (
+        <span className="h-full mx-auto grid place-content-center">
+          <Image src={linkIcon} alt="Link Icon" width={15} height={15} />
+          <Link href={params.row.details} className="absolute inset-0" onClick={navigate}/>
+        </span>
+      ),
+    },
+  ];
+
+  const navigate: MouseEventHandler<HTMLAnchorElement> = (e) => {
+    const isNewTab = e.metaKey || e.ctrlKey;
+    if (!isNewTab) setFullscreenLoader(true)
+  }
+
   const filteredJobs = jobs.filter((job) => {
     const name = job.company.toLowerCase();
     const regions = job.regions.toLowerCase();
     const technologies = job.technologies.toLowerCase();
 
-    const added_technologies = value.added_technologies.toLowerCase().split(",");
+    const added_technologies = value.added_technologies
+      .toLowerCase()
+      .split(",");
     const added_regions = value.added_regions.toLowerCase().split(",");
     const searched_technologies = value.technologies.toLowerCase();
     const searched_regions = value.regions.toLowerCase();
-    const technologies_keywords = value.added_technologies ? [...added_technologies] : [];
+    const technologies_keywords = value.added_technologies
+      ? [...added_technologies]
+      : [];
     const regions_keywords = value.added_regions ? [...added_regions] : [];
 
     if (searched_regions) regions_keywords.push(searched_regions);
-    if (searched_technologies) technologies_keywords.push(searched_technologies);
+    if (searched_technologies)
+      technologies_keywords.push(searched_technologies);
 
     const nameCheck = name.includes(value.name.toLowerCase());
-    const technologiesCheck = technologies_keywords.length > 0 ? technologies_keywords.some(region => technologies.includes(region)) : true;
-    const regionsCheck = regions_keywords.length > 0 ? regions_keywords.some(region => regions.includes(region)) : true;
+    const technologiesCheck =
+      technologies_keywords.length > 0
+        ? technologies_keywords.some((region) => technologies.includes(region))
+        : true;
+    const regionsCheck =
+      regions_keywords.length > 0
+        ? regions_keywords.some((region) => regions.includes(region))
+        : true;
     if (nameCheck && technologiesCheck && regionsCheck) {
       return job;
     }
   });
 
-  const handleClose = () => setIsAlertOpen(false)
+  const handleClose = () => setIsAlertOpen(false);
 
   const action = (
     <IconButton
@@ -100,13 +175,13 @@ export default function Home() {
       onClick={handleClose}
     >
       <CloseIcon fontSize="small" />
-      </IconButton>
+    </IconButton>
   );
 
   return (
     <div>
       <Container>
-        <Filter value={value} setValue={setValue} />
+        <Filter />
 
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
@@ -117,8 +192,8 @@ export default function Home() {
           action={action}
           sx={{
             ".MuiSnackbarContent-message": {
-              fontSize: windowWidth < 600 ? 10 : 14
-            }
+              fontSize: windowWidth < 600 ? 10 : 14,
+            },
           }}
         />
         <div className="overflow-x-auto">
@@ -138,8 +213,8 @@ export default function Home() {
               loading={!isLoaded}
               slotProps={{
                 loadingOverlay: {
-                  variant: 'linear-progress',
-                  noRowsVariant: 'linear-progress',
+                  variant: "linear-progress",
+                  noRowsVariant: "linear-progress",
                 },
               }}
               sx={{
@@ -152,62 +227,17 @@ export default function Home() {
           </div>
         </div>
       </Container>
+
+      <Backdrop
+        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+        open={fullscreenLoader}
+        onClick={handleClose}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 }
-
-const columns: GridColDef[] = [
-  { field: "id", headerName: "ID", width: 50, sortable: false },
-  { field: "company", headerName: "Company", flex: 1 },
-  {
-    field: "url",
-    headerName: "Website",
-    flex: 1,
-    sortable: false,
-    renderCell: (params) => (
-      <a href={params.row.url} target="_blank" className="text-blue-600 hover:underline">
-        {params.row.url}
-      </a>
-    ),
-  },
-  {
-    field: "regions",
-    headerName: "Regions",
-    width: 350,
-    sortable: false,
-    renderCell: (params) => (
-      <div className="flex flex-wrap gap-1 items-center h-full">
-        {params.row.regions
-          .split(",")
-          .map((region: string) => region.trim())
-          .map((region: string, idx: number) => (
-            <Chip
-              size="small"
-              key={idx}
-              label={region}
-              sx={{ fontSize: 12, paddingInline: 0.5, fontWeight: 500 }}
-            />
-          ))}
-      </div>
-    ),
-  },
-  {
-    field: "details",
-    headerName: "Details",
-    description: "This column has a value getter and is not sortable.",
-    sortable: false,
-    width: 100,
-    valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`,
-    renderCell: (params) => (
-      <Link
-        className="h-full mx-auto grid place-content-center"
-        href={params.row.details}
-      >
-        <Image src={linkIcon} alt="Link Icon" width={15} height={15} />
-      </Link>
-    ),
-  },
-];
 
 const paginationModel = { page: 0, pageSize: 10 };
 

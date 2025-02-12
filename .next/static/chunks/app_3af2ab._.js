@@ -89,15 +89,17 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                 [name]: e.target.value
             }));
     };
-    const onKeyUp = (e)=>{
-        const value = e.currentTarget.value;
-        if (e.key === "Enter" && value && (name === "regions" || name === "technologies")) {
+    const addTag = (value)=>{
+        if (name === "regions" || name === "technologies") {
             setValue((prev)=>({
                     ...prev,
                     [name]: "",
                     [`added_${name}`]: prev[`added_${name}`] ? `${prev[`added_${name}`]},${value}` : value
                 }));
         }
+    };
+    const onKeyUp = (e)=>{
+        if (e.key === "Enter") addTag(val[name]);
     };
     const onDelete = (tag)=>{
         if (name === "regions" || name === "technologies") {
@@ -116,7 +118,7 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                 children: label
             }, void 0, false, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 53,
+                lineNumber: 50,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -131,10 +133,11 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                         className: "w-full px-4 py-2 border border-gray-300 lg:text-base text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     }, void 0, false, {
                         fileName: "[project]/app/components/searchField.tsx",
-                        lineNumber: 57,
+                        lineNumber: 54,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: ()=>addTag(val[name]),
                         className: "absolute inset-y-[1px] right-[1px] flex items-center px-3 rounded-full bg-[#fafafa]",
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                             className: "h-5 w-5 text-gray-500",
@@ -149,23 +152,23 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                                 d: "M21 21l-4.35-4.35M9 17a8 8 0 100-16 8 8 0 000 16z"
                             }, void 0, false, {
                                 fileName: "[project]/app/components/searchField.tsx",
-                                lineNumber: 66,
+                                lineNumber: 63,
                                 columnNumber: 135
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/components/searchField.tsx",
-                            lineNumber: 66,
+                            lineNumber: 63,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/components/searchField.tsx",
-                        lineNumber: 65,
+                        lineNumber: 62,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 56,
+                lineNumber: 53,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("small", {
@@ -173,7 +176,7 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                 children: helperText
             }, void 0, false, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 69,
+                lineNumber: 66,
                 columnNumber: 7
             }, this),
             tags && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -189,18 +192,18 @@ function SearchField({ label, val, setValue, helperText, tags, ...props }) {
                         onDelete: ()=>onDelete(tag)
                     }, idx, false, {
                         fileName: "[project]/app/components/searchField.tsx",
-                        lineNumber: 74,
+                        lineNumber: 71,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/app/components/searchField.tsx",
-                lineNumber: 72,
+                lineNumber: 69,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/components/searchField.tsx",
-        lineNumber: 52,
+        lineNumber: 49,
         columnNumber: 5
     }, this);
 }
@@ -325,6 +328,16 @@ const useStore = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_module
         jobs: [],
         setJobs: (jobs)=>set({
                 jobs
+            }),
+        value: {
+            name: "",
+            regions: "",
+            technologies: "",
+            added_regions: "",
+            added_technologies: ""
+        },
+        setValue: (value)=>set({
+                value
             })
     }));
 const __TURBOPACK__default__export__ = useStore;
@@ -350,11 +363,11 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$imag
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$store$2f$index$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/app/store/index.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__ = __turbopack_import__("[project]/node_modules/@mui/material/Chip/Chip.js [app-client] (ecmascript) <export default as Chip>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$IconButton$2f$IconButton$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__IconButton$3e$__ = __turbopack_import__("[project]/node_modules/@mui/material/IconButton/IconButton.js [app-client] (ecmascript) <export default as IconButton>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$icons$2d$material$2f$esm$2f$Close$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/@mui/icons-material/esm/Close.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Snackbar$2f$Snackbar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Snackbar$3e$__ = __turbopack_import__("[project]/node_modules/@mui/material/Snackbar/Snackbar.js [app-client] (ecmascript) <export default as Snackbar>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$x$2d$data$2d$grid$2f$DataGrid$2f$DataGrid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/@mui/x-data-grid/DataGrid/DataGrid.js [app-client] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__ = __turbopack_import__("[project]/node_modules/@mui/material/Chip/Chip.js [app-client] (ecmascript) <export default as Chip>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$axios$2f$lib$2f$axios$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_import__("[project]/node_modules/axios/lib/axios.js [app-client] (ecmascript)");
 ;
 var _s = __turbopack_refresh__.signature();
@@ -375,6 +388,7 @@ var _s = __turbopack_refresh__.signature();
 function Home() {
     _s();
     const router = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
+    const [fullscreenLoader, setFullscreenLoader] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [windowWidth, setWindowWidth] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(0);
     const [value, setValue] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])({
         name: "",
@@ -432,6 +446,96 @@ function Home() {
     }["Home.useEffect"], [
         isLoaded
     ]);
+    const columns = [
+        {
+            field: "id",
+            headerName: "ID",
+            width: 50,
+            sortable: false
+        },
+        {
+            field: "company",
+            headerName: "Company",
+            flex: 1
+        },
+        {
+            field: "url",
+            headerName: "Website",
+            flex: 1,
+            sortable: false,
+            renderCell: (params)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                    href: params.row.url,
+                    target: "_blank",
+                    className: "text-blue-600 hover:underline h-full w-full block relative z-10",
+                    children: params.row.url
+                }, void 0, false, {
+                    fileName: "[project]/app/page.tsx",
+                    lineNumber: 89,
+                    columnNumber: 9
+                }, this)
+        },
+        {
+            field: "regions",
+            headerName: "Regions",
+            width: 350,
+            sortable: false,
+            renderCell: (params)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "flex flex-wrap gap-1 items-center h-full",
+                    children: params.row.regions.split(",").map((region)=>region.trim()).map((region, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
+                            size: "small",
+                            label: region,
+                            sx: {
+                                fontSize: 12,
+                                paddingInline: 0.5,
+                                fontWeight: 500
+                            }
+                        }, idx, false, {
+                            fileName: "[project]/app/page.tsx",
+                            lineNumber: 109,
+                            columnNumber: 15
+                        }, this))
+                }, void 0, false, {
+                    fileName: "[project]/app/page.tsx",
+                    lineNumber: 104,
+                    columnNumber: 9
+                }, this)
+        },
+        {
+            field: "details",
+            headerName: "Details",
+            description: "This column has a value getter and is not sortable.",
+            sortable: false,
+            width: 100,
+            valueGetter: (value, row)=>`${row.firstName || ""} ${row.lastName || ""}`,
+            renderCell: (params)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                    className: "h-full mx-auto grid place-content-center",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                            src: __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$assets$2f$link$2e$svg$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$app$2f$assets$2f$link$2e$svg__$5b$app$2d$client$5d$__$28$static$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__["default"],
+                            alt: "Link Icon",
+                            width: 15,
+                            height: 15
+                        }, void 0, false, {
+                            fileName: "[project]/app/page.tsx",
+                            lineNumber: 129,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
+                            href: params.row.details,
+                            className: "absolute inset-0"
+                        }, void 0, false, {
+                            fileName: "[project]/app/page.tsx",
+                            lineNumber: 130,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/app/page.tsx",
+                    lineNumber: 128,
+                    columnNumber: 9
+                }, this)
+        }
+    ];
     const filteredJobs = jobs.filter((job)=>{
         const name = job.company.toLowerCase();
         const regions = job.regions.toLowerCase();
@@ -465,12 +569,12 @@ function Home() {
             fontSize: "small"
         }, void 0, false, {
             fileName: "[project]/app/page.tsx",
-            lineNumber: 102,
+            lineNumber: 179,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/page.tsx",
-        lineNumber: 96,
+        lineNumber: 173,
         columnNumber: 5
     }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -481,7 +585,7 @@ function Home() {
                     setValue: setValue
                 }, void 0, false, {
                     fileName: "[project]/app/page.tsx",
-                    lineNumber: 109,
+                    lineNumber: 186,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Snackbar$2f$Snackbar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Snackbar$3e$__["Snackbar"], {
@@ -500,7 +604,7 @@ function Home() {
                     }
                 }, "topright", false, {
                     fileName: "[project]/app/page.tsx",
-                    lineNumber: 111,
+                    lineNumber: 188,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -526,8 +630,8 @@ function Home() {
                             loading: !isLoaded,
                             slotProps: {
                                 loadingOverlay: {
-                                    variant: 'linear-progress',
-                                    noRowsVariant: 'linear-progress'
+                                    variant: "linear-progress",
+                                    noRowsVariant: "linear-progress"
                                 }
                             },
                             sx: {
@@ -538,119 +642,38 @@ function Home() {
                             }
                         }, void 0, false, {
                             fileName: "[project]/app/page.tsx",
-                            lineNumber: 126,
+                            lineNumber: 203,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 125,
+                        lineNumber: 202,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/page.tsx",
-                    lineNumber: 124,
+                    lineNumber: 201,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/page.tsx",
-            lineNumber: 108,
+            lineNumber: 185,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/page.tsx",
-        lineNumber: 107,
+        lineNumber: 184,
         columnNumber: 5
     }, this);
 }
-_s(Home, "2LUoivu4Nl3VebAyYCVk+H714dc=", false, function() {
+_s(Home, "5t2qvN9mLeGR7tG82bxaEu4ZBJc=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"],
         __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$store$2f$index$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"]
     ];
 });
 _c = Home;
-const columns = [
-    {
-        field: "id",
-        headerName: "ID",
-        width: 50,
-        sortable: false
-    },
-    {
-        field: "company",
-        headerName: "Company",
-        flex: 1
-    },
-    {
-        field: "url",
-        headerName: "Website",
-        flex: 1,
-        sortable: false,
-        renderCell: (params)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                href: params.row.url,
-                target: "_blank",
-                className: "text-blue-600 hover:underline",
-                children: params.row.url
-            }, void 0, false, {
-                fileName: "[project]/app/page.tsx",
-                lineNumber: 168,
-                columnNumber: 7
-            }, this)
-    },
-    {
-        field: "regions",
-        headerName: "Regions",
-        width: 350,
-        sortable: false,
-        renderCell: (params)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex flex-wrap gap-1 items-center h-full",
-                children: params.row.regions.split(",").map((region)=>region.trim()).map((region, idx)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$mui$2f$material$2f$Chip$2f$Chip$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Chip$3e$__["Chip"], {
-                        size: "small",
-                        label: region,
-                        sx: {
-                            fontSize: 12,
-                            paddingInline: 0.5,
-                            fontWeight: 500
-                        }
-                    }, idx, false, {
-                        fileName: "[project]/app/page.tsx",
-                        lineNumber: 184,
-                        columnNumber: 13
-                    }, this))
-            }, void 0, false, {
-                fileName: "[project]/app/page.tsx",
-                lineNumber: 179,
-                columnNumber: 7
-            }, this)
-    },
-    {
-        field: "details",
-        headerName: "Details",
-        description: "This column has a value getter and is not sortable.",
-        sortable: false,
-        width: 100,
-        valueGetter: (value, row)=>`${row.firstName || ""} ${row.lastName || ""}`,
-        renderCell: (params)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                className: "h-full mx-auto grid place-content-center",
-                href: params.row.details,
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                    src: __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$assets$2f$link$2e$svg$2e$mjs__$7b$__IMAGE__$3d3e$__$225b$project$5d2f$app$2f$assets$2f$link$2e$svg__$5b$app$2d$client$5d$__$28$static$2922$__$7d$__$5b$app$2d$client$5d$__$28$structured__image__object$2c$__ecmascript$29$__["default"],
-                    alt: "Link Icon",
-                    width: 15,
-                    height: 15
-                }, void 0, false, {
-                    fileName: "[project]/app/page.tsx",
-                    lineNumber: 206,
-                    columnNumber: 9
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/app/page.tsx",
-                lineNumber: 202,
-                columnNumber: 7
-            }, this)
-    }
-];
 const paginationModel = {
     page: 0,
     pageSize: 10

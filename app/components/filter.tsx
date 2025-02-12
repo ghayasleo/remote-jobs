@@ -2,19 +2,14 @@
 
 import React from "react";
 import SearchField from "./searchField";
-import { InputValues } from "../page";
+import useStore from "../store";
 
-type Props = {
-  value: InputValues;
-  setValue: React.Dispatch<React.SetStateAction<InputValues>>;
-};
+function Filter() {
+  const { value } = useStore();
 
-function Filter({ value, setValue }: Props) {
   return (
     <div className="flex flex-col md:flex-row py-4 md:gap-5 gap-3 lg:gap-10">
       <SearchField
-        val={value}
-        setValue={setValue}
         label="Search by Name"
         placeholder="E.g: Amazon, 10up"
         id="name"
@@ -22,8 +17,6 @@ function Filter({ value, setValue }: Props) {
       />
 
       <SearchField
-        val={value}
-        setValue={setValue}
         label="Search by Region"
         placeholder="Eg: Worldwide, Europe, Asia etc"
         id="regions"
@@ -33,8 +26,6 @@ function Filter({ value, setValue }: Props) {
       />
 
       <SearchField
-        val={value}
-        setValue={setValue}
         label="Search by Technologies"
         placeholder="Eg: Javascript, PHP, AWS etc"
         id="technologies"

@@ -14,6 +14,7 @@ import Container from "./components/container";
 
 import contributorAlpha from "./assets/contributor-alpha.svg";
 import contributorBeta from "./assets/contributor-beta.svg";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Remote Jobs",
@@ -31,10 +32,12 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}></ThemeProvider>
           <header className="header  py-5">
-            <Container className="flex items-center gap-5">
-              <Image src={jobsIcon} width={40} height={40} alt="Jobs Logo" />
+            <Container>
+              <Link href="/" className="flex items-center gap-5 w-fit">
+                <Image src={jobsIcon} width={40} height={40} alt="Jobs Logo" />
+                <h1 className="text-2xl">Remote Jobs</h1>
+              </Link>
 
-              <h1 className="text-2xl">Remote Jobs</h1>
             </Container>
           </header>
 
