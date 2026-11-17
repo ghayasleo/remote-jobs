@@ -175,7 +175,9 @@ export default async function AboutPage() {
         <Section title="Credits">
           <p>
             Thanks to everyone who contributes to <External href="https://github.com/remoteintech">remoteintech</External>
-            : the company profiles here are their work.
+            : the company profiles here are their work. They come from{" "}
+            <External href={UPSTREAM_REPO_URL}>remoteintech/remote-jobs</External> and are used under its{" "}
+            <External href={`${UPSTREAM_REPO_URL}/blob/main/LICENSE`}>ISC license</External>.
           </p>
           <a
             href="https://github.com/ghayasleo/remote-jobs"
