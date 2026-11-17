@@ -13,6 +13,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { openConsent } from "@/lib/consent";
+import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { useSavedSlugs } from "@/lib/saved";
 import { cn } from "@/lib/utils";
 import { MAIN_ITEMS, MORE_ITEMS, isActive, isMoreActive, type NavItem } from "./nav-items";
@@ -159,6 +161,15 @@ export function BottomNav() {
                     </DrawerClose>
                   </li>
                 ))}
+                {ANALYTICS_ENABLED && (
+                  <li className="px-3 pt-2">
+                    <DrawerClose asChild>
+                      <button type="button" onClick={openConsent} className="h-10 text-sm text-muted-foreground">
+                        Cookie choices
+                      </button>
+                    </DrawerClose>
+                  </li>
+                )}
               </ul>
             </DrawerContent>
           </Drawer>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRightIcon } from "lucide-react";
+import { CookieChoicesButton } from "@/components/analytics/cookie-choices-button";
 import { BrandMark } from "@/components/brand/logo";
 import { CopyFeedButton } from "@/components/copy-feed-button";
 import { InstallApp } from "@/components/install-app";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
 import { getExploreData } from "@/lib/data/explore-data";
 import { BOARD_COUNT } from "@/lib/data/job-boards";
+import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 
 export const metadata: Metadata = {
   title: "About",
@@ -111,8 +113,20 @@ export default async function AboutPage() {
 
         <Section title="Your privacy">
           <p>
-            There are no accounts. Saved companies stay in this browser and are never sent anywhere. We count visits
-            with Vercel’s cookie-free analytics, and that’s it.
+            There are no accounts. Saved companies stay in this browser and are never sent anywhere.
+            {ANALYTICS_ENABLED ? (
+              <>
+                {" "}
+                We count visits with Vercel’s cookie-free analytics and with Google Analytics. In Europe, Google Analytics
+                only sets cookies once you allow it, and anyone can change their answer under{" "}
+                <CookieChoicesButton className="font-medium text-primary underline underline-offset-4">
+                  cookie choices
+                </CookieChoicesButton>
+                . There are no ads.
+              </>
+            ) : (
+              " We count visits with Vercel’s cookie-free analytics, and that’s it."
+            )}
           </p>
         </Section>
 

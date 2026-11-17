@@ -3,10 +3,18 @@
 Everything here is a draft for you to post from your own accounts. Numbers were
 accurate on 17 Nov 2026; check `/insights` for today's before posting.
 
-## 1. One-time setup (10 minutes, all free)
+## 1. One-time setup (about 20 minutes, all free)
 
-- [ ] **Turn on Vercel Web Analytics.** Vercel dashboard → remote-jobs → Analytics → Enable. The code is already in the app; it just isn't switched on, so no visits are being counted yet.
-- [ ] **Google Search Console.** Add the property `https://remotejobs.ghayasuddin.net`, choose "HTML tag", copy only the `content` value, and add it in Vercel as the environment variable `GOOGLE_SITE_VERIFICATION`. Redeploy, click Verify, then submit `https://remotejobs.ghayasuddin.net/sitemap.xml` under Sitemaps.
+Every environment variable is described in [`.env.example`](../.env.example). Add them in Vercel → Project → Settings → Environment Variables (Production), then redeploy: values are read at build time.
+
+- [ ] **Turn on Vercel Web Analytics.** Vercel dashboard → remote-jobs → Analytics → Enable. The code is already in the app; it just isn't switched on, so no visits are being counted yet. It's cookie-free, so it never needs the cookie question.
+- [ ] **Google Analytics 4.** At analytics.google.com create a property for the site and a Web data stream for `https://remotejobs.ghayasuddin.net`. Keep "Enhanced measurement" on: its "Page changes based on browser history events" setting is what counts in-app navigation. Copy the Measurement ID (`G-…`).
+- [ ] **Google Tag Manager.** At tagmanager.google.com create a Web container and copy its ID (`GTM-…`). Inside it, add a **Google tag** with your GA4 Measurement ID, triggered on "Initialization – All Pages", then Submit → Publish. Set `NEXT_PUBLIC_GTM_ID` in Vercel and redeploy.
+  - Prefer GA4 without Tag Manager? Set `NEXT_PUBLIC_GA_MEASUREMENT_ID` instead. Don't do both while GA4 is also in the container, or visits count twice.
+  - Consent is handled in the app (Google Consent Mode v2): visitors in the EEA, UK and Switzerland are asked first, everyone can change their answer under "Cookie choices", and ad storage is always off. In Tag Manager, leave the GA4 tag's built-in consent checks on.
+  - Check it: Tag Manager → Preview, or GA4 → Reports → Realtime while you browse the site.
+- [ ] **Google Search Console.** Add the property `https://remotejobs.ghayasuddin.net` and choose "HTML tag". Copy only the `content` value and add it in Vercel as `GOOGLE_SITE_VERIFICATION`. Redeploy, click Verify, then submit `https://remotejobs.ghayasuddin.net/sitemap.xml` under Sitemaps. If the same Google account owns the GA4 property or Tag Manager container, the "Google Analytics" or "Google Tag Manager" verification methods work too.
+  - Link it to GA4 (GA4 → Admin → Product links → Search Console) to see search queries next to visits.
 - [ ] **Bing Webmaster Tools.** Sign in and import the site from Search Console (one click), or set `BING_SITE_VERIFICATION` the same way.
 - [ ] **Check Google Jobs markup.** In Search Console → Enhancements → Job postings (appears after Google crawls a few role pages). Or paste a role URL into https://search.google.com/test/rich-results.
 

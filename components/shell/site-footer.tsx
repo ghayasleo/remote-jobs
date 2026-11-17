@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieChoicesButton } from "@/components/analytics/cookie-choices-button";
 import { Wordmark } from "@/components/brand/logo";
 import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
 import { getLandingTopics } from "@/lib/data/explore-data";
@@ -54,6 +55,7 @@ export async function SiteFooter() {
             </a>{" "}
             list, updated daily; open roles every hour.
           </p>
+          <CookieChoicesButton className={`mt-3 ${linkClass}`} />
         </div>
         <div className="col-span-3 grid grid-cols-3 gap-x-6">
           {groups.map(({ title, links }) => (
