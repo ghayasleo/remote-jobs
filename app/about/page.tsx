@@ -147,7 +147,7 @@ export default async function AboutPage() {
               placeholder="blur"
               // Already resized to 480px and 14 KB, so it's served as is.
               unoptimized
-              className="size-20 shrink-0 rounded-2xl object-cover ring-1 ring-foreground/10 sm:size-24"
+              className="size-20 shrink-0 rounded-full object-cover ring-1 ring-foreground/10 sm:size-24"
             />
             <div>
               <p className="font-semibold">{MAKER.name}</p>
