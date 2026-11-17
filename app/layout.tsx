@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Image from "next/image";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import jobsIcon from "./assets/jobs.svg";
+import jobsIcon from "./assets/logo.svg";
 import roboto from "./lib/font-family";
 import { ThemeProvider } from "@mui/material";
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -44,7 +44,7 @@ export default function RootLayout({
             <Container>
               <Link href="/" className="flex items-center gap-5 w-fit">
                 <Image src={jobsIcon} width={40} height={40} alt="Jobs Logo" />
-                <h1 className="text-2xl">Remote Jobs</h1>
+                <h1 className="text-2xl text-theme">Remote Jobs</h1>
               </Link>
 
             </Container>
