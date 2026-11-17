@@ -18,7 +18,7 @@ function Filter() {
 
       <SearchField
         label="Search by Region"
-        placeholder="Eg: Worldwide, Europe, Asia etc"
+        placeholder="Eg: Worldwide, Europe, Americas, Asia Pacific"
         id="regions"
         name="regions"
         helperText="Type a region and press 'Enter' to add it as a tag. Repeat to include multiple regions"

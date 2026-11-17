@@ -1,14 +1,5 @@
 import { create } from "zustand";
 
-type Job = {
-  id: number;
-  company: string;
-  url: string;
-  details: string;
-  regions: string;
-  technologies: string;
-};
-
 export type InputValues = {
   name: string;
   regions: string;
@@ -18,17 +9,11 @@ export type InputValues = {
 };
 
 interface State {
-  jobs: Array<Job>;
-  setJobs: (val: Array<Job>) => void;
-
   value: InputValues;
   setValue: (val: InputValues) => void;
 }
 
 const useStore = create<State>()(set => ({
-  jobs: [],
-  setJobs: (jobs: State["jobs"]) => set({ jobs }),
-
   value: {
     name: "",
     regions: "",

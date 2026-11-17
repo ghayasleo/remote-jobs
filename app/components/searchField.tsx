@@ -1,7 +1,6 @@
 import React, { InputHTMLAttributes } from "react";
-import { InputValues } from "../page";
 import { Chip } from "@mui/material";
-import useStore from "../store";
+import useStore, { InputValues } from "../store";
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
