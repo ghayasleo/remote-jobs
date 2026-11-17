@@ -6,7 +6,7 @@ import { getInsights } from "@/lib/data/insights";
 import { regionLabels, remotePolicyLabels, techLabels, type Tech } from "@/lib/data/labels";
 import { formatDate } from "@/lib/format";
 import { JOB_CATEGORIES } from "@/lib/jobs";
-import { absoluteUrl } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, absoluteUrl } from "@/lib/site";
 
 const number = new Intl.NumberFormat("en");
 const percent = new Intl.NumberFormat("en", { style: "percent", maximumFractionDigits: 0 });
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const insights = await getInsights();
   const title = `State of remote tech hiring, ${month(insights.updatedAt)}`;
   const description = `${number.format(insights.remoteRoles)} open remote roles at ${insights.hiringCompanies} companies: who's hiring most, what kind of work is remote, where companies hire, and pay transparency. Updated hourly.`;
-  return { title, description, alternates: { canonical: "/insights" }, openGraph: { title, description, url: "/insights" } };
+  return { title, description, alternates: { canonical: "/insights" }, openGraph: { title, description, url: "/insights", images: [DEFAULT_OG_IMAGE] } };
 }
 
 function Section({ title, takeaway, children }: { title: string; takeaway: React.ReactNode; children: React.ReactNode }) {
