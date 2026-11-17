@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRightIcon } from "lucide-react";
 import { BrandMark } from "@/components/brand/logo";
+import { CopyFeedButton } from "@/components/copy-feed-button";
 import { InstallApp } from "@/components/install-app";
 import { Button } from "@/components/ui/button";
 import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
@@ -95,10 +96,13 @@ export default async function AboutPage() {
         <Section title="Follow new roles">
           <p>
             <Link href="/new" className="font-medium text-primary underline underline-offset-4">New this week</Link> lists
-            the freshest remote roles. Feed readers can follow{" "}
-            <a href="/feeds/jobs.xml" className="font-medium text-primary underline underline-offset-4">new roles</a> and{" "}
-            <a href="/feeds/companies.xml" className="font-medium text-primary underline underline-offset-4">new companies</a>.
+            the freshest remote roles. To follow them in a feed reader such as Feedly or Inoreader, copy a feed address
+            and paste it into your reader.
           </p>
+          <div className="flex flex-wrap gap-2">
+            <CopyFeedButton path="/feeds/jobs.xml">New roles feed</CopyFeedButton>
+            <CopyFeedButton path="/feeds/companies.xml">New companies feed</CopyFeedButton>
+          </div>
         </Section>
 
         <Section title="Use it like an app">
