@@ -30,7 +30,7 @@ function RoleRow({ role, company }: { role: Role; company: string }) {
     <li className="relative px-4 py-3.5 transition-colors duration-150 hover:bg-muted/60 has-[a:focus-visible]:bg-muted/60 sm:px-5">
       {/* Remote roles have their own page here; others go straight to the board. */}
       {role.workplace === "remote" && !isPlaceholderRole(role.title) ? (
-        <Link href={jobPath({ company, id: role.id })} className={rowLink}>
+        <Link href={jobPath({ company, id: role.id, title: role.title })} className={rowLink}>
           <span>{role.title}</span>
           <ChevronRightIcon className={rowIcon} aria-hidden />
         </Link>
