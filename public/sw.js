@@ -1,7 +1,7 @@
 /* Remote Jobs service worker: lets the installed app open pages you've
    already visited, and shows /offline for the rest, when there's no network. */
 
-const VERSION = "v1";
+const VERSION = "v2";
 const PAGES = `pages-${VERSION}`;
 const STATIC = `static-${VERSION}`;
 const LOGOS = `logos-${VERSION}`;
