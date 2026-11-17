@@ -10,10 +10,13 @@ import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
 import { getExploreData } from "@/lib/data/explore-data";
 import { BOARD_COUNT } from "@/lib/data/job-boards";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
+import { MAKER, makerJsonLd } from "@/lib/maker";
+import { jsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "Where Remote Jobs gets its data, how live roles work, and how to add a company.",
+  description:
+    "Where Remote Jobs gets its data, how live roles work, how to add a company, and who built it: Ghayas Ud Din, an e-commerce and SaaS developer.",
   alternates: { canonical: "/about" },
 };
 
@@ -130,10 +133,47 @@ export default async function AboutPage() {
           </p>
         </Section>
 
+        <section aria-labelledby="maker" className="rounded-2xl border p-5 sm:p-6">
+          <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(makerJsonLd)} />
+          <h2 id="maker" className="text-lg font-bold tracking-tight">
+            Who’s behind it
+          </h2>
+          <div className="mt-2 max-w-[36rem] space-y-3 leading-relaxed text-foreground/90">
+            <p>
+              Hi, I’m {MAKER.name}, an e-commerce and SaaS developer in {MAKER.location}, working remotely. Over seven
+              years I’ve shipped more than 40 projects to production for clients across the UK and EU, mostly with
+              React, Next.js, Node, React Native, Shopify and WooCommerce.
+            </p>
+            <p>
+              I built Remote Jobs on top of the community-run remoteintech list to make it quicker to see which
+              remote-friendly companies are hiring right now. If you need something built, such as an online store, a
+              SaaS product, an integration or a mobile app, I take on fixed-scope projects.
+            </p>
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Button asChild className="h-10 rounded-full px-4">
+              <a href={MAKER.portfolio} target="_blank" rel="noopener noreferrer">
+                See my work <ArrowUpRightIcon aria-hidden />
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="h-10 rounded-full px-4">
+              <a href={MAKER.contact} target="_blank" rel="noopener noreferrer">
+                Start a project
+                <span className="sr-only"> (opens in a new tab)</span>
+              </a>
+            </Button>
+          </div>
+          <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            <External href={MAKER.github}>GitHub</External>
+            <External href={MAKER.linkedin}>LinkedIn</External>
+          </p>
+        </section>
+
         <Section title="Credits">
           <p>
-            Built by <External href="https://github.com/ghayasleo">Ghayas</External>, on top of the work of everyone
-            who contributes to <External href="https://github.com/remoteintech">remoteintech</External>.
+            Thanks to everyone who contributes to <External href="https://github.com/remoteintech">remoteintech</External>
+            : the company profiles here are their work.
           </p>
           <a
             href="https://github.com/ghayasleo/remote-jobs"
