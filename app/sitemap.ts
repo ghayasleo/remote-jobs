@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     { url: absoluteUrl("/jobs"), changeFrequency: "hourly", priority: 0.9 },
     { url: absoluteUrl("/new"), changeFrequency: "daily", priority: 0.7 },
+    { url: absoluteUrl("/insights"), changeFrequency: "daily", priority: 0.7 },
     ...jobs.map((job) => ({
       url: absoluteUrl(jobPath(job)),
       lastModified: job.postedAt ? new Date(job.postedAt) : undefined,

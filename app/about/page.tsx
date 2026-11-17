@@ -82,6 +82,16 @@ export default async function AboutPage() {
           </p>
         </Section>
 
+        <Section title="The numbers">
+          <p>
+            <Link href="/insights" className="font-medium text-primary underline underline-offset-4">
+              State of remote hiring
+            </Link>{" "}
+            shows who’s hiring the most, what kind of work is remote, where companies hire and how many listings show pay,
+            updated every hour.
+          </p>
+        </Section>
+
         <Section title="Follow new roles">
           <p>
             <Link href="/new" className="font-medium text-primary underline underline-offset-4">New this week</Link> lists
