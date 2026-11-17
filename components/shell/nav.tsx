@@ -16,7 +16,8 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 // Detail screens (a company, a role) show their own action bar instead.
-const hasActionBar = (pathname: string) => /^\/(company-profiles\/[^/]+|jobs\/[^/]+\/[^/]+)\/?$/.test(pathname);
+const hasActionBar = (pathname: string) =>
+  /^\/(company-profiles\/[^/]+|jobs\/[^/]+\/[^/]+(\/[^/]+)?)\/?$/.test(pathname);
 
 function useActive() {
   const pathname = usePathname();

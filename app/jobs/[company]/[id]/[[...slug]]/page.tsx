@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArrowUpRightIcon, BriefcaseIcon } from "lucide-react";
 import { Tag } from "@/components/company/chips";
 import { CompanyLogo } from "@/components/company/company-logo";
@@ -15,17 +15,17 @@ import { Button } from "@/components/ui/button";
 import type { Role } from "@/lib/data/job-boards";
 import { postingText } from "@/lib/data/job-boards/sanitize";
 import { getJob, getRemoteJobs } from "@/lib/data/jobs";
-import { JOB_CATEGORIES, jobCategory, jobPath, type JobListing } from "@/lib/jobs";
+import { JOB_CATEGORIES, jobCategory, jobPath, jobSlug, type JobListing } from "@/lib/jobs";
 import { clip, jobPostingJsonLd } from "@/lib/seo";
 import { absoluteUrl, jsonLd } from "@/lib/site";
 
-type Props = PageProps<"/jobs/[company]/[id]">;
+type Props = PageProps<"/jobs/[company]/[id]/[[...slug]]">;
 
 // The newest roles are prerendered; every other role page renders on its first
 // visit and is then cached like the rest.
 export async function generateStaticParams() {
   const jobs = await getRemoteJobs();
-  return jobs.slice(0, 30).map((job) => ({ company: job.company, id: job.id }));
+  return jobs.slice(0, 30).map((job) => ({ company: job.company, id: job.id, slug: [jobSlug(job.title)] }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = clip(
     `${job.company.name} is hiring a remote ${role.title}${where}. ${job.detail ? postingText(job.detail.html) : job.company.blurb}`,
   );
-  const url = jobPath({ company, id: role.id });
+  const url = jobPath({ company, id: role.id, title: role.title });
   return { title, description, alternates: { canonical: url }, openGraph: { title, description, url } };
 }
 
@@ -71,7 +71,7 @@ const toListings = (company: { slug: string; name: string; domain: string | null
   );
 
 async function JobView({ params }: Pick<Props, "params">) {
-  const { company: companySlug, id: rawId } = await params;
+  const { company: companySlug, id: rawId, slug } = await params;
   const job = await getJob(companySlug, decodeURIComponent(rawId));
   if (!job) notFound();
   const { company } = job;
@@ -119,7 +119,9 @@ async function JobView({ params }: Pick<Props, "params">) {
   }
 
   const { role, detail } = job;
-  const path = jobPath({ company: company.slug, id: role.id });
+  const path = jobPath({ company: company.slug, id: role.id, title: role.title });
+  // Links without the title, or with an old one, go to the current address.
+  if (companySlug !== company.slug || slug?.length !== 1 || slug[0] !== jobSlug(role.title)) permanentRedirect(path);
   const facts = [role.location, role.team, role.employmentType].filter(Boolean);
   const pay = detail?.payText ?? role.salary;
   const others = toListings(company, job.others);

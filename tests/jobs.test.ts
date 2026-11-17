@@ -5,6 +5,7 @@ import {
   isPlaceholderRole,
   jobCategory,
   jobPath,
+  jobSlug,
   locationCountries,
   parseJobParams,
   schemaEmploymentType,
@@ -98,8 +99,28 @@ describe("isPlaceholderRole", () => {
 });
 
 describe("Google Jobs helpers", () => {
-  it("builds role paths", () => {
-    expect(jobPath({ company: "gitlab", id: "8801094002" })).toBe("/jobs/gitlab/8801094002");
+  it("builds role paths with a readable slug", () => {
+    expect(jobPath({ company: "gitlab", id: "8801094002", title: "Senior Backend Engineer, Plan" })).toBe(
+      "/jobs/gitlab/8801094002/senior-backend-engineer-plan",
+    );
+  });
+
+  it.each([
+    ["Senior Software Engineer (Remote - US)", "senior-software-engineer-remote-us"],
+    ["Data & AI Lead", "data-and-ai-lead"],
+    ["Développeur·se Full-Stack Sénior", "developpeur-se-full-stack-senior"],
+    ["  --C++ / Rust Engineer--  ", "c-rust-engineer"],
+    ["ソフトウェアエンジニア", "role"],
+  ])("slugs %s", (title, slug) => {
+    expect(jobSlug(title)).toBe(slug);
+  });
+
+  it("cuts long slugs at a word boundary", () => {
+    const slug = jobSlug(
+      "Staff Software Engineer, Distributed Systems and Infrastructure Reliability for Enterprise Customers in North America",
+    );
+    expect(slug.length).toBeLessThanOrEqual(80);
+    expect(slug).toBe("staff-software-engineer-distributed-systems-and-infrastructure-reliability-for");
   });
 
   it("maps employment types", () => {

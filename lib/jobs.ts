@@ -56,8 +56,31 @@ const PLACEHOLDER =
 
 export const isPlaceholderRole = (title: string) => PLACEHOLDER.test(title);
 
-export const jobPath = (job: Pick<JobListing, "company" | "id">) =>
-  `/jobs/${job.company}/${encodeURIComponent(job.id)}`;
+const SLUG_MAX = 80;
+
+/** The readable part of a role's address: "Senior Backend Engineer (US)" → "senior-backend-engineer-us". */
+export function jobSlug(title: string): string {
+  const slug = title
+    .normalize("NFKD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+  if (!slug) return "role";
+  if (slug.length <= SLUG_MAX) return slug;
+  // Cut at a word boundary.
+  const cut = slug.slice(0, SLUG_MAX + 1);
+  const end = cut.lastIndexOf("-");
+  return (end > SLUG_MAX / 2 ? cut.slice(0, end) : cut.slice(0, SLUG_MAX)).replace(/-$/, "");
+}
+
+/**
+ * A role's page: /jobs/{company}/{id}/{title-slug}. The id finds the role; the
+ * slug is for people and search results, so a missing or stale one redirects.
+ */
+export const jobPath = (job: Pick<JobListing, "company" | "id" | "title">) =>
+  `/jobs/${job.company}/${encodeURIComponent(job.id)}/${jobSlug(job.title)}`;
 
 /* ---------- feed filters (kept in the URL) ---------- */
 
