@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { getCompanies } from "./lib/companies";
+import { getCompanyIndex } from "@/lib/data/companies";
 
 // Temporary page while the new UI is built.
-export const revalidate = 86400;
-
 export default async function Home() {
-  const companies = await getCompanies();
+  const companies = await getCompanyIndex();
   return (
     <main className="mx-auto max-w-2xl p-6">
       <h1 className="text-2xl font-semibold">Remote Jobs</h1>
