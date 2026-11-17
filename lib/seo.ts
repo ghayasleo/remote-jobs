@@ -1,5 +1,7 @@
+import type { Role } from "@/lib/data/job-boards/providers";
 import { label, remotePolicyLabels } from "@/lib/data/labels";
 import type { CompanyProfile } from "@/lib/data/parse";
+import { locationCountries, schemaEmploymentType } from "@/lib/jobs";
 import { absoluteUrl } from "@/lib/site";
 
 // Titles, descriptions and structured data written for how people search:
@@ -80,5 +82,55 @@ export function companyJsonLd(company: CompanyProfile) {
         ],
       },
     ],
+  };
+}
+
+/** schema.org JobPosting for Google Jobs. Only fields we actually know. */
+export function jobPostingJsonLd({
+  company,
+  role,
+  html,
+  url,
+  fallbackDate,
+}: {
+  company: CompanyProfile;
+  role: Role;
+  html: string;
+  url: string;
+  fallbackDate: string;
+}) {
+  const countries = locationCountries(role.location);
+  return {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: role.title,
+    description: html,
+    datePosted: role.postedAt ?? fallbackDate,
+    ...(schemaEmploymentType(role.employmentType) && { employmentType: schemaEmploymentType(role.employmentType) }),
+    hiringOrganization: {
+      "@type": "Organization",
+      name: company.name,
+      sameAs: company.website,
+      ...(company.domain && { logo: absoluteUrl(`/logo/${company.domain}`) }),
+    },
+    jobLocationType: "TELECOMMUTE",
+    ...(countries.length > 0 && {
+      applicantLocationRequirements: countries.map((name) => ({ "@type": "Country", name })),
+    }),
+    ...(role.pay && {
+      baseSalary: {
+        "@type": "MonetaryAmount",
+        currency: role.pay.currency,
+        value: {
+          "@type": "QuantitativeValue",
+          ...(role.pay.min !== null && { minValue: role.pay.min }),
+          ...(role.pay.max !== null && { maxValue: role.pay.max }),
+          unitText: role.pay.unit,
+        },
+      },
+    }),
+    directApply: false,
+    identifier: { "@type": "PropertyValue", name: company.name, value: role.id },
+    url,
   };
 }

@@ -41,13 +41,15 @@ export function OpenRoles({
   hasBoard,
   careersUrl,
   name,
+  slug,
 }: {
   roles: OpenRolesData | null;
   hasBoard: boolean;
   careersUrl: string | null;
   name: string;
+  slug: string;
 }) {
-  if (roles && roles.total > 0) return <RolesList data={roles} />;
+  if (roles && roles.total > 0) return <RolesList data={roles} company={slug} />;
 
   if (roles) {
     return (

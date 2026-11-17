@@ -1,45 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { ArrowUpDownIcon, SearchXIcon } from "lucide-react";
 import { CompanyRow } from "@/components/company/company-row";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ChoiceMenu } from "@/components/choice-menu";
 import { SORTS, isRecent, type ExploreCompany, type HiringCounts, type SortKey } from "@/lib/explore";
+import { useLoadMore } from "@/lib/use-load-more";
 import type { ActiveFilter } from "./filters";
 
-const PAGE_SIZE = 24;
-
 export function SortMenu({ value, onChange }: { value: SortKey; onChange: (sort: SortKey) => void }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-10 rounded-full px-3 text-sm">
-          <ArrowUpDownIcon aria-hidden />
-          <span className="sr-only">Sort by: </span>
-          {SORTS[value]}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-44">
-        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
-        <DropdownMenuRadioGroup value={value} onValueChange={(sort) => onChange(sort as SortKey)}>
-          {(Object.keys(SORTS) as SortKey[]).map((key) => (
-            <DropdownMenuRadioItem key={key} value={key}>
-              {SORTS[key]}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+  return <ChoiceMenu label="Sort by" icon={ArrowUpDownIcon} value={value} options={SORTS} onChange={onChange} />;
 }
 
 /** The matching companies, revealed a page at a time as you scroll. */
@@ -59,22 +30,7 @@ export function ResultList({
   /** More companies are still loading (only the first page is in the HTML). */
   pending?: boolean;
 }) {
-  const [limit, setLimit] = useState(PAGE_SIZE);
-  const sentinel = useRef<HTMLLIElement>(null);
-  const hasMore = limit < companies.length;
-
-  useEffect(() => {
-    const target = sentinel.current;
-    if (!hasMore || !target || !("IntersectionObserver" in window)) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setLimit((current) => current + PAGE_SIZE);
-      },
-      { rootMargin: "800px 0px" },
-    );
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [hasMore, limit]);
+  const { limit, hasMore, sentinel, showMore } = useLoadMore(companies.length);
 
   if (companies.length === 0) return <EmptyResults filters={filters} onClearAll={onClearAll} />;
 
@@ -96,7 +52,7 @@ export function ResultList({
       )}
       {hasMore && (
         <li ref={sentinel} className="flex justify-center px-4 py-6">
-          <Button variant="outline" className="h-11 rounded-full px-6" onClick={() => setLimit(limit + PAGE_SIZE)}>
+          <Button variant="outline" className="h-11 rounded-full px-6" onClick={showMore}>
             Show more ({companies.length - limit} left)
           </Button>
         </li>

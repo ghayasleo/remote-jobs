@@ -144,7 +144,7 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
           <h2 id="open-roles-title" className="mb-3 text-lg font-bold tracking-tight">
             Open roles
           </h2>
-          <OpenRoles roles={roles} hasBoard={board !== null} careersUrl={careersUrl} name={company.name} />
+          <OpenRoles roles={roles} hasBoard={board !== null} careersUrl={careersUrl} name={company.name} slug={company.slug} />
         </section>
 
         {sections.map((section) => (

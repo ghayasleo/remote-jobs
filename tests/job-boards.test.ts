@@ -1,8 +1,10 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
+  decodeEntities,
   detectBoards,
   employmentType,
+  payFrom,
   PROVIDERS,
   salaryRange,
   workplaceFromText,
@@ -24,6 +26,7 @@ describe("normalizers", () => {
       team: null,
       employmentType: null,
       salary: null,
+      pay: null,
       url: "http://www.circleci.com/careers/jobs/8801094002/?gh_jid=8801094002",
       postedAt: "2026-10-06T20:30:43.000Z",
     });
@@ -89,6 +92,40 @@ describe("normalizers", () => {
   });
 });
 
+describe("role details", () => {
+  const details = JSON.parse(readFileSync("tests/fixtures/boards/details.json", "utf8"));
+
+  it("greenhouse: unescapes the posting and summarises pay transparency", () => {
+    const detail = PROVIDERS.greenhouse.normalizeDetail(details.greenhouse, "8801094002")!;
+    expect(detail.html.startsWith("<article><header></header>")).toBe(true);
+    expect(detail.payText).toBe("$118.5K – $171K · United States Base Pay Range");
+  });
+
+  it("lever: joins the description, lists and closing", () => {
+    const detail = PROVIDERS.lever.normalizeDetail(details.lever, details.lever.id)!;
+    expect(detail.html).toContain("What is F");
+    expect(detail.html).toMatch(/<h3>[^<]+<\/h3><ul>/);
+  });
+
+  it("ashby: finds the posting in the board list", () => {
+    const detail = PROVIDERS.ashby.normalizeDetail(details.ashby, "c30b2b86-47b1-453f-a2dc-7459a7c2fe80")!;
+    expect(detail.html).toMatch(/^<p/);
+    expect(detail.payText).toBe("$170K – $210K • Offers Equity");
+    expect(PROVIDERS.ashby.normalizeDetail(details.ashby, "missing")).toBeNull();
+  });
+
+  it("workable and recruitee: add a requirements section", () => {
+    expect(PROVIDERS.workable.normalizeDetail(details.workable, "81B46579FE")!.html).toContain("<h3>Requirements</h3>");
+    expect(PROVIDERS.recruitee.normalizeDetail(details.recruitee, "2790099")!.html).toContain("<h3>Requirements</h3>");
+  });
+
+  it("returns null for an empty posting", () => {
+    for (const provider of Object.keys(PROVIDERS) as ProviderId[]) {
+      expect(PROVIDERS[provider].normalizeDetail({}, "1")).toBeNull();
+    }
+  });
+});
+
 describe("detectBoards", () => {
   it("finds boards in embeds, links and subdomains", () => {
     const html = `
@@ -130,6 +167,16 @@ describe("helpers", () => {
     expect(workplaceFromText("Hybrid (London)")).toBe("hybrid");
     expect(workplaceFromText("Work from anywhere")).toBe("remote");
     expect(workplaceFromText("Berlin")).toBeNull();
+  });
+
+  it("builds structured pay only when the period is known", () => {
+    expect(payFrom(100000, 150000, "usd", "per-year-salary")).toEqual({ min: 100000, max: 150000, currency: "USD", unit: "YEAR" });
+    expect(payFrom(4000, null, "EUR", "month")).toEqual({ min: 4000, max: null, currency: "EUR", unit: "MONTH" });
+    expect(payFrom(100, 200, "USD", null)).toBeNull();
+  });
+
+  it("decodes Greenhouse's escaped HTML, ampersands last", () => {
+    expect(decodeEntities("&lt;p&gt;R&amp;D &amp;lt;3&lt;/p&gt;")).toBe("<p>R&D &lt;3</p>");
   });
 
   it("maps employment types and keeps unknown ones", () => {
