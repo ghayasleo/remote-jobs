@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRightIcon } from "lucide-react";
 import { CookieChoicesButton } from "@/components/analytics/cookie-choices-button";
@@ -11,6 +12,7 @@ import { getExploreData } from "@/lib/data/explore-data";
 import { BOARD_COUNT } from "@/lib/data/job-boards";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { MAKER, makerJsonLd } from "@/lib/maker";
+import photo from "@/public/images/ghayas-ud-din.webp";
 import { jsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -138,11 +140,26 @@ export default async function AboutPage() {
           <h2 id="maker" className="text-lg font-bold tracking-tight">
             Who’s behind it
           </h2>
-          <div className="mt-2 max-w-[36rem] space-y-3 leading-relaxed text-foreground/90">
+          <div className="mt-4 flex items-center gap-4">
+            <Image
+              src={photo}
+              alt={MAKER.name}
+              placeholder="blur"
+              // Already resized to 480px and 14 KB, so it's served as is.
+              unoptimized
+              className="size-20 shrink-0 rounded-2xl object-cover ring-1 ring-foreground/10 sm:size-24"
+            />
+            <div>
+              <p className="font-semibold">{MAKER.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {MAKER.jobTitle} · {MAKER.location}, working remotely
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 max-w-[36rem] space-y-3 leading-relaxed text-foreground/90">
             <p>
-              Hi, I’m {MAKER.name}, an e-commerce and SaaS developer in {MAKER.location}, working remotely. Over seven
-              years I’ve shipped more than 40 projects to production for clients across the UK and EU, mostly with
-              React, Next.js, Node, React Native, Shopify and WooCommerce.
+              Hi, I’m Ghayas. Over seven years I’ve shipped more than 40 projects to production for clients across the UK
+              and EU, mostly with React, Next.js, Node, React Native, Shopify and WooCommerce.
             </p>
             <p>
               I built Remote Jobs on top of the community-run remoteintech list to make it quicker to see which
