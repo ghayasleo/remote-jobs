@@ -28,6 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#ffffff" />
+        <meta name="application-name" content="Remote Jobs" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Remote Jobs" />
+        <link rel="apple-touch-icon" href="/icons/icon-152x152.png" />
+      </head>
       <body className={`${roboto.className} ${roboto.variable} antialiased h-full flex flex-col`}>
         <AppRouterCacheProvider>
           <ThemeProvider theme={theme}></ThemeProvider>
