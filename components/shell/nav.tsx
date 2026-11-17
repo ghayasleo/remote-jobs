@@ -66,6 +66,8 @@ export function DesktopNav() {
 /** App-style tab bar pinned to the bottom of the screen on phones. */
 export function BottomNav() {
   const isActive = useActive();
+  // Company pages show their own action bar here instead.
+  if (usePathname().startsWith("/company-profiles/")) return null;
   return (
     <nav
       aria-label="Main"

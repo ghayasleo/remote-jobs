@@ -157,6 +157,22 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Long-form company profiles: typography plugin colours from our tokens. */
+@utility prose-app {
+  --tw-prose-body: color-mix(in oklch, var(--foreground) 90%, transparent);
+  --tw-prose-headings: var(--foreground);
+  --tw-prose-links: var(--primary);
+  --tw-prose-bold: var(--foreground);
+  --tw-prose-counters: var(--muted-foreground);
+  --tw-prose-bullets: var(--muted-foreground);
+  --tw-prose-quotes: var(--foreground);
+  --tw-prose-quote-borders: var(--border);
+  --tw-prose-hr: var(--border);
+  --tw-prose-code: var(--foreground);
+  --tw-prose-th-borders: var(--border);
+  --tw-prose-td-borders: var(--border);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

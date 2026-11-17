@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { OfflineNotice, ServiceWorker } from "@/components/shell/connectivity";
 import { BottomNav } from "@/components/shell/nav";
+import { NavigationTracker } from "@/components/shell/navigation";
 import { SiteHeader } from "@/components/shell/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               {children}
             </main>
             <BottomNav />
+            <NavigationTracker />
             <Toaster
               position="bottom-center"
               mobileOffset={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
