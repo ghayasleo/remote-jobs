@@ -3,7 +3,7 @@
 import { useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import type { ExplorePreview } from "@/lib/data/explore-data";
-import { DEFAULT_PARAMS, filterCompanies, serializeParams } from "@/lib/explore";
+import { DEFAULT_PARAMS, activeFilterCount, filterCompanies, serializeParams } from "@/lib/explore";
 import { retryExploreData, useExploreData, useExploreDataFailed } from "@/lib/use-explore-data";
 import { useExploreParams } from "@/lib/use-explore-params";
 import { ActiveFilters, FilterChip, FilterPanel, FilterSheet, describeFilters } from "./filters";
@@ -59,7 +59,13 @@ export function Explore({
         <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-(--z-sticky) border-b bg-background px-4 py-3 sm:px-6 lg:static lg:border-0 lg:px-0 lg:py-0">
           <SearchField value={params.q} onChange={onSearch} />
           <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:hidden">
-            <FilterSheet params={params} setParams={setParams} resultCount={count} />
+            <FilterSheet
+              count={activeFilterCount(params)}
+              resultLabel={count === null ? "Show results" : `Show ${count} ${count === 1 ? "company" : "companies"}`}
+              onClear={() => setParams({ ...DEFAULT_PARAMS, q: params.q, sort: params.sort })}
+            >
+              <FilterPanel params={params} setParams={setParams} />
+            </FilterSheet>
             <FilterChip pressed={params.hiring} onPressedChange={(hiring) => setParams({ hiring })}>
               Hiring now
             </FilterChip>
