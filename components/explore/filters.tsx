@@ -135,14 +135,14 @@ export function FilterPanel({ params, setParams }: { params: ExploreParams; setP
         ))}
       </FilterGroup>
 
-      <FilterGroup title="Company size">
+      <FilterGroup title="Company size" hint="Number of people at the company.">
         {COMPANY_SIZES.map((size) => (
           <FilterChip
             key={size}
             pressed={params.size.includes(size)}
             onPressedChange={() => toggleIn(setParams, "size", size)}
           >
-            {companySizeLabels[size]} people
+            {companySizeLabels[size]}
           </FilterChip>
         ))}
       </FilterGroup>
@@ -221,7 +221,7 @@ export function describeFilters(params: ExploreParams, setParams: SetParams): Ac
   for (const key of params.stack)
     filters.push({ id: `stack-${key}`, label: techLabels[key], remove: () => toggleIn(setParams, "stack", key) });
   for (const key of params.size)
-    filters.push({ id: `size-${key}`, label: `${companySizeLabels[key]} people`, remove: () => toggleIn(setParams, "size", key) });
+    filters.push({ id: `size-${key}`, label: `Size ${companySizeLabels[key]}`, remove: () => toggleIn(setParams, "size", key) });
   return filters;
 }
 
