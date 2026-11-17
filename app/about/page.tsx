@@ -82,6 +82,15 @@ export default async function AboutPage() {
           </p>
         </Section>
 
+        <Section title="Follow new roles">
+          <p>
+            <Link href="/new" className="font-medium text-primary underline underline-offset-4">New this week</Link> lists
+            the freshest remote roles. Feed readers can follow{" "}
+            <a href="/feeds/jobs.xml" className="font-medium text-primary underline underline-offset-4">new roles</a> and{" "}
+            <a href="/feeds/companies.xml" className="font-medium text-primary underline underline-offset-4">new companies</a>.
+          </p>
+        </Section>
+
         <Section title="Use it like an app">
           <InstallApp />
         </Section>
