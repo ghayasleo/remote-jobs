@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { getCompanyIndex } from "@/lib/data/companies";
+import { getHiringSummary } from "@/lib/data/job-boards";
 
 // Temporary page while the new UI is built.
 export default async function Home() {
-  const companies = await getCompanyIndex();
+  const [companies, hiring] = await Promise.all([getCompanyIndex(), getHiringSummary()]);
   return (
     <main className="mx-auto max-w-2xl p-6">
       <h1 className="text-2xl font-semibold">Remote Jobs</h1>
-      <p className="mt-1 text-sm">{companies.length} companies</p>
+      <p className="mt-1 text-sm">
+        {companies.length} companies, {Object.keys(hiring).length} hiring now
+      </p>
       <ul className="mt-6 space-y-1">
         {companies.map((company) => (
           <li key={company.slug}>

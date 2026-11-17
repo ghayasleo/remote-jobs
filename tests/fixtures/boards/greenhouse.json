@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "total": 15
+  },
+  "jobs": [
+    {
+      "absolute_url": "http://www.circleci.com/careers/jobs/8801094002/?gh_jid=8801094002",
+      "internal_job_id": 6521614002,
+      "location": {
+        "name": "Remote (USA)"
+      },
+      "id": 8801094002,
+      "updated_at": "2026-10-06T16:30:43-04:00",
+      "requisition_id": "blank",
+      "title": "Agentic Operator, Growth Marketing",
+      "company_name": "CircleCI",
+      "first_published": "2026-10-06T16:30:43-04:00",
+      "language": "en",
+      "application_deadline": null
+    },
+    {
+      "absolute_url": "http://www.circleci.com/careers/jobs/8932689002/?gh_jid=8932689002",
+      "internal_job_id": 6579251002,
+      "location": {
+        "name": "San Francisco, CA"
+      },
+      "id": 8932689002,
+      "updated_at": "2026-11-16T18:19:32-05:00",
+      "requisition_id": "P000644",
+      "title": "Executive Business Partner, GTM",
+      "company_name": "CircleCI",
+      "first_published": "2026-11-15T11:36:15-05:00",
+      "language": "en",
+      "application_deadline": null
+    },
+    {
+      "absolute_url": "http://www.circleci.com/careers/jobs/8560754002/?gh_jid=8560754002",
+      "internal_job_id": 6419399002,
+      "location": {
+        "name": "San Francisco, CA"
+      },
+      "id": 8560754002,
+      "updated_at": "2026-11-07T10:36:38-05:00",
+      "requisition_id": "P000120",
+      "title": "Lead Product Designer",
+      "company_name": "CircleCI",
+      "first_published": "2026-05-26T15:10:40-04:00",
+      "language": "en",
+      "application_deadline": null
+    }
+  ]
+}

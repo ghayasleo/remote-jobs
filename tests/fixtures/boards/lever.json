@@ -1,0 +1,60 @@
+[
+  {
+    "categories": {
+      "commitment": "Consultant",
+      "location": "San Francisco Bay Area",
+      "team": "Others",
+      "allLocations": [
+        "San Francisco Bay Area"
+      ]
+    },
+    "createdAt": 1792788085592,
+    "id": "5a9e3fae-86b6-4a83-9da3-aa60f864d71a",
+    "salaryRange": {
+      "min": 6000,
+      "max": 6000,
+      "currency": "USD",
+      "interval": "per-month-salary"
+    },
+    "salaryDescription": "<p>Pay is weighted toward results: a monthly base fee plus an uncapped fee of $1,000 for every position your pod closes.</p>\n<div>&nbsp;</div>\n<div>&nbsp;</div>",
+    "salaryDescriptionPlain": "Pay is weighted toward results: a monthly base fee plus an uncapped fee of $1,000 for every position your pod closes.\n \n \n",
+    "text": "Contract Technical Recruiter",
+    "country": "US",
+    "workplaceType": "onsite",
+    "hostedUrl": "https://jobs.lever.co/findem/5a9e3fae-86b6-4a83-9da3-aa60f864d71a",
+    "applyUrl": "https://jobs.lever.co/findem/5a9e3fae-86b6-4a83-9da3-aa60f864d71a/apply"
+  },
+  {
+    "categories": {
+      "commitment": "Full Time",
+      "location": "Bangalore",
+      "team": "Marketing",
+      "allLocations": [
+        "Bangalore"
+      ]
+    },
+    "createdAt": 1788883624621,
+    "id": "ae77d4a7-f6dc-4efc-a4c3-1a059ecece35",
+    "text": "Digital Marketing Manager — Paid Media & Digital Execution",
+    "country": "IN",
+    "workplaceType": "onsite",
+    "hostedUrl": "https://jobs.lever.co/findem/ae77d4a7-f6dc-4efc-a4c3-1a059ecece35",
+    "applyUrl": "https://jobs.lever.co/findem/ae77d4a7-f6dc-4efc-a4c3-1a059ecece35/apply"
+  },
+  {
+    "categories": {
+      "location": "Bangalore",
+      "team": "Others",
+      "allLocations": [
+        "Bangalore"
+      ]
+    },
+    "createdAt": 1793362293739,
+    "id": "b94bb3a2-5f97-4225-9f58-7f6bf67bf5a5",
+    "text": "GTM Systems Manager(US Shift)",
+    "country": "IN",
+    "workplaceType": "onsite",
+    "hostedUrl": "https://jobs.lever.co/findem/b94bb3a2-5f97-4225-9f58-7f6bf67bf5a5",
+    "applyUrl": "https://jobs.lever.co/findem/b94bb3a2-5f97-4225-9f58-7f6bf67bf5a5/apply"
+  }
+]

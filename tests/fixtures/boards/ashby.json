@@ -1,0 +1,215 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {
+      "id": "c30b2b86-47b1-453f-a2dc-7459a7c2fe80",
+      "title": "Senior Infrastructure Engineer",
+      "department": "Engineering",
+      "team": "Engineering",
+      "employmentType": "FullTime",
+      "location": "Remote - US or Canada",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "secondaryLocations": [],
+      "publishedAt": "2026-08-27T02:17:07.200+00:00",
+      "isListed": true,
+      "isRemote": null,
+      "workplaceType": null,
+      "address": null,
+      "jobUrl": "https://jobs.ashbyhq.com/kindred/c30b2b86-47b1-453f-a2dc-7459a7c2fe80",
+      "applyUrl": "https://jobs.ashbyhq.com/kindred/c30b2b86-47b1-453f-a2dc-7459a7c2fe80/application",
+      "compensation": {
+        "compensationTierSummary": "$170K – $210K • Offers Equity",
+        "scrapeableCompensationSalarySummary": "$170K - $210K",
+        "compensationTiers": [
+          {
+            "id": "117252f9-872e-4d75-aa13-2b38aa938b5c",
+            "tierSummary": "Estimated Base Salary $170K – $210K • Offers Equity",
+            "title": null,
+            "additionalInformation": null,
+            "components": [
+              {
+                "id": "0133d32d-4513-4917-97ee-6e0b4104ee02",
+                "summary": "Offers Equity",
+                "compensationType": "EquityPercentage",
+                "interval": "NONE",
+                "currencyCode": null,
+                "minValue": null,
+                "maxValue": null
+              },
+              {
+                "id": "90529441-9f11-4ff6-9756-46776cc19faf",
+                "summary": "Estimated Base Salary $170K – $210K",
+                "compensationType": "Salary",
+                "interval": "1 YEAR",
+                "currencyCode": "USD",
+                "minValue": 170000,
+                "maxValue": 210000
+              }
+            ]
+          }
+        ],
+        "summaryComponents": [
+          {
+            "compensationType": "EquityPercentage",
+            "interval": "NONE",
+            "currencyCode": null,
+            "minValue": null,
+            "maxValue": null
+          },
+          {
+            "compensationType": "Salary",
+            "interval": "1 YEAR",
+            "currencyCode": "USD",
+            "minValue": 170000,
+            "maxValue": 210000
+          }
+        ]
+      }
+    },
+    {
+      "id": "210ddddd-0242-4831-802d-a0b0480c5500",
+      "title": "Head of Product Design",
+      "department": "Design",
+      "team": "Design",
+      "employmentType": "FullTime",
+      "location": "San Francisco, CA",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "secondaryLocations": [
+        {
+          "location": "Remote - US",
+          "address": {
+            "postalAddress": {
+              "addressCountry": "United States"
+            }
+          }
+        }
+      ],
+      "publishedAt": "2026-07-30T21:35:07.666+00:00",
+      "isListed": true,
+      "isRemote": null,
+      "workplaceType": null,
+      "address": {
+        "postalAddress": {
+          "addressRegion": "California",
+          "addressCountry": "United States",
+          "addressLocality": "San Francisco"
+        }
+      },
+      "jobUrl": "https://jobs.ashbyhq.com/kindred/210ddddd-0242-4831-802d-a0b0480c5500",
+      "applyUrl": "https://jobs.ashbyhq.com/kindred/210ddddd-0242-4831-802d-a0b0480c5500/application",
+      "compensation": {
+        "compensationTierSummary": "$230K – $285K • Offers Equity",
+        "scrapeableCompensationSalarySummary": "$230K - $285K",
+        "compensationTiers": [
+          {
+            "id": "02cb492b-72a6-4f4e-9601-e16a9e4eb9b3",
+            "tierSummary": "Estimated Base Salary $230K – $285K • Offers Equity",
+            "title": null,
+            "additionalInformation": null,
+            "components": [
+              {
+                "id": "49b90372-84b6-4675-8881-7846e69c7902",
+                "summary": "Estimated Base Salary $230K – $285K",
+                "compensationType": "Salary",
+                "interval": "1 YEAR",
+                "currencyCode": "USD",
+                "minValue": 230000,
+                "maxValue": 285000
+              },
+              {
+                "id": "55dded7b-326c-4f8a-9293-5f1d505ce655",
+                "summary": "Offers Equity",
+                "compensationType": "EquityPercentage",
+                "interval": "NONE",
+                "currencyCode": null,
+                "minValue": null,
+                "maxValue": null
+              }
+            ]
+          }
+        ],
+        "summaryComponents": [
+          {
+            "compensationType": "Salary",
+            "interval": "1 YEAR",
+            "currencyCode": "USD",
+            "minValue": 230000,
+            "maxValue": 285000
+          },
+          {
+            "compensationType": "EquityPercentage",
+            "interval": "NONE",
+            "currencyCode": null,
+            "minValue": null,
+            "maxValue": null
+          }
+        ]
+      }
+    },
+    {
+      "id": "6070b239-54da-4e17-8f46-880a70629586",
+      "title": "Full-Stack Engineer",
+      "department": "Engineering",
+      "team": "Engineering",
+      "employmentType": "FullTime",
+      "location": "Remote - US or Canada",
+      "shouldDisplayCompensationOnJobPostings": true,
+      "secondaryLocations": [],
+      "publishedAt": "2026-08-17T15:53:09.605+00:00",
+      "isListed": true,
+      "isRemote": null,
+      "workplaceType": null,
+      "address": null,
+      "jobUrl": "https://jobs.ashbyhq.com/kindred/6070b239-54da-4e17-8f46-880a70629586",
+      "applyUrl": "https://jobs.ashbyhq.com/kindred/6070b239-54da-4e17-8f46-880a70629586/application",
+      "compensation": {
+        "compensationTierSummary": "$150K – $220K • Offers Equity",
+        "scrapeableCompensationSalarySummary": "$150K - $220K",
+        "compensationTiers": [
+          {
+            "id": "16d97006-57f3-4ea7-8abe-76b735c3b71f",
+            "tierSummary": "Estimated Base Salary $150K – $220K • Offers Equity",
+            "title": null,
+            "additionalInformation": null,
+            "components": [
+              {
+                "id": "c6967427-35e2-4e33-baf1-90e42f8758dd",
+                "summary": "Offers Equity",
+                "compensationType": "EquityPercentage",
+                "interval": "NONE",
+                "currencyCode": null,
+                "minValue": null,
+                "maxValue": null
+              },
+              {
+                "id": "af661138-619c-45bb-a339-55726a63978a",
+                "summary": "Estimated Base Salary $150K – $220K",
+                "compensationType": "Salary",
+                "interval": "1 YEAR",
+                "currencyCode": "USD",
+                "minValue": 150000,
+                "maxValue": 220000
+              }
+            ]
+          }
+        ],
+        "summaryComponents": [
+          {
+            "compensationType": "EquityPercentage",
+            "interval": "NONE",
+            "currencyCode": null,
+            "minValue": null,
+            "maxValue": null
+          },
+          {
+            "compensationType": "Salary",
+            "interval": "1 YEAR",
+            "currencyCode": "USD",
+            "minValue": 150000,
+            "maxValue": 220000
+          }
+        ]
+      }
+    }
+  ]
+}
