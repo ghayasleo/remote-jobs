@@ -51,6 +51,9 @@ export default async function AboutPage() {
         <Button asChild variant="outline" className="h-11 rounded-full px-5">
           <Link href="/">Explore all {companies.length}</Link>
         </Button>
+        <Button asChild variant="ghost" className="h-11 rounded-full px-5">
+          <Link href="/remote">Browse by stack and region</Link>
+        </Button>
       </div>
 
       <div className="mt-10 space-y-8">

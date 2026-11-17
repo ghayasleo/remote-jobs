@@ -34,7 +34,9 @@ export function CompanyLogo({
     );
   }
   return (
-    <span className={cn(box, "grid place-items-center overflow-hidden p-1.5")}>
+    // Logos are made for light backgrounds (many are dark marks on transparency),
+    // so the tile stays white in dark mode too.
+    <span className={cn(box, "grid place-items-center overflow-hidden bg-white p-1.5 dark:border-white/10")}>
       <Image
         src={`/logo/${domain}`}
         alt=""

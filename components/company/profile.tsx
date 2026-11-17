@@ -69,16 +69,25 @@ export function CompanyFacts({
   remotePolicy,
   companySize,
   addedAt,
+  regionHref,
 }: {
   region: string;
   remotePolicy: string;
   companySize: string | null;
   addedAt: string | null;
+  /** Landing page for this region, when there is one. */
+  regionHref?: string;
 }) {
   return (
     <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-4">
       <Fact term="Hires in">
-        <RegionChip region={region} className="mt-0.5" />
+        {regionHref ? (
+          <Link href={regionHref} className="rounded-full" aria-label="See more companies that hire here">
+            <RegionChip region={region} className="mt-0.5 transition-opacity hover:opacity-80" />
+          </Link>
+        ) : (
+          <RegionChip region={region} className="mt-0.5" />
+        )}
       </Fact>
       <Fact term="Remote policy">{label(remotePolicyLabels, remotePolicy) || "Not stated"}</Fact>
       <Fact term="Team size">{companySize ? `${label(companySizeLabels, companySize)} people` : "Not stated"}</Fact>

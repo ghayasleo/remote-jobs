@@ -4,6 +4,7 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getCompanyIndex } from "./companies";
 import { getHiringSummary } from "./job-boards";
 import { DEFAULT_PARAMS, filterCompanies, newSinceDate, toExploreCompany } from "@/lib/explore";
+import { landingTopics, topicPath } from "@/lib/landing";
 
 /**
  * Every company the Explore and Saved lists can show. Served as one static
@@ -49,3 +50,13 @@ export async function getExplorePreview() {
 }
 
 export type ExplorePreview = Awaited<ReturnType<typeof getExplorePreview>>;
+
+/** Every landing page (/remote/...) with its company count, computed once. */
+export async function getLandingTopics() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("companies", "roles");
+
+  const { companies, hiring, newSince } = await getExploreData();
+  return landingTopics(companies, hiring, newSince).map(({ topic, count }) => ({ topic, count, path: topicPath(topic) }));
+}

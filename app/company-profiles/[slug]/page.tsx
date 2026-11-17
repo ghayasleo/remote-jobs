@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { ArrowUpRightIcon } from "lucide-react";
@@ -14,6 +15,7 @@ import { formatDate } from "@/lib/format";
 import { BackButton } from "@/components/shell/navigation";
 import { Button } from "@/components/ui/button";
 import { findSlugByAlias, getCompany, getCompanyIndex, upstreamFileUrl } from "@/lib/data/companies";
+import { getLandingTopics } from "@/lib/data/explore-data";
 import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
 import { label, techLabels } from "@/lib/data/labels";
 import { companyJsonLd, companySeo } from "@/lib/seo";
@@ -62,7 +64,11 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
   }
 
   const board = getBoard(slug);
-  const roles = board ? await getOpenRoles(board) : null;
+  const [roles, landing] = await Promise.all([
+    board ? getOpenRoles(board) : null,
+    getLandingTopics().then((pages) => new Set(pages.map((page) => page.path))),
+  ]);
+  const regionPage = `/remote/${company.region}`;
   const careersUrl = company.careersUrl ?? company.website;
   // "About" goes first, then open roles, then the rest of the profile.
   const about = company.sections.find((section) => section.id === "blurb");
@@ -109,6 +115,7 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
           remotePolicy={company.remotePolicy}
           companySize={company.companySize}
           addedAt={company.addedAt}
+          regionHref={landing.has(regionPage) ? regionPage : undefined}
         />
       </div>
 
@@ -116,7 +123,15 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
         <ul aria-label="Tech stack" className="mt-4 flex flex-wrap gap-1.5">
           {company.technologies.map((tech) => (
             <li key={tech}>
-              <Tag className="h-7 px-3 text-sm">{label(techLabels, tech)}</Tag>
+              {landing.has(`/remote/${tech}`) ? (
+                <Link href={`/remote/${tech}`} aria-label={`Remote ${label(techLabels, tech)} companies`}>
+                  <Tag className="h-7 px-3 text-sm transition-colors hover:bg-muted hover:text-foreground">
+                    {label(techLabels, tech)}
+                  </Tag>
+                </Link>
+              ) : (
+                <Tag className="h-7 px-3 text-sm">{label(techLabels, tech)}</Tag>
+              )}
             </li>
           ))}
         </ul>
