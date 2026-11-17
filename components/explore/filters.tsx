@@ -71,7 +71,7 @@ export function FilterChip({
         // Same width on and off: the 18px the tick and its gap take when on
         // come out of the side padding (2 × 18px off; 8px + 10px on), so
         // picking a filter never pushes the next chip onto a new line.
-        "h-8 shrink-0 gap-1 rounded-full bg-background px-4.5 text-[0.8125rem] transition-colors duration-150 pointer-coarse:h-11 pointer-coarse:text-sm",
+        "h-8 shrink-0 gap-1 rounded-full bg-background px-4.5 text-[0.8125rem] transition-colors duration-150 pointer-coarse:h-9",
         "data-[state=on]:border-primary data-[state=on]:bg-primary data-[state=on]:pr-2.5 data-[state=on]:pl-2 data-[state=on]:text-primary-foreground hover:data-[state=on]:bg-primary/90",
         className,
       )}
@@ -174,8 +174,8 @@ export function FilterSheet({
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="h-9 shrink-0 rounded-full px-3.5 pointer-coarse:h-11">
-          <SlidersHorizontalIcon aria-hidden />
+        <Button variant="outline" className="h-8 shrink-0 gap-1.5 rounded-full px-3 text-[0.8125rem] pointer-coarse:h-9">
+          <SlidersHorizontalIcon className="size-3.5" aria-hidden />
           Filters
           {count > 0 && (
             <span className="grid min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[0.6875rem] leading-5 font-semibold text-primary-foreground tabular-nums">
