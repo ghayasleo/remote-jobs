@@ -1,0 +1,120 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { ArrowUpDownIcon, SearchXIcon } from "lucide-react";
+import { CompanyRow } from "@/components/company/company-row";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SORTS, isRecent, type ExploreCompany, type HiringCounts, type SortKey } from "@/lib/explore";
+import type { ActiveFilter } from "./filters";
+
+const PAGE_SIZE = 24;
+
+export function SortMenu({ value, onChange }: { value: SortKey; onChange: (sort: SortKey) => void }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-10 rounded-full px-3 text-sm">
+          <ArrowUpDownIcon aria-hidden />
+          <span className="sr-only">Sort by: </span>
+          {SORTS[value]}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-44">
+        <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+        <DropdownMenuRadioGroup value={value} onValueChange={(sort) => onChange(sort as SortKey)}>
+          {(Object.keys(SORTS) as SortKey[]).map((key) => (
+            <DropdownMenuRadioItem key={key} value={key}>
+              {SORTS[key]}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/** The matching companies, revealed a page at a time as you scroll. */
+export function ResultList({
+  companies,
+  hiring,
+  newSince,
+  filters,
+  onClearAll,
+}: {
+  companies: ExploreCompany[];
+  hiring: HiringCounts;
+  newSince: string;
+  filters: ActiveFilter[];
+  onClearAll: () => void;
+}) {
+  const [limit, setLimit] = useState(PAGE_SIZE);
+  const sentinel = useRef<HTMLLIElement>(null);
+  const hasMore = limit < companies.length;
+
+  useEffect(() => {
+    const target = sentinel.current;
+    if (!hasMore || !target || !("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setLimit((current) => current + PAGE_SIZE);
+      },
+      { rootMargin: "800px 0px" },
+    );
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [hasMore, limit]);
+
+  if (companies.length === 0) return <EmptyResults filters={filters} onClearAll={onClearAll} />;
+
+  return (
+    <ul className="divide-y border-y lg:rounded-2xl lg:border">
+      {companies.slice(0, limit).map((company) => (
+        <CompanyRow
+          key={company.slug}
+          company={company}
+          hiring={hiring[company.slug]}
+          isNew={isRecent(company, newSince)}
+        />
+      ))}
+      {hasMore && (
+        <li ref={sentinel} className="flex justify-center px-4 py-6">
+          <Button variant="outline" className="h-11 rounded-full px-6" onClick={() => setLimit(limit + PAGE_SIZE)}>
+            Show more ({companies.length - limit} left)
+          </Button>
+        </li>
+      )}
+    </ul>
+  );
+}
+
+function EmptyResults({ filters, onClearAll }: { filters: ActiveFilter[]; onClearAll: () => void }) {
+  return (
+    <div className="mx-4 rounded-2xl border border-dashed px-6 py-14 text-center sm:mx-6 lg:mx-0">
+      <span className="mx-auto grid size-14 place-items-center rounded-full bg-secondary text-secondary-foreground">
+        <SearchXIcon className="size-6" aria-hidden />
+      </span>
+      <h3 className="mt-5 text-lg font-semibold">No companies match all of that</h3>
+      <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">
+        Try loosening one filter. Each one below is a single tap to remove.
+      </p>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        {filters.slice(0, 4).map((filter) => (
+          <Button key={filter.id} variant="outline" className="h-10 rounded-full px-4" onClick={filter.remove}>
+            Remove {filter.label}
+          </Button>
+        ))}
+        <Button className="h-10 rounded-full px-4" onClick={onClearAll}>
+          Clear everything
+        </Button>
+      </div>
+    </div>
+  );
+}

@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Figtree } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { OfflineNotice, ServiceWorker } from "@/components/shell/connectivity";
@@ -46,27 +45,25 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en" className={figtree.className} suppressHydrationWarning>
       <body className="min-h-dvh antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <NuqsAdapter>
-            <TooltipProvider>
-              <a
-                href="#main"
-                className="sr-only rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-(--z-toast)"
-              >
-                Skip to content
-              </a>
-              <SiteHeader />
-              <OfflineNotice />
-              {/* Room for the bottom tab bar on phones. */}
-              <main id="main" className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-                {children}
-              </main>
-              <BottomNav />
-              <Toaster
-                position="bottom-center"
-                mobileOffset={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
-              />
-            </TooltipProvider>
-          </NuqsAdapter>
+          <TooltipProvider>
+            <a
+              href="#main"
+              className="sr-only rounded-full bg-primary px-4 py-2 font-medium text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-(--z-toast)"
+            >
+              Skip to content
+            </a>
+            <SiteHeader />
+            <OfflineNotice />
+            {/* Room for the bottom tab bar on phones. */}
+            <main id="main" className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+              {children}
+            </main>
+            <BottomNav />
+            <Toaster
+              position="bottom-center"
+              mobileOffset={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
+            />
+          </TooltipProvider>
         </ThemeProvider>
         <ServiceWorker />
         <Analytics />
