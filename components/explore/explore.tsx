@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { ExplorePreview } from "@/lib/data/explore-data";
 import { DEFAULT_PARAMS, filterCompanies, serializeParams } from "@/lib/explore";
@@ -15,7 +14,14 @@ import { SearchField } from "./search-field";
  * The page HTML carries only the first page of the default view; the full
  * list loads right after (from /data/explore.json) for searching and filtering.
  */
-export function Explore({ preview, previewHiring, total, hiringCount, newSince }: ExplorePreview) {
+export function Explore({
+  preview,
+  previewHiring,
+  total,
+  hiringCount,
+  newSince,
+  discover,
+}: ExplorePreview & { discover?: React.ReactNode }) {
   const [params, setParams] = useExploreParams();
   const data = useExploreData();
   const failed = useExploreDataFailed();
@@ -46,6 +52,7 @@ export function Explore({ preview, previewHiring, total, hiringCount, newSince }
             {total} remote-friendly tech companies,{" "}
             <span className="font-semibold text-foreground">{hiringCount} hiring right now.</span>
           </p>
+          {discover}
         </header>
 
         {/* On phones the search and quick filters stay pinned under the top bar. */}
@@ -122,19 +129,6 @@ export function Explore({ preview, previewHiring, total, hiringCount, newSince }
         ) : (
           <ListSkeleton />
         )}
-        <p className="px-4 pt-6 text-center text-sm sm:px-6 lg:px-0">
-          <Link href="/remote" className="font-medium text-primary underline underline-offset-4">
-            Browse companies by stack and region
-          </Link>
-          {" · "}
-          <Link href="/insights" className="font-medium text-primary underline underline-offset-4">
-            State of remote hiring
-          </Link>
-        </p>
-        <p className="px-4 py-6 text-center text-xs text-muted-foreground sm:px-6 lg:px-0">
-          Company data from the community-run remoteintech/remote-jobs list, refreshed daily. Open roles
-          refresh hourly.
-        </p>
       </div>
     </div>
   );

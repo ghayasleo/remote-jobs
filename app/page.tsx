@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { DiscoverLinks } from "@/components/explore/discover-links";
 import { Explore } from "@/components/explore/explore";
 import { getExplorePreview } from "@/lib/data/explore-data";
+import { getNewThisWeek } from "@/lib/data/jobs";
 import { SITE_NAME, SITE_URL, jsonLd } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -15,14 +17,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ExplorePage() {
-  const preview = await getExplorePreview();
+  const [preview, fresh] = await Promise.all([getExplorePreview(), getNewThisWeek()]);
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={jsonLd({ "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: SITE_URL })}
       />
-      <Explore {...preview} />
+      <Explore {...preview} discover={<DiscoverLinks newRoles={fresh.jobs.length} />} />
     </>
   );
 }
