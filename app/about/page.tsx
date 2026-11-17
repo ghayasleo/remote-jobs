@@ -18,7 +18,7 @@ import { jsonLd } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Where Remote Jobs gets its data, how live roles work, how to add a company, and who built it: Ghayas Ud Din, an e-commerce and SaaS developer.",
+    "Where Remote Jobs gets its data, how live roles work, how to add a company, and who built it: Ghayas Ud Din, a senior software engineer.",
   alternates: { canonical: "/about" },
 };
 
@@ -151,37 +151,22 @@ export default async function AboutPage() {
             />
             <div>
               <p className="font-semibold">{MAKER.name}</p>
-              <p className="text-sm text-muted-foreground">
-                {MAKER.jobTitle} · {MAKER.location}, working remotely
-              </p>
+              <p className="text-sm">{MAKER.jobTitle}</p>
+              <p className="text-sm text-muted-foreground">Working remotely from {MAKER.location}</p>
             </div>
           </div>
           <div className="mt-4 max-w-[36rem] space-y-3 leading-relaxed text-foreground/90">
             <p>
-              Hi, I’m Ghayas. Over seven years I’ve shipped more than 40 projects to production for clients across the UK
-              and EU, mostly with React, Next.js, Node, React Native, Shopify and WooCommerce.
+              Hi, I’m Ghayas. For the past seven years I’ve been building web and mobile products, from online stores to
+              SaaS apps and the systems that connect them, mostly with React, Next.js, Node and React Native.
             </p>
             <p>
-              I built Remote Jobs on top of the community-run remoteintech list to make it quicker to see which
-              remote-friendly companies are hiring right now. If you need something built, such as an online store, a
-              SaaS product, an integration or a mobile app, I take on fixed-scope projects.
+              Remote Jobs began as a way to make the community-run remoteintech list easier to browse, and grew to show
+              which of those companies are hiring right now.
             </p>
           </div>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <Button asChild className="h-10 rounded-full px-4">
-              <a href={MAKER.work} target="_blank" rel="noopener noreferrer">
-                See my work <ArrowUpRightIcon aria-hidden />
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>
-            </Button>
-            <Button asChild variant="outline" className="h-10 rounded-full px-4">
-              <a href={MAKER.contact} target="_blank" rel="noopener noreferrer">
-                Start a project
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>
-            </Button>
-          </div>
           <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            <External href={MAKER.work}>See my work</External>
             <External href={MAKER.github}>GitHub</External>
             <External href={MAKER.linkedin}>LinkedIn</External>
           </p>
