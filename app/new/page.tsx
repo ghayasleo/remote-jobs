@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { RssIcon } from "lucide-react";
 import { CompanyRow } from "@/components/company/company-row";
+import { CopyFeedButton } from "@/components/copy-feed-button";
 import { JobRow } from "@/components/jobs/job-row";
 import { getNewThisWeek } from "@/lib/data/jobs";
 
@@ -16,15 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-function FeedLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <a href={href} className="inline-flex items-center gap-1.5 text-sm font-medium text-primary underline underline-offset-4">
-      <RssIcon className="size-4" aria-hidden />
-      {children}
-    </a>
-  );
-}
-
 export default async function NewThisWeekPage() {
   const { jobs, companies } = await getNewThisWeek();
   const byCompany = new Set(jobs.map((job) => job.company)).size;
@@ -35,11 +26,11 @@ export default async function NewThisWeekPage() {
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">New this week</h1>
         <p className="mt-1.5 max-w-[36rem] text-muted-foreground">
           <span className="font-semibold text-foreground">{jobs.length} remote roles</span> posted in the last 7 days at{" "}
-          {byCompany} companies. Follow along in any feed reader.
+          {byCompany} companies.
         </p>
-        <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-          <FeedLink href="/feeds/jobs.xml">New roles feed</FeedLink>
-          <FeedLink href="/feeds/companies.xml">New companies feed</FeedLink>
+        <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2">
+          <CopyFeedButton path="/feeds/jobs.xml">Copy RSS address</CopyFeedButton>
+          <p className="text-sm text-muted-foreground">to get new roles in your feed reader</p>
         </div>
       </header>
 
