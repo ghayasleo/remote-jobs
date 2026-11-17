@@ -116,7 +116,7 @@ components:
 
 **Creative North Star: "First Light"**
 
-The mark is a sun rising over the horizon, and the whole interface takes its cue from that: morning light on a clean page. Job hunting is tiring, so the surface stays quiet and bright (pure white by day, true near-black at night) and lets one confident violet and a warm sunrise yellow do the encouraging. Colour is spent on meaning: what you selected, who's hiring, where a company hires. Nothing is decorative.
+The logo is the word “remotejobs” with a striped sun as its “o”, and the whole interface takes its cue from that: morning light on a clean page. Job hunting is tiring, so the surface stays quiet and bright (pure white by day, true near-black at night) and lets one confident violet and a warm sunrise yellow do the encouraging. Colour is spent on meaning: what you selected, who's hiring, where a company hires. Nothing is decorative.
 
 It's a tool first. Density is comfortable rather than packed; every list row answers "is this company for me?" in one glance (name, where they hire, policy, stack, hiring), and everything else is one tap away. On phones it behaves like a native app: pinned search, a bottom tab bar, bottom sheets for filters, an action bar on detail screens, and state that survives going back.
 
@@ -194,7 +194,7 @@ Flat. There are no resting shadows: depth comes from hairline borders, tonal was
 
 ## Shapes
 
-Two shapes, used consistently. Anything you tap is a pill (fully rounded): buttons, filter chips, search field, badges, active-tab indicator. Anything that contains is a soft rounded rectangle: lists and cards at 1.575rem (`rounded-2xl`), logos at 0.7–1.225rem. Dashed borders mark "nothing here yet" panels (empty results, empty saved, notices). The logo is a 512-unit rounded square (radius 116) with the sun glyph centred inside the maskable safe zone.
+Two shapes, used consistently. Anything you tap is a pill (fully rounded): buttons, filter chips, search field, badges, active-tab indicator. Anything that contains is a soft rounded rectangle: lists and cards at 1.575rem (`rounded-2xl`), logos at 0.7–1.225rem. Dashed borders mark "nothing here yet" panels (empty results, empty saved, notices). The logo is the wordmark “remotejobs” in one ink colour (Figtree 800, tracking −0.04em) with the striped sun as its “o”; it never changes colour except to flip ink for dark mode. The app icon is that sun alone on a 512-unit ink square (radius 116), centred inside the maskable safe zone. Both come from `lib/brand-mark.ts`; `npm run icons` regenerates the icon files.
 
 ## Components
 
