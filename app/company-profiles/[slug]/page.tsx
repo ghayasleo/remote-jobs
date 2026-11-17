@@ -1,10 +1,10 @@
 import React from "react";
 import { notFound, permanentRedirect } from "next/navigation";
 import { marked } from "marked";
-import Container from "../../components/container";
+
 import { findSlugByAlias, getCompanyProfile } from "../../lib/companies";
 import { companySizeLabels, label, regionLabels, remotePolicyLabels } from "../../lib/labels";
-import 'github-markdown-css/github-markdown-light.css';
+
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -33,7 +33,7 @@ async function Page({ params }: Props) {
 
   return (
     <div className="py-10">
-      <Container>
+      <div className="mx-auto max-w-3xl px-6">
         <header className="mb-8 pb-6 border-b border-gray-200">
           <h1 className="text-3xl font-semibold">{company.name}</h1>
           <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1">
@@ -55,7 +55,7 @@ async function Page({ params }: Props) {
           </ul>
         </header>
         <div className="markdown-body" dangerouslySetInnerHTML={{ __html: html }} />
-      </Container>
+      </div>
     </div>
   );
 }
