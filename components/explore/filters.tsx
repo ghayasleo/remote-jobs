@@ -1,7 +1,7 @@
 "use client";
 
 import { useId } from "react";
-import { CheckIcon, SlidersHorizontalIcon, XIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, SlidersHorizontalIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -13,6 +13,15 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Toggle } from "@/components/ui/toggle";
 import {
   COMPANY_SIZES,
@@ -206,23 +215,126 @@ export function FilterSheet({
   );
 }
 
-export type ActiveFilter = { id: string; label: string; remove: () => void };
+/** A type of filter, so several picks of one type can share a single pill. */
+export type FilterKind = { key: string; label: string; clear: () => void };
+
+export type ActiveFilter = {
+  id: string;
+  /** Stands on its own: the pill, and "Remove …" in the empty state. */
+  label: string;
+  remove: () => void;
+  kind?: FilterKind;
+  /** Shorter label inside its type's menu, where the type is already named. */
+  option?: string;
+};
 
 /** Every applied filter as a removable item, for pills and the empty state. */
 export function describeFilters(params: ExploreParams, setParams: SetParams): ActiveFilter[] {
+  const region: FilterKind = { key: "region", label: "Region", clear: () => setParams({ region: [] }) };
+  const policy: FilterKind = { key: "policy", label: "Remote policy", clear: () => setParams({ policy: [] }) };
+  const stack: FilterKind = { key: "stack", label: "Tech stack", clear: () => setParams({ stack: [] }) };
+  const size: FilterKind = { key: "size", label: "Company size", clear: () => setParams({ size: [] }) };
+
   const filters: ActiveFilter[] = [];
   if (params.q.trim()) filters.push({ id: "q", label: `“${params.q.trim()}”`, remove: () => setParams({ q: "" }) });
   if (params.hiring) filters.push({ id: "hiring", label: "Hiring now", remove: () => setParams({ hiring: false }) });
   if (params.recent) filters.push({ id: "recent", label: "Recently added", remove: () => setParams({ recent: false }) });
   for (const key of params.region)
-    filters.push({ id: `region-${key}`, label: REGION_FILTERS[key].label, remove: () => toggleIn(setParams, "region", key) });
+    filters.push({ id: `region-${key}`, kind: region, label: REGION_FILTERS[key].label, remove: () => toggleIn(setParams, "region", key) });
   for (const key of params.policy)
-    filters.push({ id: `policy-${key}`, label: remotePolicyLabels[key], remove: () => toggleIn(setParams, "policy", key) });
+    filters.push({ id: `policy-${key}`, kind: policy, label: remotePolicyLabels[key], remove: () => toggleIn(setParams, "policy", key) });
   for (const key of params.stack)
-    filters.push({ id: `stack-${key}`, label: techLabels[key], remove: () => toggleIn(setParams, "stack", key) });
+    filters.push({ id: `stack-${key}`, kind: stack, label: techLabels[key], remove: () => toggleIn(setParams, "stack", key) });
   for (const key of params.size)
-    filters.push({ id: `size-${key}`, label: `Size ${companySizeLabels[key]}`, remove: () => toggleIn(setParams, "size", key) });
+    filters.push({
+      id: `size-${key}`,
+      kind: size,
+      label: `Size ${companySizeLabels[key]}`,
+      option: companySizeLabels[key],
+      remove: () => toggleIn(setParams, "size", key),
+    });
   return filters;
+}
+
+type FilterGroup = { kind: FilterKind; filters: ActiveFilter[] };
+
+/** Filters in order, with two or more picks of one type folded into a group. */
+function groupFilters(filters: ActiveFilter[]): (ActiveFilter | FilterGroup)[] {
+  const entries: (ActiveFilter | FilterGroup)[] = [];
+  const groups = new Map<string, FilterGroup>();
+  for (const filter of filters) {
+    if (!filter.kind) {
+      entries.push(filter);
+      continue;
+    }
+    let group = groups.get(filter.kind.key);
+    if (!group) {
+      group = { kind: filter.kind, filters: [] };
+      groups.set(filter.kind.key, group);
+      entries.push(group);
+    }
+    group.filters.push(filter);
+  }
+  return entries.flatMap((entry) => ("filters" in entry && entry.filters.length === 1 ? entry.filters : [entry]));
+}
+
+const pillClass = "inline-flex h-8 items-center rounded-full bg-secondary text-sm font-medium text-secondary-foreground";
+
+function FilterPill({ filter }: { filter: ActiveFilter }) {
+  return (
+    <span className={cn(pillClass, "gap-1 pl-3")}>
+      {filter.label}
+      <button
+        type="button"
+        onClick={filter.remove}
+        aria-label={`Remove filter: ${filter.label}`}
+        className="grid size-8 place-items-center rounded-full transition-colors hover:bg-primary/10"
+      >
+        <XIcon className="size-3.5" aria-hidden />
+      </button>
+    </span>
+  );
+}
+
+/** Several picks of one type: "Tech stack 3", opening a checklist to untick any of them. */
+function FilterGroupPill({ group: { kind, filters } }: { group: FilterGroup }) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        className={cn(
+          pillClass,
+          "gap-1.5 pr-2.5 pl-3 outline-none transition-colors duration-150 hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50 data-[state=open]:bg-primary/10",
+        )}
+      >
+        {kind.label}
+        <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1.5 text-[0.6875rem] font-semibold text-primary-foreground tabular-nums">
+          {filters.length}
+          <span className="sr-only"> selected</span>
+        </span>
+        <ChevronDownIcon className="size-3.5" aria-hidden />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" className="w-auto min-w-48 rounded-xl p-1.5">
+        <DropdownMenuLabel>{kind.label}</DropdownMenuLabel>
+        {filters.map((filter) => (
+          <DropdownMenuCheckboxItem
+            key={filter.id}
+            checked
+            // Stay open, so several can be unticked in a row.
+            onSelect={(event) => event.preventDefault()}
+            onCheckedChange={filter.remove}
+            className="h-9 rounded-lg"
+          >
+            {filter.option ?? filter.label}
+          </DropdownMenuCheckboxItem>
+        ))}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={kind.clear} className="h-9 rounded-lg">
+          <XIcon aria-hidden />
+          Remove all {filters.length}
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
 
 export function ActiveFilters({
@@ -237,22 +349,13 @@ export function ActiveFilters({
   if (filters.length === 0) return null;
   return (
     <div className={cn("flex flex-wrap items-center gap-2", className)}>
-      {filters.map((filter) => (
-        <span
-          key={filter.id}
-          className="inline-flex h-8 items-center gap-1 rounded-full bg-secondary pl-3 text-sm font-medium text-secondary-foreground"
-        >
-          {filter.label}
-          <button
-            type="button"
-            onClick={filter.remove}
-            aria-label={`Remove filter: ${filter.label}`}
-            className="grid size-8 place-items-center rounded-full transition-colors hover:bg-primary/10"
-          >
-            <XIcon className="size-3.5" aria-hidden />
-          </button>
-        </span>
-      ))}
+      {groupFilters(filters).map((entry) =>
+        "filters" in entry ? (
+          <FilterGroupPill key={entry.kind.key} group={entry} />
+        ) : (
+          <FilterPill key={entry.id} filter={entry} />
+        ),
+      )}
       <Button variant="link" className="h-8 px-1.5 text-sm" onClick={onClearAll}>
         Clear all
       </Button>

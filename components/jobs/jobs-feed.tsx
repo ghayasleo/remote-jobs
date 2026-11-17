@@ -63,10 +63,12 @@ export function JobsFeed({ preview, total, companies }: { preview: JobListing[];
   const onSearch = useCallback((q: string) => setParams({ q }), [setParams]);
   const clearAll = () => setParams({ ...DEFAULT_JOB_PARAMS, sort: params.sort });
 
+  const kindOfWork = { key: "category", label: "Kind of work", clear: () => setParams({ category: [] }) };
   const filters: ActiveFilter[] = [
     ...(params.q.trim() ? [{ id: "q", label: `“${params.q.trim()}”`, remove: () => setParams({ q: "" }) }] : []),
     ...params.category.map((category) => ({
       id: `category-${category}`,
+      kind: kindOfWork,
       label: JOB_CATEGORIES[category],
       remove: () => setParams((current) => ({ category: current.category.filter((item) => item !== category) })),
     })),
