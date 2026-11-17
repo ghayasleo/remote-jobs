@@ -50,6 +50,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={figtree.className} suppressHydrationWarning>
       <body className="min-h-dvh antialiased">
+        {/* Feed discovery. Rendered here (React hoists it into <head>) rather than in
+            metadata, because pages that set their own alternates would drop it. */}
+        <link rel="alternate" type="application/rss+xml" title="New remote roles" href="/feeds/jobs.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Newly added companies" href="/feeds/companies.xml" />
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <TooltipProvider>
             <a

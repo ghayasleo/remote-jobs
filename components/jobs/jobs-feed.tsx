@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+import Link from "next/link";
 import { ArrowUpDownIcon, CalendarIcon, SearchXIcon } from "lucide-react";
 import { ChoiceMenu } from "@/components/choice-menu";
 import { ActiveFilters, FilterChip, type ActiveFilter } from "@/components/explore/filters";
@@ -85,7 +86,10 @@ export function JobsFeed({ preview, total, companies }: { preview: JobListing[];
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Remote jobs</h1>
         <p className="mt-1.5 text-muted-foreground">
           <span className="font-semibold text-foreground">{total} remote roles</span> at {companies} companies, straight
-          from their job boards and refreshed every hour.
+          from their job boards and refreshed every hour.{" "}
+          <Link href="/new" className="font-medium text-primary underline underline-offset-4">
+            See what’s new this week
+          </Link>
         </p>
       </header>
 

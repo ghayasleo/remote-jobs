@@ -3,6 +3,7 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { getCompany, getCompanyIndex } from "./companies";
 import { forEachBoard, getBoard, getOpenRoles, getRoleDetail, type Role } from "./job-boards";
+import { toExploreCompany } from "@/lib/explore";
 import { isPlaceholderRole, jobCategory, type JobListing } from "@/lib/jobs";
 
 const byNewest = (a: JobListing, b: JobListing) => (b.postedAt ?? "").localeCompare(a.postedAt ?? "");
@@ -85,5 +86,27 @@ export async function getJob(companySlug: string, id: string) {
     others,
     providerLabel: open.providerLabel,
     fetchedAt: open.fetchedAt,
+  };
+}
+
+const WEEK_MS = 7 * 86_400_000;
+
+/** Roles posted in the last 7 days, newest first. */
+export async function getNewThisWeek() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("roles", "companies");
+
+  const since = new Date(Date.now() - WEEK_MS).toISOString();
+  const [jobs, companies] = await Promise.all([getRemoteJobs(), getCompanyIndex()]);
+  const recentCompanies = companies
+    .filter((company) => company.addedAt)
+    .sort((a, b) => b.addedAt!.localeCompare(a.addedAt!))
+    .slice(0, 12)
+    .map(toExploreCompany);
+  return {
+    jobs: jobs.filter((job) => job.postedAt && job.postedAt >= since),
+    companies: recentCompanies,
+    since,
   };
 }
