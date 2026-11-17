@@ -8,6 +8,7 @@ export const MAKER = {
   jobTitle: "E-commerce & SaaS developer",
   location: "Islamabad",
   portfolio: "https://www.ghayasuddin.net",
+  work: "https://www.ghayasuddin.net/#work",
   contact: "https://www.ghayasuddin.net/#contact",
   github: "https://github.com/ghayasleo",
   linkedin: "https://www.linkedin.com/in/ghayas-ud-din",

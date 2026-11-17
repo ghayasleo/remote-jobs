@@ -169,7 +169,7 @@ export default async function AboutPage() {
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             <Button asChild className="h-10 rounded-full px-4">
-              <a href={MAKER.portfolio} target="_blank" rel="noopener noreferrer">
+              <a href={MAKER.work} target="_blank" rel="noopener noreferrer">
                 See my work <ArrowUpRightIcon aria-hidden />
                 <span className="sr-only"> (opens in a new tab)</span>
               </a>
