@@ -2,28 +2,25 @@ import Link from "next/link";
 import { CookieChoicesButton } from "@/components/analytics/cookie-choices-button";
 import { Wordmark } from "@/components/brand/logo";
 import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
-import { getLandingTopics } from "@/lib/data/explore-data";
-import { topicCopy, type Topic } from "@/lib/landing";
+import { topicCopy, topicPath, type Topic } from "@/lib/landing";
 import { MAIN_ITEMS, MORE_ITEMS } from "./nav-items";
 
 type Group = { title: string; links: { href: string; label: string }[] };
 
 const linkClass = "text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground hover:underline";
 
-/** The busiest region and stack pages, so every page links to them. */
-async function popularTopics() {
-  const pages = await getLandingTopics();
-  const top = (keep: (topic: Topic) => boolean) =>
-    pages
-      .filter(({ topic }) => keep(topic))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 3);
-  const regions = top((topic) => !!topic.region && !topic.stack);
-  const stacks = top((topic) => !!topic.stack && !topic.region);
-  return [...regions, ...stacks].map(({ topic, path }) => ({ href: path, label: topicCopy(topic).searchTitle }));
-}
+// Big, stable region and stack pages, linked from every page. A fixed list:
+// the footer is in every page's render, so it must not wait on live data.
+const POPULAR: Topic[] = [
+  { region: "worldwide" },
+  { region: "europe" },
+  { region: "americas" },
+  { stack: "javascript" },
+  { stack: "python" },
+  { stack: "go" },
+];
 
-export async function SiteFooter() {
+export function SiteFooter() {
   const groups: Group[] = [
     {
       title: "Find work",
@@ -36,7 +33,7 @@ export async function SiteFooter() {
       title: "Explore",
       links: MORE_ITEMS.filter(({ href }) => href !== "/new").map(({ href, label }) => ({ href, label })),
     },
-    { title: "Popular", links: await popularTopics() },
+    { title: "Popular", links: POPULAR.map((topic) => ({ href: topicPath(topic), label: topicCopy(topic).searchTitle })) },
   ];
 
   return (
