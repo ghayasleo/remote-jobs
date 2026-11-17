@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { findSlugByAlias, getCompany, getCompanyIndex, upstreamFileUrl } from "@/lib/data/companies";
 import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
 import { label, techLabels } from "@/lib/data/labels";
+import { companyJsonLd, companySeo } from "@/lib/seo";
+import { jsonLd } from "@/lib/site";
 
 type Props = PageProps<"/company-profiles/[slug]">;
 
@@ -28,12 +30,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const company = await getCompany(slug);
   if (!company) return { title: "Company not found", robots: { index: false } };
-  const description = company.blurb || `${company.name} is a remote-friendly tech company.`;
+  const board = getBoard(slug);
+  const roles = board ? await getOpenRoles(board) : null;
+  const { title, description } = companySeo(company, roles);
+  const url = `/company-profiles/${slug}`;
   return {
-    title: company.name,
+    title,
     description,
-    alternates: { canonical: `/company-profiles/${slug}` },
-    openGraph: { title: `${company.name} · Remote Jobs`, description, url: `/company-profiles/${slug}` },
+    alternates: { canonical: url },
+    openGraph: { title, description, url },
   };
 }
 
@@ -65,6 +70,7 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
 
   return (
     <article className="mx-auto max-w-3xl px-4 pt-3 pb-10 sm:px-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(companyJsonLd(company))} />
       <BackButton />
 
       <header className="mt-3 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">

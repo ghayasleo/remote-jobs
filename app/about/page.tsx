@@ -11,6 +11,7 @@ import { BOARD_COUNT } from "@/lib/data/job-boards";
 export const metadata: Metadata = {
   title: "About",
   description: "Where Remote Jobs gets its data, how live roles work, and how to add a company.",
+  alternates: { canonical: "/about" },
 };
 
 function External({ href, children }: { href: string; children: React.ReactNode }) {
