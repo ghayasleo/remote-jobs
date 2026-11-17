@@ -1,0 +1,92 @@
+/* Remote Jobs service worker: lets the installed app open pages you've
+   already visited, and shows /offline for the rest, when there's no network. */
+
+const VERSION = "v1";
+const PAGES = `pages-${VERSION}`;
+const STATIC = `static-${VERSION}`;
+const LOGOS = `logos-${VERSION}`;
+const OFFLINE_URL = "/offline";
+const LIMITS = { [PAGES]: 60, [STATIC]: 250, [LOGOS]: 400 };
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(PAGES)
+      .then((cache) => cache.addAll([OFFLINE_URL, "/icons/icon-192.png"]))
+      .then(() => self.skipWaiting()),
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  const current = new Set(Object.keys(LIMITS));
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((key) => !current.has(key)).map((key) => caches.delete(key))))
+      .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const { request } = event;
+  if (request.method !== "GET") return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  if (request.mode === "navigate") {
+    event.respondWith(networkFirst(request));
+  } else if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/")) {
+    event.respondWith(cacheFirst(request));
+  } else if (url.pathname.startsWith("/logo/")) {
+    event.respondWith(staleWhileRevalidate(event, request));
+  }
+  // Everything else (RSC payloads, APIs) goes straight to the network; Next.js
+  // retries client navigations itself once the connection is back.
+});
+
+async function remember(cacheName, request, response) {
+  const cache = await caches.open(cacheName);
+  await cache.put(request, response);
+  const keys = await cache.keys();
+  const excess = keys.length - LIMITS[cacheName];
+  for (const key of keys.slice(0, Math.max(0, excess))) await cache.delete(key);
+}
+
+async function networkFirst(request) {
+  try {
+    const response = await fetch(request);
+    if (response.ok && response.type === "basic") remember(PAGES, request, response.clone());
+    return response;
+  } catch {
+    const cache = await caches.open(PAGES);
+    // Filters live in the query string and are applied in the browser, so any
+    // cached copy of the same page is a good fallback.
+    return (
+      (await cache.match(request)) ||
+      (await cache.match(request, { ignoreSearch: true })) ||
+      (await cache.match(OFFLINE_URL)) ||
+      Response.error()
+    );
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok) remember(STATIC, request, response.clone());
+  return response;
+}
+
+async function staleWhileRevalidate(event, request) {
+  const cached = await caches.match(request);
+  const network = fetch(request)
+    .then((response) => {
+      if (response.ok) remember(LOGOS, request, response.clone());
+      return response;
+    })
+    .catch(() => cached || Response.error());
+  if (!cached) return network;
+  event.waitUntil(network);
+  return cached;
+}
