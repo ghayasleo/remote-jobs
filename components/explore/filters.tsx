@@ -31,13 +31,7 @@ import {
   remotePolicyLabels,
   techLabels,
 } from "@/lib/data/labels";
-import {
-  DEFAULT_PARAMS,
-  REGION_FILTER_KEYS,
-  REGION_FILTERS,
-  activeFilterCount,
-  type ExploreParams,
-} from "@/lib/explore";
+import { REGION_FILTER_KEYS, REGION_FILTERS, type ExploreParams } from "@/lib/explore";
 import type { useExploreParams } from "@/lib/use-explore-params";
 import { cn } from "@/lib/utils";
 
@@ -82,7 +76,7 @@ export function FilterChip({
   );
 }
 
-function FilterGroup({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+export function FilterGroup({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
   const id = useId();
   return (
     <section role="group" aria-labelledby={id}>
@@ -159,18 +153,22 @@ export function FilterPanel({ params, setParams }: { params: ExploreParams; setP
   );
 }
 
-/** Phone: a "Filters" button that opens every filter in a bottom sheet. */
+/**
+ * Phone and tablet: a "Filters" button with the active count, opening every
+ * filter in a bottom sheet. Companies and Jobs pass their own panel.
+ */
 export function FilterSheet({
-  params,
-  setParams,
-  resultCount,
+  count,
+  resultLabel,
+  onClear,
+  children,
 }: {
-  params: ExploreParams;
-  setParams: SetParams;
-  /** null while the full list is still loading. */
-  resultCount: number | null;
+  count: number;
+  /** The main button, e.g. "Show 42 companies". */
+  resultLabel: string;
+  onClear: () => void;
+  children: React.ReactNode;
 }) {
-  const count = activeFilterCount(params);
   return (
     <Drawer>
       <DrawerTrigger asChild>
@@ -190,24 +188,13 @@ export function FilterSheet({
           <DrawerTitle className="text-lg">Filters</DrawerTitle>
           <DrawerDescription>Changes apply as you go.</DrawerDescription>
         </DrawerHeader>
-        <div className="overflow-y-auto overscroll-contain px-4 pb-6">
-          <FilterPanel params={params} setParams={setParams} />
-        </div>
+        <div className="overflow-y-auto overscroll-contain px-4 pb-6">{children}</div>
         <DrawerFooter className="flex-row gap-3 border-t pb-[calc(1rem+env(safe-area-inset-bottom))]">
-          <Button
-            variant="ghost"
-            className="h-12 rounded-full px-5"
-            disabled={count === 0}
-            onClick={() => setParams({ ...DEFAULT_PARAMS, q: params.q, sort: params.sort })}
-          >
+          <Button variant="ghost" className="h-12 rounded-full px-5" disabled={count === 0} onClick={onClear}>
             Clear all
           </Button>
           <DrawerClose asChild>
-            <Button className="h-12 flex-1 rounded-full text-base">
-              {resultCount === null
-                ? "Show results"
-                : `Show ${resultCount} ${resultCount === 1 ? "company" : "companies"}`}
-            </Button>
+            <Button className="h-12 flex-1 rounded-full text-base">{resultLabel}</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
@@ -256,12 +243,12 @@ export function describeFilters(params: ExploreParams, setParams: SetParams): Ac
   return filters;
 }
 
-type FilterGroup = { kind: FilterKind; filters: ActiveFilter[] };
+type PillGroup = { kind: FilterKind; filters: ActiveFilter[] };
 
 /** Filters in order, with two or more picks of one type folded into a group. */
-function groupFilters(filters: ActiveFilter[]): (ActiveFilter | FilterGroup)[] {
-  const entries: (ActiveFilter | FilterGroup)[] = [];
-  const groups = new Map<string, FilterGroup>();
+function groupFilters(filters: ActiveFilter[]): (ActiveFilter | PillGroup)[] {
+  const entries: (ActiveFilter | PillGroup)[] = [];
+  const groups = new Map<string, PillGroup>();
   for (const filter of filters) {
     if (!filter.kind) {
       entries.push(filter);
@@ -297,7 +284,7 @@ function FilterPill({ filter }: { filter: ActiveFilter }) {
 }
 
 /** Several picks of one type: "Tech stack 3", opening a checklist to untick any of them. */
-function FilterGroupPill({ group: { kind, filters } }: { group: FilterGroup }) {
+function FilterGroupPill({ group: { kind, filters } }: { group: PillGroup }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger

@@ -2,6 +2,8 @@
 // role pages and their Google Jobs markup. Pure functions, shared by server
 // and browser.
 
+import { COMPANY_SIZES, REMOTE_POLICIES, TECHS, type CompanySize, type RemotePolicy, type Tech } from "./data/labels";
+
 export type JobListing = {
   id: string;
   /** Company slug. */
@@ -15,6 +17,11 @@ export type JobListing = {
   salary: string | null;
   postedAt: string | null;
   category: JobCategory;
+  // From the company's profile, for the company filters. Optional: a copy of
+  // the list cached before these existed simply doesn't match them.
+  companyPolicy?: string | null;
+  companySize?: string | null;
+  companyStack?: string[];
 };
 
 export const JOB_CATEGORIES = {
@@ -82,6 +89,118 @@ export function jobSlug(title: string): string {
 export const jobPath = (job: Pick<JobListing, "company" | "id" | "title">) =>
   `/jobs/${job.company}/${encodeURIComponent(job.id)}/${jobSlug(job.title)}`;
 
+/* ---------- where a role can be done from ---------- */
+
+export const JOB_REGIONS = {
+  anywhere: "Anywhere",
+  "us-canada": "US & Canada",
+  "latin-america": "Latin America",
+  europe: "Europe",
+  "middle-east-africa": "Middle East & Africa",
+  "asia-pacific": "Asia Pacific",
+} as const;
+export type JobRegion = keyof typeof JOB_REGIONS;
+export const JOB_REGION_KEYS = Object.keys(JOB_REGIONS) as JobRegion[];
+
+const words = (list: string) => new RegExp(`(?:^|[^a-z])(?:${list})(?![a-z])`, "i");
+
+// Boards write locations as free text ("Remote - US", "EMEA Remote",
+// "Foster City, CA", "Remote, Canada; Remote, Poland"), so each region is a
+// list of the words that put a role there. A role can be in several.
+const REGION_WORDS: [JobRegion, RegExp][] = [
+  ["anywhere", words("anywhere|worldwide|global|globally|any location|any country|any time ?zone|fully distributed|international")],
+  [
+    "us-canada",
+    words(
+      [
+        "us|usa|u\\.s\\.a?\\.?|united[- ]states|north america|namer|amer|americas|canada|canadian|west coast|east coast",
+        "eastern time|pacific time|central time|mountain time|pst|pdt|est|edt|cst|cdt",
+        "san francisco|bay area|silicon valley|new york|nyc|seattle|austin|boston|chicago|los angeles|denver|atlanta|miami|montr[eé]al",
+        "washington|portland|san diego|san jose|palo alto|mountain view|sunnyvale|foster city|menlo park|philadelphia",
+        "dallas|houston|phoenix|raleigh|salt lake|pittsburgh|minneapolis|detroit|nashville|toronto|vancouver|montreal",
+        "ottawa|calgary|waterloo|california|texas|florida|colorado|massachusetts|illinois|oregon|utah|arizona|virginia",
+        "north carolina|ontario|british columbia|quebec|alabama|alaska|arkansas|connecticut|delaware|hawaii|idaho",
+        "indiana|iowa|kansas|kentucky|louisiana|maine|maryland|michigan|minnesota|mississippi|missouri|montana",
+        "nebraska|nevada|new hampshire|new jersey|new mexico|north dakota|ohio|oklahoma|pennsylvania|rhode island",
+        "south carolina|south dakota|tennessee|vermont|west virginia|wisconsin|wyoming",
+      ].join("|"),
+    ),
+  ],
+  [
+    "latin-america",
+    words(
+      [
+        "latam|latin america|south america|central america|amer|americas|brazil|brasil|mexico|méxico|argentina",
+        "colombia|chile|peru|uruguay|costa rica|guatemala|ecuador|bolivia|paraguay|venezuela|dominican republic",
+        "são paulo|sao paulo|buenos aires|bogot[aá]|mexico city|medell[ií]n|santiago|lima|montevideo",
+      ].join("|"),
+    ),
+  ],
+  [
+    "europe",
+    words(
+      [
+        "europe|european|emea|eu|eea|cet|cest|uk|u\\.k\\.|united[- ]kingdom|great britain|britain|england|scotland|wales",
+        "ireland|germany|deutschland|france|spain|portugal|netherlands|holland|belgium|luxembourg|italy|poland",
+        "romania|bulgaria|greece|croatia|serbia|slovenia|slovakia|czechia|czech republic|hungary|austria|switzerland",
+        "sweden|denmark|norway|finland|iceland|estonia|latvia|lithuania|ukraine|moldova|cyprus|malta|albania|turkey",
+        "london|manchester|edinburgh|berlin|munich|hamburg|paris|amsterdam|rotterdam|lisbon|porto|madrid|barcelona",
+        "dublin|warsaw|krak[oó]w|prague|vienna|z[uü]rich|stockholm|copenhagen|oslo|helsinki|brussels|bucharest",
+        "budapest|athens|milan|rome|tallinn|riga|vilnius|kyiv|kiev|belgrade|sofia|zagreb|istanbul|belarus|minsk",
+        "armenia|yerevan|tbilisi|montenegro|podgorica",
+      ].join("|"),
+    ),
+  ],
+  [
+    "middle-east-africa",
+    words(
+      [
+        "emea|mena|middle east|africa|israel|tel aviv|uae|united arab emirates|dubai|abu dhabi|saudi arabia|riyadh",
+        "qatar|doha|egypt|cairo|south africa|cape town|johannesburg|nigeria|lagos|kenya|nairobi|ghana|morocco|tunisia",
+        "jordan|lebanon|ksa",
+      ].join("|"),
+    ),
+  ],
+  [
+    "asia-pacific",
+    words(
+      [
+        "apac|apj|anz|asia|asia[- ]pacific|oceania|india|bangalore|bengaluru|mumbai|delhi|hyderabad|pune|chennai",
+        "japan|tokyo|singapore|australia|sydney|melbourne|brisbane|perth|new zealand|auckland|philippines|manila",
+        "korea|seoul|indonesia|jakarta|vietnam|malaysia|kuala lumpur|thailand|bangkok|hong kong|taiwan|taipei|china",
+        "shanghai|beijing|pakistan|karachi|lahore|islamabad|sri lanka|bangladesh|nepal",
+      ].join("|"),
+    ),
+  ],
+];
+
+// "Remote, BR", "Remote, MX": Latin American country codes after a comma.
+const LATAM_CODE = /,\s*(BR|MX)\b/;
+
+// "Foster City, CA", "Toronto, ON": a US state or Canadian province code after a comma.
+const STATE_CODE =
+  /,\s*(AL|AK|AZ|AR|CA|CO|CT|DE|FL|GA|HI|ID|IL|IN|IA|KS|KY|LA|ME|MD|MA|MI|MN|MS|MO|MT|NE|NV|NH|NJ|NM|NY|NC|ND|OH|OK|OR|PA|RI|SC|SD|TN|TX|UT|VT|VA|WA|WV|WI|WY|DC|ON|BC|QC|AB)\b/;
+
+/** The regions a role's location names. Empty when it only says "Remote". */
+export function jobRegions(location: string): JobRegion[] {
+  const regions = REGION_WORDS.filter(([, pattern]) => pattern.test(location)).map(([region]) => region);
+  if (!regions.includes("us-canada") && STATE_CODE.test(location)) regions.push("us-canada");
+  if (!regions.includes("latin-america") && LATAM_CODE.test(location)) regions.push("latin-america");
+  // "Anywhere in the US" is the US: anywhere only counts when no region is named.
+  const named: JobRegion[] = regions.filter((region) => region !== "anywhere");
+  return named.length ? JOB_REGION_KEYS.filter((region) => named.includes(region)) : regions;
+}
+
+const regionCache = new WeakMap<JobListing, JobRegion[]>();
+function regionsOf(job: JobListing) {
+  let regions = regionCache.get(job);
+  if (!regions) {
+    regions = jobRegions(job.location);
+    regionCache.set(job, regions);
+  }
+  return regions;
+}
+
 /* ---------- feed filters (kept in the URL) ---------- */
 
 export const POSTED_WITHIN = { "1d": "Last 24 hours", "7d": "Last 7 days", "30d": "Last 30 days" } as const;
@@ -91,18 +210,59 @@ const POSTED_DAYS: Record<Exclude<PostedWithin, "">, number> = { "1d": 1, "7d": 
 export const JOB_SORTS = { newest: "Newest", company: "Company A–Z" } as const;
 export type JobSort = keyof typeof JOB_SORTS;
 
-export type JobParams = { q: string; category: JobCategory[]; posted: PostedWithin; sort: JobSort };
-export const DEFAULT_JOB_PARAMS: JobParams = { q: "", category: [], posted: "", sort: "newest" };
+export type JobParams = {
+  q: string;
+  category: JobCategory[];
+  /** Where the role can be done from. */
+  where: JobRegion[];
+  posted: PostedWithin;
+  /** Only roles that publish pay. */
+  pay: boolean;
+  /** The company's remote policy, size and stack. */
+  policy: RemotePolicy[];
+  size: CompanySize[];
+  stack: Tech[];
+  sort: JobSort;
+};
+export const DEFAULT_JOB_PARAMS: JobParams = {
+  q: "",
+  category: [],
+  where: [],
+  posted: "",
+  pay: false,
+  policy: [],
+  size: [],
+  stack: [],
+  sort: "newest",
+};
+
+/** List filters, in URL order. Values are kept in their canonical order. */
+const LIST_PARAMS = {
+  category: JOB_CATEGORY_KEYS,
+  where: JOB_REGION_KEYS,
+  policy: REMOTE_POLICIES,
+  size: COMPANY_SIZES,
+  stack: TECHS,
+} as const;
+export type JobListParam = keyof typeof LIST_PARAMS;
 
 export function parseJobParams(query: string): JobParams {
   const search = new URLSearchParams(query);
-  const categories = (search.get("category") ?? "").split(",");
+  const list = <K extends JobListParam>(key: K) => {
+    const values = (search.get(key) ?? "").split(",");
+    return (LIST_PARAMS[key] as readonly string[]).filter((value) => values.includes(value)) as JobParams[K];
+  };
   const posted = search.get("posted") ?? "";
   const sort = search.get("sort") ?? "";
   return {
     q: (search.get("q") ?? "").slice(0, 100),
-    category: JOB_CATEGORY_KEYS.filter((key) => categories.includes(key)),
+    category: list("category"),
+    where: list("where"),
     posted: posted in POSTED_WITHIN ? (posted as PostedWithin) : "",
+    pay: search.get("pay") === "true",
+    policy: list("policy"),
+    size: list("size"),
+    stack: list("stack"),
     sort: sort in JOB_SORTS ? (sort as JobSort) : "newest",
   };
 }
@@ -110,12 +270,24 @@ export function parseJobParams(query: string): JobParams {
 export function serializeJobParams(params: JobParams): string {
   const search = new URLSearchParams();
   if (params.q.trim()) search.set("q", params.q.trim());
-  if (params.category.length) search.set("category", params.category.join(","));
+  for (const key of ["category", "where"] as const) if (params[key].length) search.set(key, params[key].join(","));
   if (params.posted) search.set("posted", params.posted);
+  if (params.pay) search.set("pay", "true");
+  for (const key of ["policy", "size", "stack"] as const) if (params[key].length) search.set(key, params[key].join(","));
   if (params.sort !== "newest") search.set("sort", params.sort);
   const query = search.toString().replaceAll("%2C", ",");
   return query ? `?${query}` : "";
 }
+
+/** How many filters are on, search aside: the badge on the Filters button. */
+export const activeJobFilterCount = (params: JobParams) =>
+  params.category.length +
+  params.where.length +
+  Number(Boolean(params.posted)) +
+  Number(params.pay) +
+  params.policy.length +
+  params.size.length +
+  params.stack.length;
 
 const haystacks = new WeakMap<JobListing, string>();
 const haystack = (job: JobListing) => {
@@ -128,13 +300,20 @@ const haystack = (job: JobListing) => {
 };
 
 export function filterJobs(jobs: JobListing[], params: JobParams, now: number): JobListing[] {
-  const words = params.q.toLowerCase().split(/\s+/).filter(Boolean);
+  const queryWords = params.q.toLowerCase().split(/\s+/).filter(Boolean);
   const since = params.posted ? new Date(now - POSTED_DAYS[params.posted] * 86_400_000).toISOString() : null;
   const matches = jobs.filter(
     (job) =>
-      words.every((word) => haystack(job).includes(word)) &&
+      queryWords.every((word) => haystack(job).includes(word)) &&
       (params.category.length === 0 || params.category.includes(job.category)) &&
-      (!since || (job.postedAt !== null && job.postedAt >= since)),
+      // A role open anywhere counts for every region.
+      (params.where.length === 0 ||
+        regionsOf(job).some((region) => region === "anywhere" || params.where.includes(region))) &&
+      (!since || (job.postedAt !== null && job.postedAt >= since)) &&
+      (!params.pay || job.salary !== null) &&
+      (params.policy.length === 0 || (params.policy as string[]).includes(job.companyPolicy ?? "")) &&
+      (params.size.length === 0 || (params.size as string[]).includes(job.companySize ?? "")) &&
+      (params.stack.length === 0 || params.stack.some((tech) => job.companyStack?.includes(tech))),
   );
   const byCompany = (a: JobListing, b: JobListing) =>
     a.companyName.localeCompare(b.companyName, "en", { sensitivity: "base" }) || a.title.localeCompare(b.title);

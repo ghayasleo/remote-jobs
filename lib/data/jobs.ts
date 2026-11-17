@@ -33,6 +33,9 @@ export async function getRemoteJobs(): Promise<JobListing[]> {
         salary: role.salary,
         postedAt: role.postedAt,
         category: jobCategory(role.title, role.team),
+        companyPolicy: company.remotePolicy || null,
+        companySize: company.companySize,
+        companyStack: company.technologies,
       });
     }
   });

@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   DEFAULT_JOB_PARAMS,
+  activeJobFilterCount,
   filterJobs,
   isPlaceholderRole,
   jobCategory,
   jobPath,
+  jobRegions,
   jobSlug,
   locationCountries,
   parseJobParams,
@@ -65,6 +67,31 @@ describe("filterJobs", () => {
     expect(filterJobs(JOBS, { ...DEFAULT_JOB_PARAMS, posted: "1d" }, NOW).map((j) => j.id)).toEqual(["1"]);
   });
 
+  it("filters by where the role can be done from; anywhere counts for every region", () => {
+    const jobs = [
+      job({ id: "us", location: "Remote - US" }),
+      job({ id: "eu", location: "Remote, Germany" }),
+      job({ id: "any", location: "Remote (Anywhere)" }),
+      job({ id: "vague", location: "Remote" }),
+    ];
+    expect(filterJobs(jobs, { ...DEFAULT_JOB_PARAMS, where: ["europe"] }, NOW).map((j) => j.id).sort()).toEqual(["any", "eu"]);
+    expect(filterJobs(jobs, { ...DEFAULT_JOB_PARAMS, where: ["anywhere"] }, NOW).map((j) => j.id)).toEqual(["any"]);
+  });
+
+  it("filters by pay and the company's policy, size and stack", () => {
+    const jobs = [
+      job({ id: "a", salary: "$120K – $150K", companyPolicy: "fully-remote", companySize: "small", companyStack: ["go"] }),
+      job({ id: "b", companyPolicy: "hybrid", companySize: "large", companyStack: ["python", "react"] }),
+      job({ id: "old", companyPolicy: undefined, companySize: undefined, companyStack: undefined }),
+    ];
+    const ids = (params: Partial<typeof DEFAULT_JOB_PARAMS>) =>
+      filterJobs(jobs, { ...DEFAULT_JOB_PARAMS, ...params }, NOW).map((j) => j.id).sort();
+    expect(ids({ pay: true })).toEqual(["a"]);
+    expect(ids({ policy: ["fully-remote"] })).toEqual(["a"]);
+    expect(ids({ size: ["large", "small"] })).toEqual(["a", "b"]);
+    expect(ids({ stack: ["python"] })).toEqual(["b"]);
+  });
+
   it("sorts by company", () => {
     expect(filterJobs(JOBS, { ...DEFAULT_JOB_PARAMS, sort: "company" }, NOW).map((j) => j.companyName)).toEqual(["Acme", "Beta", "Zeta"]);
   });
@@ -73,9 +100,46 @@ describe("filterJobs", () => {
 describe("job params", () => {
   it("round-trips and drops junk", () => {
     const params = parseJobParams("?category=design,nope,data&posted=7d&sort=company&q=go");
-    expect(params).toEqual({ q: "go", category: ["data", "design"], posted: "7d", sort: "company" });
+    expect(params).toEqual({ ...DEFAULT_JOB_PARAMS, q: "go", category: ["data", "design"], posted: "7d", sort: "company" });
     expect(serializeJobParams(params)).toBe("?q=go&category=data,design&posted=7d&sort=company");
-    expect(parseJobParams("?posted=forever&sort=random")).toEqual(DEFAULT_JOB_PARAMS);
+    expect(parseJobParams("?posted=forever&sort=random&pay=yes&where=mars")).toEqual(DEFAULT_JOB_PARAMS);
+  });
+
+  it("keeps the location, pay and company filters", () => {
+    const query = "?where=europe,anywhere&pay=true&policy=fully-remote&size=small&stack=go,python";
+    const params = parseJobParams(query);
+    expect(params).toMatchObject({
+      where: ["anywhere", "europe"],
+      pay: true,
+      policy: ["fully-remote"],
+      size: ["small"],
+      stack: ["python", "go"],
+    });
+    expect(activeJobFilterCount(params)).toBe(7);
+    expect(serializeJobParams(params)).toBe("?where=anywhere,europe&pay=true&policy=fully-remote&size=small&stack=python,go");
+  });
+});
+
+describe("jobRegions", () => {
+  it.each([
+    ["Remote - USA", ["us-canada"]],
+    ["Foster City, CA", ["us-canada"]],
+    ["Remote-United-States", ["us-canada"]],
+    ["Remote, Canada; Remote, Poland; Remote, United Kingdom", ["us-canada", "europe"]],
+    ["Americas Remote", ["us-canada", "latin-america"]],
+    ["Remote, Brazil", ["latin-america"]],
+    ["Remote, BR", ["latin-america"]],
+    ["EMEA Remote", ["europe", "middle-east-africa"]],
+    ["Germany (Remote)", ["europe"]],
+    ["Remote - India", ["asia-pacific"]],
+    ["Sydney, Australia", ["asia-pacific"]],
+    ["Remote (Anywhere)", ["anywhere"]],
+    ["Anywhere in the US", ["us-canada"]],
+    ["Remote - Latin America", ["latin-america"]],
+    ["Remote", []],
+    ["Ukraine", ["europe"]],
+  ])("%s", (location, regions) => {
+    expect(jobRegions(location)).toEqual(regions);
   });
 });
 
