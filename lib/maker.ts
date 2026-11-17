@@ -1,6 +1,8 @@
 // Who built Remote Jobs. Shown on About and in the footer, and described to
 // search engines as the site's author.
 
+import { absoluteUrl } from "./site";
+
 export const MAKER = {
   name: "Ghayas Ud Din",
   jobTitle: "E-commerce & SaaS developer",
@@ -17,5 +19,6 @@ export const makerJsonLd = {
   name: MAKER.name,
   jobTitle: MAKER.jobTitle,
   url: MAKER.portfolio,
+  image: absoluteUrl("/images/ghayas-ud-din.webp"),
   sameAs: [MAKER.github, MAKER.linkedin],
 };
