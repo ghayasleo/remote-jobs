@@ -53,3 +53,15 @@ DESIGN.md            the visual system
 ## Contributing a company
 
 Add or edit companies upstream in [remoteintech/remote-jobs](https://github.com/remoteintech/remote-jobs/blob/main/CONTRIBUTING.md). Changes show up here within a day of being merged.
+
+## Data and license
+
+Company profiles are the work of the contributors to [remoteintech/remote-jobs](https://github.com/remoteintech/remote-jobs), used here under that repository's license. Profiles contributed before October 2025 were released under CC0 1.0 (public domain); the repository is now licensed under ISC, whose notice is reproduced below as it requires:
+
+> Copyright (c) 2024 Lene Saile
+>
+> Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
+>
+> THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Open roles are read from each company's public job board (Greenhouse, Lever, Ashby, Workable or Recruitee) and link back to it for applying. Company logos are fetched from Google's favicon service and belong to their companies.
