@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { OfflineNotice, ServiceWorker } from "@/components/shell/connectivity";
 import { BottomNav } from "@/components/shell/nav";
 import { NavigationTracker } from "@/components/shell/navigation";
+import { SiteFooter } from "@/components/shell/site-footer";
 import { SiteHeader } from "@/components/shell/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -64,10 +65,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </a>
             <SiteHeader />
             <OfflineNotice />
-            {/* Room for the bottom tab bar on phones. */}
-            <main id="main" className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-              {children}
-            </main>
+            <main id="main">{children}</main>
+            {/* Its bottom padding leaves room for the tab bar on phones. */}
+            <SiteFooter />
             <BottomNav />
             <NavigationTracker />
             <Toaster
