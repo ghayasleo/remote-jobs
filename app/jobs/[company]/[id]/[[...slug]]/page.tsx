@@ -17,7 +17,7 @@ import { postingText } from "@/lib/data/job-boards/sanitize";
 import { getJob, getRemoteJobs } from "@/lib/data/jobs";
 import { JOB_CATEGORIES, jobCategory, jobPath, jobSlug, type JobListing } from "@/lib/jobs";
 import { clip, jobPostingJsonLd } from "@/lib/seo";
-import { absoluteUrl, jsonLd } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, absoluteUrl, jsonLd } from "@/lib/site";
 
 type Props = PageProps<"/jobs/[company]/[id]/[[...slug]]">;
 
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `${job.company.name} is hiring a remote ${role.title}${where}. ${job.detail ? postingText(job.detail.html) : job.company.blurb}`,
   );
   const url = jobPath({ company, id: role.id, title: role.title });
-  return { title, description, alternates: { canonical: url }, openGraph: { title, description, url } };
+  return { title, description, alternates: { canonical: url }, openGraph: { title, description, url, images: [DEFAULT_OG_IMAGE] } };
 }
 
 export default function JobPage({ params }: Props) {

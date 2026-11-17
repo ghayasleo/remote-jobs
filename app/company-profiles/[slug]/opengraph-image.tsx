@@ -1,13 +1,11 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { getCompany, getCompanyIndex } from "@/lib/data/companies";
 import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
 import { label, regionLabels, remotePolicyLabels } from "@/lib/data/labels";
-import { BRAND, SUN_PATHS } from "@/lib/brand-mark";
+import { OG, OG_SIZE, OgChip, OgHorizonSun, OgWordmark, ogClip, ogFonts } from "@/lib/og";
 
 export const alt = "Company profile on Remote Jobs";
-export const size = { width: 1200, height: 630 };
+export const size = OG_SIZE;
 export const contentType = "image/png";
 
 // Rendered at build like the pages, so sharing never waits on a cold render.
@@ -16,71 +14,97 @@ export async function generateStaticParams() {
   return companies.map((company) => ({ slug: company.slug }));
 }
 
-function Pill({ children, background, color }: { children: React.ReactNode; background: string; color: string }) {
-  return (
-    <div style={{ display: "flex", padding: "10px 22px", borderRadius: 999, background, color, fontSize: 28, fontWeight: 600 }}>
-      {children}
-    </div>
-  );
+/** The company's icon as a data URL, or null to show its initial instead. */
+async function logoDataUrl(domain: string | null) {
+  if (!domain) return null;
+  try {
+    const response = await fetch(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`, {
+      signal: AbortSignal.timeout(4_000),
+    });
+    const type = response.headers.get("content-type") ?? "";
+    if (!response.ok || !type.startsWith("image/")) return null;
+    return `data:${type};base64,${Buffer.from(await response.arrayBuffer()).toString("base64")}`;
+  } catch {
+    return null;
+  }
 }
-
-// Figtree, the app's typeface (assets/fonts, SIL Open Font License).
-const fonts = Promise.all(
-  [600, 800].map(async (weight) => ({
-    name: "Figtree",
-    weight: weight as 600 | 800,
-    style: "normal" as const,
-    data: await readFile(join(process.cwd(), `assets/fonts/figtree-latin-${weight}-normal.woff`)),
-  })),
-);
 
 /** The card shown when a company page is shared in chats and social apps. */
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const company = await getCompany(slug);
   const board = getBoard(slug);
-  const roles = board ? await getOpenRoles(board) : null;
+  const [roles, logo] = await Promise.all([board ? getOpenRoles(board) : null, logoDataUrl(company?.domain ?? null)]);
   const name = company?.name ?? "Remote Jobs";
+  const hiring = roles?.total ?? 0;
+  const remote = roles?.remote ?? 0;
+  const blurb = company?.blurb ? ogClip(company.blurb, 118) : null;
 
   return new ImageResponse(
     (
-      <div style={{ display: "flex", flexDirection: "column", width: "100%", height: "100%", padding: 72, background: BRAND.violet, color: BRAND.white, fontFamily: "Figtree" }}>
-        {/* The logo: "remotejobs" with the striped sun as its "o". */}
-        <div style={{ display: "flex", alignItems: "flex-end", fontSize: 44, fontWeight: 800, letterSpacing: -1.8, lineHeight: 1 }}>
-          <span>rem</span>
-          <svg width="31" height="31" viewBox="0 0 100 100" style={{ margin: "0 1px 4px" }}>
-            {SUN_PATHS.map((d) => (
-              <path key={d} d={d} fill={BRAND.sun} />
-            ))}
-          </svg>
-          <span>tejobs</span>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          position: "relative",
+          width: "100%",
+          height: "100%",
+          padding: "64px 72px",
+          background: OG.bg,
+          color: OG.text,
+          fontFamily: "Figtree",
+          overflow: "hidden",
+        }}
+      >
+        <OgHorizonSun />
+        <OgWordmark fontSize={38} />
+
+        <div style={{ display: "flex", flexDirection: "column", maxWidth: 790 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 104,
+                height: 104,
+                borderRadius: 26,
+                background: "#ffffff",
+                flexShrink: 0,
+              }}
+            >
+              {logo ? (
+                <img src={logo} width={64} height={64} alt="" style={{ borderRadius: 10 }} />
+              ) : (
+                <div style={{ fontSize: 56, fontWeight: 800, color: OG.bg }}>{name.charAt(0).toUpperCase()}</div>
+              )}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <div style={{ fontSize: name.length > 22 ? 60 : 76, fontWeight: 800, lineHeight: 1.02, letterSpacing: -2 }}>
+                {name}
+              </div>
+              {company?.domain && (
+                <div style={{ marginTop: 8, fontSize: 28, fontWeight: 600, color: OG.muted }}>{company.domain}</div>
+              )}
+            </div>
+          </div>
+          {blurb && (
+            <div style={{ marginTop: 30, fontSize: 30, fontWeight: 600, lineHeight: 1.35, color: OG.soft }}>{blurb}</div>
+          )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", marginTop: "auto" }}>
-          <div style={{ fontSize: name.length > 24 ? 76 : 96, fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.02em" }}>
-            {name}
-          </div>
-          {company?.domain && <div style={{ marginTop: 12, fontSize: 34, fontWeight: 600, opacity: 0.85 }}>{company.domain}</div>}
-          <div style={{ display: "flex", gap: 14, marginTop: 36 }}>
-            {roles && roles.total > 0 && (
-              <Pill background={BRAND.sun} color="#3d2a00">
-                {`Hiring · ${roles.remote > 0 ? `${roles.remote} remote` : roles.total} role${(roles.remote || roles.total) === 1 ? "" : "s"}`}
-              </Pill>
-            )}
-            {company && (
-              <Pill background="rgba(255,255,255,0.16)" color={BRAND.white}>
-                {label(regionLabels, company.region) || "Remote"}
-              </Pill>
-            )}
-            {company?.remotePolicy && (
-              <Pill background="rgba(255,255,255,0.16)" color={BRAND.white}>
-                {label(remotePolicyLabels, company.remotePolicy)}
-              </Pill>
-            )}
-          </div>
+        <div style={{ display: "flex", gap: 12 }}>
+          {hiring > 0 && (
+            <OgChip tone="sun">
+              {`Hiring · ${remote > 0 ? `${remote} remote` : hiring} role${(remote || hiring) === 1 ? "" : "s"}`}
+            </OgChip>
+          )}
+          {company && <OgChip>{label(regionLabels, company.region) || "Remote"}</OgChip>}
+          {company?.remotePolicy && <OgChip>{label(remotePolicyLabels, company.remotePolicy)}</OgChip>}
         </div>
       </div>
     ),
-    { ...size, fonts: await fonts },
+    { ...size, fonts: await ogFonts() },
   );
 }
