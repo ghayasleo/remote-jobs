@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { WifiOffIcon } from "lucide-react";
 import { useOffline } from "next/offline";
+import { captureInstallPrompt } from "@/lib/install-prompt";
 
 /** A quiet notice while offline. Next.js retries navigations once we're back. */
 export function OfflineNotice() {
@@ -18,8 +19,9 @@ export function OfflineNotice() {
   );
 }
 
-/** Registers public/sw.js in production builds. */
+/** Registers public/sw.js in production builds and listens for the install prompt. */
 export function ServiceWorker() {
+  useEffect(() => captureInstallPrompt(), []);
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
     navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {

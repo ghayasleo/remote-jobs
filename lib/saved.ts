@@ -65,3 +65,13 @@ export function toggleSaved(slug: string): boolean {
   window.dispatchEvent(new Event(CHANGE_EVENT));
   return next.includes(slug);
 }
+
+/** Replaces the whole list, e.g. to undo "Clear all". */
+export function replaceSaved(slugs: string[]) {
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(slugs));
+  } catch {
+    return;
+  }
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}

@@ -93,3 +93,6 @@ export async function getHiringSummary(): Promise<HiringSummary> {
   queue.length = 0; // stop handing out boards once the deadline has passed
   return { ...summary };
 }
+
+/** How many companies have a job board we can read. */
+export const BOARD_COUNT = Object.keys(BOARDS).length;

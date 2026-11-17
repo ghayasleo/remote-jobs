@@ -63,6 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <NavigationTracker />
             <Toaster
               position="bottom-center"
+              duration={5000}
               mobileOffset={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
             />
           </TooltipProvider>
