@@ -38,6 +38,7 @@
   --color-hiring: var(--hiring);
   --color-hiring-foreground: var(--hiring-foreground);
   --color-sun: var(--sun);
+  --color-chart-bar: var(--chart-bar);
 
   /* Region chips: soft tint + strong text, always paired with a label. */
   --color-region-worldwide: var(--region-worldwide);
@@ -90,6 +91,8 @@
   --hiring: oklch(0.95 0.08 90);
   --hiring-foreground: oklch(0.42 0.1 70);
   --sun: oklch(0.82 0.16 80);
+  /* Chart bars: validated (dataviz validate_palette) against each theme's surface. */
+  --chart-bar: oklch(0.53 0.23 292);
 
   --region-worldwide: oklch(0.95 0.04 195);
   --region-worldwide-foreground: oklch(0.43 0.09 195);
@@ -134,6 +137,7 @@
   --hiring: oklch(0.3 0.06 75);
   --hiring-foreground: oklch(0.88 0.12 85);
   --sun: oklch(0.82 0.16 80);
+  --chart-bar: oklch(0.66 0.17 292);
 
   --region-worldwide: oklch(0.29 0.05 195);
   --region-worldwide-foreground: oklch(0.86 0.09 195);

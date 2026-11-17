@@ -126,6 +126,10 @@ export function Explore({ preview, previewHiring, total, hiringCount, newSince }
           <Link href="/remote" className="font-medium text-primary underline underline-offset-4">
             Browse companies by stack and region
           </Link>
+          {" · "}
+          <Link href="/insights" className="font-medium text-primary underline underline-offset-4">
+            State of remote hiring
+          </Link>
         </p>
         <p className="px-4 py-6 text-center text-xs text-muted-foreground sm:px-6 lg:px-0">
           Company data from the community-run remoteintech/remote-jobs list, refreshed daily. Open roles
