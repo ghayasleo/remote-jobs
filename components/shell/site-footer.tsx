@@ -3,6 +3,7 @@ import { CookieChoicesButton } from "@/components/analytics/cookie-choices-butto
 import { Wordmark } from "@/components/brand/logo";
 import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
 import { topicCopy, topicPath, type Topic } from "@/lib/landing";
+import { MAKER } from "@/lib/maker";
 import { MAIN_ITEMS, MORE_ITEMS } from "./nav-items";
 
 type Group = { title: string; links: { href: string; label: string }[] };
@@ -52,7 +53,14 @@ export function SiteFooter() {
             </a>{" "}
             list, updated daily; open roles every hour.
           </p>
-          <CookieChoicesButton className={`mt-3 ${linkClass}`} />
+          <p className="mt-3 text-sm text-muted-foreground">
+            Built by{" "}
+            <a href={MAKER.portfolio} target="_blank" rel="noopener noreferrer" className="font-medium text-foreground hover:underline">
+              {MAKER.name}
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </p>
+          <CookieChoicesButton className={`mt-2 ${linkClass}`} />
         </div>
         <div className="col-span-3 grid grid-cols-3 gap-x-6">
           {groups.map(({ title, links }) => (
