@@ -42,9 +42,42 @@ export type CompanyProfile = Company & {
 
 /** What the Explore list needs: no long Markdown. */
 export type CompanyListItem = Company & {
-  /** Lowercased text matched by search: name, blurb, stack and the stack section. */
-  searchText: string;
+  /**
+   * Extra search words from the free-text "Company technologies" section
+   * (e.g. "aws kafka laravel"), minus anything already in the other fields.
+   * The browser builds the full search text from these, which keeps the page
+   * payload small.
+   */
+  keywords: string;
 };
+
+const STOP_WORDS = new Set(
+  "a an and are as at be but by etc for from in is it more of on or our the to us we with use uses using also other others".split(" "),
+);
+
+// Tech-style tokens: keeps "c#", "c++", ".net", "node.js"; drops sentence-ending dots.
+const tokens = (text: string) =>
+  text
+    .toLowerCase()
+    .split(/[^a-z0-9+#.]+/)
+    .map((token) => token.replace(/\.+$/, ""))
+    .filter(Boolean);
+
+/** Unique lowercase words in `text` that aren't in `known` or too common to help. */
+export function extractKeywords(text: string, known: string) {
+  const seen = new Set<string>();
+  for (const token of tokens(known)) {
+    seen.add(token);
+    for (const part of token.split(".")) if (part) seen.add(part); // "wordpress.com" knows "wordpress"
+  }
+  const words: string[] = [];
+  for (const word of tokens(text)) {
+    if (word.length < 2 || STOP_WORDS.has(word) || seen.has(word)) continue;
+    seen.add(word);
+    words.push(word);
+  }
+  return words.join(" ");
+}
 
 const SECTION_IDS: Record<string, SectionId> = {
   "company blurb": "blurb",
@@ -163,14 +196,6 @@ export function toListItem(profile: CompanyProfile): CompanyListItem {
   };
   const stackSection =
     profile.sections.find((section) => section.id === "technologies")?.markdown ?? "";
-  const searchText = [
-    company.name,
-    company.blurb,
-    ...company.technologies,
-    ...company.technologies.map((tech) => label(techLabels, tech)),
-    excerpt(stackSection, 400),
-  ]
-    .join(" ")
-    .toLowerCase();
-  return { ...company, searchText };
+  const known = [company.name, company.blurb, ...company.technologies, ...company.technologies.map((tech) => label(techLabels, tech))].join(" ");
+  return { ...company, keywords: extractKeywords(excerpt(stackSection, 400), known) };
 }

@@ -155,7 +155,8 @@ export function FilterSheet({
 }: {
   params: ExploreParams;
   setParams: SetParams;
-  resultCount: number;
+  /** null while the full list is still loading. */
+  resultCount: number | null;
 }) {
   const count = activeFilterCount(params);
   return (
@@ -191,7 +192,9 @@ export function FilterSheet({
           </Button>
           <DrawerClose asChild>
             <Button className="h-12 flex-1 rounded-full text-base">
-              Show {resultCount} {resultCount === 1 ? "company" : "companies"}
+              {resultCount === null
+                ? "Show results"
+                : `Show ${resultCount} ${resultCount === 1 ? "company" : "companies"}`}
             </Button>
           </DrawerClose>
         </DrawerFooter>

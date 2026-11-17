@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpDownIcon, SearchXIcon } from "lucide-react";
 import { CompanyRow } from "@/components/company/company-row";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,12 +49,15 @@ export function ResultList({
   newSince,
   filters,
   onClearAll,
+  pending = false,
 }: {
   companies: ExploreCompany[];
   hiring: HiringCounts;
   newSince: string;
   filters: ActiveFilter[];
   onClearAll: () => void;
+  /** More companies are still loading (only the first page is in the HTML). */
+  pending?: boolean;
 }) {
   const [limit, setLimit] = useState(PAGE_SIZE);
   const sentinel = useRef<HTMLLIElement>(null);
@@ -84,6 +88,12 @@ export function ResultList({
           isNew={isRecent(company, newSince)}
         />
       ))}
+      {pending && !hasMore && (
+        <li aria-busy="true" className="px-4 py-4 sm:px-5">
+          <RowSkeleton />
+          <span className="sr-only">Loading more companies</span>
+        </li>
+      )}
       {hasMore && (
         <li ref={sentinel} className="flex justify-center px-4 py-6">
           <Button variant="outline" className="h-11 rounded-full px-6" onClick={() => setLimit(limit + PAGE_SIZE)}>
@@ -92,6 +102,33 @@ export function ResultList({
         </li>
       )}
     </ul>
+  );
+}
+
+function RowSkeleton() {
+  return (
+    <div aria-hidden className="flex gap-3.5">
+      <Skeleton className="size-11 rounded-xl" />
+      <div className="flex-1 space-y-2">
+        <Skeleton className="h-5 w-40" />
+        <Skeleton className="h-4 w-56" />
+        <Skeleton className="h-4 w-full" />
+      </div>
+    </div>
+  );
+}
+
+/** Placeholder rows while a filtered view waits for the full list. */
+export function ListSkeleton() {
+  return (
+    <div aria-busy="true" className="divide-y border-y lg:rounded-2xl lg:border">
+      <span className="sr-only">Loading companies</span>
+      {[0, 1, 2, 3].map((row) => (
+        <div key={row} className="px-4 py-4 sm:px-5">
+          <RowSkeleton />
+        </div>
+      ))}
+    </div>
   );
 }
 

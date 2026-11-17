@@ -3,9 +3,12 @@ import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { getCompanyIndex } from "./companies";
 import { getHiringSummary } from "./job-boards";
-import { newSinceDate, toExploreCompany } from "@/lib/explore";
+import { DEFAULT_PARAMS, filterCompanies, newSinceDate, toExploreCompany } from "@/lib/explore";
 
-/** Everything the Explore and Saved lists need, in one cached payload. */
+/**
+ * Every company the Explore and Saved lists can show. Served as one static
+ * JSON file (/data/explore.json) that the browser fetches once and reuses.
+ */
 export async function getExploreData() {
   "use cache";
   cacheLife("hours");
@@ -21,3 +24,28 @@ export async function getExploreData() {
 }
 
 export type ExploreData = Awaited<ReturnType<typeof getExploreData>>;
+
+export const PREVIEW_SIZE = 24;
+
+/**
+ * What the Explore page's HTML carries: the first page of the default view and
+ * the totals. Keeping the full list out of the HTML makes it ~10x smaller,
+ * which matters for first paint on phones.
+ */
+export async function getExplorePreview() {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("companies", "roles");
+
+  const { companies, hiring, newSince } = await getExploreData();
+  const preview = filterCompanies(companies, DEFAULT_PARAMS, hiring, newSince).slice(0, PREVIEW_SIZE);
+  return {
+    preview,
+    previewHiring: Object.fromEntries(preview.filter((c) => hiring[c.slug]).map((c) => [c.slug, hiring[c.slug]])),
+    total: companies.length,
+    hiringCount: Object.keys(hiring).length,
+    newSince,
+  };
+}
+
+export type ExplorePreview = Awaited<ReturnType<typeof getExplorePreview>>;

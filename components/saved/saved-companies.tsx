@@ -7,18 +7,26 @@ import { toast } from "sonner";
 import { CompanyRow } from "@/components/company/company-row";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { ExploreData } from "@/lib/data/explore-data";
 import { isRecent, type ExploreCompany } from "@/lib/explore";
 import { replaceSaved, useSavedSlugs } from "@/lib/saved";
+import { retryExploreData, useExploreData, useExploreDataFailed } from "@/lib/use-explore-data";
 import { useHydrated } from "@/lib/use-hydrated";
 
-export function SavedCompanies({ companies, hiring, newSince }: ExploreData) {
+export function SavedCompanies() {
   const hydrated = useHydrated();
   const slugs = useSavedSlugs();
-  const bySlug = useMemo(() => new Map(companies.map((company) => [company.slug, company])), [companies]);
+  const data = useExploreData();
+  const failed = useExploreDataFailed();
+  const bySlug = useMemo(
+    () => new Map((data?.companies ?? []).map((company) => [company.slug, company])),
+    [data],
+  );
+  const hiring = data?.hiring ?? {};
   const saved = slugs.map((slug) => bySlug.get(slug)).filter((company): company is ExploreCompany => !!company);
-  const removedUpstream = slugs.length - saved.length;
+  // Only meaningful once the full list has loaded.
+  const removedUpstream = data ? slugs.length - saved.length : 0;
   const hiringCount = saved.filter((company) => company.slug in hiring).length;
+  const ready = hydrated && (slugs.length === 0 || data !== null);
 
   const clearAll = () => {
     const previous = slugs;
@@ -35,7 +43,7 @@ export function SavedCompanies({ companies, hiring, newSince }: ExploreData) {
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Saved companies</h1>
           <p className="mt-1.5 text-muted-foreground">
-            {!hydrated ? (
+            {!ready ? (
               "Loading your list…"
             ) : saved.length > 0 ? (
               <>
@@ -52,17 +60,24 @@ export function SavedCompanies({ companies, hiring, newSince }: ExploreData) {
             )}
           </p>
         </div>
-        {hydrated && saved.length > 0 && (
+        {ready && saved.length > 0 && (
           <Button variant="ghost" className="h-10 shrink-0 rounded-full px-3 text-muted-foreground" onClick={clearAll}>
             Clear all
           </Button>
         )}
       </header>
 
-      {!hydrated ? (
+      {failed && !data && slugs.length > 0 ? (
+        <div role="alert" className="mx-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-dashed px-4 py-3 text-sm sm:mx-6">
+          Couldn’t load your saved companies. Check your connection and try again.
+          <Button variant="outline" className="h-10 rounded-full px-4" onClick={retryExploreData}>
+            Try again
+          </Button>
+        </div>
+      ) : !ready ? (
         <SavedSkeleton />
       ) : saved.length === 0 ? (
-        <EmptySaved />
+        removedUpstream === 0 && <EmptySaved />
       ) : (
         <ul className="divide-y border-y sm:mx-6 sm:rounded-2xl sm:border">
           {saved.map((company) => (
@@ -70,13 +85,13 @@ export function SavedCompanies({ companies, hiring, newSince }: ExploreData) {
               key={company.slug}
               company={company}
               hiring={hiring[company.slug]}
-              isNew={isRecent(company, newSince)}
+              isNew={isRecent(company, data!.newSince)}
             />
           ))}
         </ul>
       )}
 
-      {hydrated && removedUpstream > 0 && (
+      {ready && removedUpstream > 0 && (
         <p className="mx-4 mt-4 flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground sm:mx-6">
           {removedUpstream} saved {removedUpstream === 1 ? "company is" : "companies are"} no longer on the list.
           <Button

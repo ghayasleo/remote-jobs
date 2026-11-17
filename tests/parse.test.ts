@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { domainOf, excerpt, parseCompanyFile, splitSections, toListItem } from "@/lib/data/parse";
+import { domainOf, excerpt, extractKeywords, parseCompanyFile, splitSections, toListItem } from "@/lib/data/parse";
 
 const AUTOMATTIC = `---
 title: "Automattic"
@@ -94,13 +94,13 @@ describe("parseCompanyFile", () => {
 });
 
 describe("toListItem", () => {
-  it("drops profile-only fields and builds lowercase search text", () => {
+  it("drops profile-only fields and keeps only new words from the stack section", () => {
     const item = toListItem(parseCompanyFile("automattic", AUTOMATTIC)!);
     expect(item).not.toHaveProperty("sections");
     expect(item).not.toHaveProperty("aliases");
-    expect(item.searchText).toContain("automattic");
-    expect(item.searchText).toContain("javascript");
-    expect(item.searchText).toContain("aws"); // from the free-text stack section
+    // "WordPress, JavaScript (Node/React/Redux), PHP, AWS": javascript and php
+    // are already technologies, and WordPress is in the blurb.
+    expect(item.keywords).toBe("node react redux aws");
   });
 });
 
@@ -124,6 +124,12 @@ describe("excerpt", () => {
 
   it("removes Markdown syntax and hard line breaks", () => {
     expect(excerpt("**Bold** [link](https://x.y) `code`\\\nnext line")).toBe("Bold link code next line");
+  });
+});
+
+describe("extractKeywords", () => {
+  it("keeps tech-style tokens once, without stop words or known words", () => {
+    expect(extractKeywords("We use C#, .NET and Node.js. And node.js again!", "ACME .net")).toBe("c# node.js again");
   });
 });
 

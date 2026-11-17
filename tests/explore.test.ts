@@ -23,16 +23,16 @@ const company = (overrides: Partial<CompanyListItem>): CompanyListItem => ({
   addedAt: "2020-01-01",
   updatedAt: null,
   blurb: "",
-  searchText: "",
+  keywords: "",
   ...overrides,
 });
 
 const COMPANIES = [
-  company({ slug: "acme", name: "Acme", region: "europe", technologies: ["python"], searchText: "acme python data" }),
-  company({ slug: "globex", name: "Globex", region: "worldwide", remotePolicy: "remote-first", searchText: "globex react" }),
-  company({ slug: "initech", name: "Initech", region: "americas", companySize: "large", addedAt: "2026-06-01", searchText: "initech go" }),
-  company({ slug: "umbrella", name: "Umbrella", region: "americas-europe", technologies: ["go", "rust"], searchText: "umbrella acme partner" }),
-  company({ slug: "hooli", name: "Hooli", region: "other", remotePolicy: "hybrid", searchText: "hooli" }),
+  company({ slug: "acme", name: "Acme", region: "europe", technologies: ["python"], keywords: "data" }),
+  company({ slug: "globex", name: "Globex", region: "worldwide", remotePolicy: "remote-first", keywords: "react" }),
+  company({ slug: "initech", name: "Initech", region: "americas", companySize: "large", addedAt: "2026-06-01", keywords: "" }),
+  company({ slug: "umbrella", name: "Umbrella", region: "americas-europe", technologies: ["go", "rust"], blurb: "Partner of Acme" }),
+  company({ slug: "hooli", name: "Hooli", region: "other", remotePolicy: "hybrid", keywords: "" }),
 ];
 const HIRING = { globex: { total: 3, remote: 0 }, umbrella: { total: 10, remote: 4 } };
 const NEW_SINCE = "2025-11-17";
@@ -63,7 +63,8 @@ describe("filterCompanies", () => {
 
   it("search needs every word and ranks name matches first", () => {
     expect(run({ q: "acme" })).toEqual(["acme", "umbrella"]); // umbrella only mentions acme
-    expect(run({ q: "umbrella go" })).toEqual([]);
+    expect(run({ q: "umbrella go" })).toEqual(["umbrella"]); // Go is in its stack
+    expect(run({ q: "umbrella python" })).toEqual([]);
     expect(run({ q: "ACME python" })).toEqual(["acme"]);
   });
 

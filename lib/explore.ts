@@ -3,6 +3,8 @@ import {
   COMPANY_SIZES,
   REMOTE_POLICIES,
   TECHS,
+  label,
+  techLabels,
   type CompanySize,
   type RemotePolicy,
   type Tech,
@@ -16,12 +18,32 @@ export type HiringCounts = Record<string, { total: number; remote: number }>;
 /** The slice of a company the list needs (keeps the page payload small). */
 export type ExploreCompany = Pick<
   CompanyListItem,
-  "slug" | "name" | "domain" | "region" | "remotePolicy" | "companySize" | "technologies" | "addedAt" | "blurb" | "searchText"
+  "slug" | "name" | "domain" | "region" | "remotePolicy" | "companySize" | "technologies" | "addedAt" | "blurb" | "keywords"
 >;
 
 export function toExploreCompany(company: CompanyListItem): ExploreCompany {
-  const { slug, name, domain, region, remotePolicy, companySize, technologies, addedAt, blurb, searchText } = company;
-  return { slug, name, domain, region, remotePolicy, companySize, technologies, addedAt, blurb, searchText };
+  const { slug, name, domain, region, remotePolicy, companySize, technologies, addedAt, blurb, keywords } = company;
+  return { slug, name, domain, region, remotePolicy, companySize, technologies, addedAt, blurb, keywords };
+}
+
+// Everything search matches against, built once per company in the browser.
+const haystacks = new WeakMap<ExploreCompany, string>();
+export function searchHaystack(company: ExploreCompany) {
+  let haystack = haystacks.get(company);
+  if (haystack === undefined) {
+    haystack = [
+      company.name,
+      company.blurb,
+      company.domain ?? "",
+      ...company.technologies,
+      ...company.technologies.map((tech) => label(techLabels, tech)),
+      company.keywords,
+    ]
+      .join(" ")
+      .toLowerCase();
+    haystacks.set(company, haystack);
+  }
+  return haystack;
 }
 
 /** "Where you're based": each choice also matches companies that hire wider. */
@@ -137,7 +159,7 @@ export function filterCompanies<T extends ExploreCompany>(
 
   const matches = companies.filter(
     (company) =>
-      words.every((word) => company.searchText.includes(word)) &&
+      words.every((word) => searchHaystack(company).includes(word)) &&
       (regions.size === 0 || regions.has(company.region)) &&
       (params.policy.length === 0 || params.policy.includes(company.remotePolicy as RemotePolicy)) &&
       (params.size.length === 0 || params.size.includes(company.companySize as CompanySize)) &&

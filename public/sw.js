@@ -5,8 +5,9 @@ const VERSION = "v1";
 const PAGES = `pages-${VERSION}`;
 const STATIC = `static-${VERSION}`;
 const LOGOS = `logos-${VERSION}`;
+const DATA = `data-${VERSION}`;
 const OFFLINE_URL = "/offline";
-const LIMITS = { [PAGES]: 60, [STATIC]: 250, [LOGOS]: 400 };
+const LIMITS = { [PAGES]: 60, [STATIC]: 250, [LOGOS]: 400, [DATA]: 4 };
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -38,7 +39,10 @@ self.addEventListener("fetch", (event) => {
   } else if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/")) {
     event.respondWith(cacheFirst(request));
   } else if (url.pathname.startsWith("/logo/")) {
-    event.respondWith(staleWhileRevalidate(event, request));
+    event.respondWith(staleWhileRevalidate(event, request, LOGOS));
+  } else if (url.pathname === "/data/explore.json") {
+    // The company list: instant from cache (and offline), refreshed in the background.
+    event.respondWith(staleWhileRevalidate(event, request, DATA));
   }
   // Everything else (RSC payloads, APIs) goes straight to the network; Next.js
   // retries client navigations itself once the connection is back.
@@ -78,11 +82,11 @@ async function cacheFirst(request) {
   return response;
 }
 
-async function staleWhileRevalidate(event, request) {
+async function staleWhileRevalidate(event, request, cacheName) {
   const cached = await caches.match(request);
   const network = fetch(request)
     .then((response) => {
-      if (response.ok) remember(LOGOS, request, response.clone());
+      if (response.ok) remember(cacheName, request, response.clone());
       return response;
     })
     .catch(() => cached || Response.error());
