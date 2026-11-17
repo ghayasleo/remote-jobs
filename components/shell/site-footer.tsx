@@ -5,7 +5,7 @@ import { getLandingTopics } from "@/lib/data/explore-data";
 import { topicCopy, type Topic } from "@/lib/landing";
 import { MAIN_ITEMS, MORE_ITEMS } from "./nav-items";
 
-type Group = { title: string; links: { href: string; label: string }[]; className?: string };
+type Group = { title: string; links: { href: string; label: string }[] };
 
 const linkClass = "text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground hover:underline";
 
@@ -35,13 +35,13 @@ export async function SiteFooter() {
       title: "Explore",
       links: MORE_ITEMS.filter(({ href }) => href !== "/new").map(({ href, label }) => ({ href, label })),
     },
-    // Longer labels: the full width on phones.
-    { title: "Popular", links: await popularTopics(), className: "col-span-2 sm:col-span-1" },
+    { title: "Popular", links: await popularTopics() },
   ];
 
   return (
-    <footer className="border-t pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
-      <div className="mx-auto grid max-w-6xl gap-x-6 gap-y-8 px-4 pt-10 pb-8 sm:px-6 md:grid-cols-[1.3fr_repeat(3,1fr)]">
+    // Phones get the app-style tab bar and More sheet instead.
+    <footer className="hidden border-t md:block">
+      <div className="mx-auto grid max-w-6xl grid-cols-[1.3fr_repeat(3,1fr)] gap-x-6 px-6 pt-10 pb-8">
         <div className="max-w-xs">
           <Link href="/" className="-mx-1 inline-block rounded-lg px-1 py-1" aria-label="Remote Jobs, home">
             <Wordmark />
@@ -55,9 +55,9 @@ export async function SiteFooter() {
             list, updated daily; open roles every hour.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-3 md:col-span-3">
-          {groups.map(({ title, links, className }) => (
-            <nav key={title} aria-label={title} className={className}>
+        <div className="col-span-3 grid grid-cols-3 gap-x-6">
+          {groups.map(({ title, links }) => (
+            <nav key={title} aria-label={title}>
               <h2 className="text-sm font-semibold">{title}</h2>
               <ul className="mt-3 space-y-2.5">
                 {links.map(({ href, label }) => (

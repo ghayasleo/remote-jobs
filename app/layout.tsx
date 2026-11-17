@@ -65,8 +65,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             </a>
             <SiteHeader />
             <OfflineNotice />
-            <main id="main">{children}</main>
-            {/* Its bottom padding leaves room for the tab bar on phones. */}
+            {/* Room for the bottom tab bar on phones. */}
+            <main id="main" className="pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
+              {children}
+            </main>
             <SiteFooter />
             <BottomNav />
             <NavigationTracker />
