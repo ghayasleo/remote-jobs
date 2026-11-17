@@ -46,7 +46,7 @@ export function ProfileSectionView({ section }: { section: ProfileSection }) {
       <h2 id={id} className="text-lg font-bold tracking-tight">
         {SECTION_TITLES[section.id] ?? section.title}
       </h2>
-      <div className="prose-app prose mt-2 max-w-[70ch] prose-p:my-2.5 prose-ul:my-2.5">
+      <div className="prose-app prose mt-2 max-w-[36rem] prose-p:my-2.5 prose-ul:my-2.5">
         <Markdown remarkPlugins={[remarkGfm]} components={MARKDOWN}>
           {section.markdown}
         </Markdown>

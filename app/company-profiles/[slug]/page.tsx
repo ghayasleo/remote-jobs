@@ -132,7 +132,7 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
       </div>
 
       <footer className="mt-12 border-t pt-5 text-sm text-muted-foreground">
-        <p>
+        <p className="max-w-[36rem]">
           Profile from the community-run{" "}
           <a
             href="https://github.com/remoteintech/remote-jobs"

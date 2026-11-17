@@ -21,13 +21,26 @@ const ARCHIVE_TTL_MS = 60 * 60 * 1000;
 
 type Archive = Map<string, CompanyProfile>;
 
-async function downloadArchive(): Promise<Archive> {
-  const response = await fetch(TARBALL_URL, { signal: AbortSignal.timeout(60_000) });
-  if (!response.ok) {
-    throw new Error(`Downloading ${TARBALL_URL} failed: ${response.status} ${response.statusText}`);
+const DOWNLOAD_ATTEMPTS = 3;
+
+/** The tarball, retried with backoff so a network blip doesn't fail a build. */
+async function fetchTarball(attempt = 1): Promise<Buffer> {
+  try {
+    const response = await fetch(TARBALL_URL, { signal: AbortSignal.timeout(30_000) });
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    return Buffer.from(await response.arrayBuffer());
+  } catch (error) {
+    if (attempt >= DOWNLOAD_ATTEMPTS) {
+      throw new Error(`Downloading ${TARBALL_URL} failed after ${attempt} attempts`, { cause: error });
+    }
+    await new Promise((resolve) => setTimeout(resolve, attempt * 2_000));
+    return fetchTarball(attempt + 1);
   }
+}
+
+async function downloadArchive(): Promise<Archive> {
   // Read and parse in one go: few awaits keep React's dev-only async tracking happy.
-  const tarball = Buffer.from(await response.arrayBuffer());
+  const tarball = await fetchTarball();
 
   const companies: Archive = new Map();
   readTar(gunzipSync(tarball), (path, content) => {

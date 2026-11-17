@@ -26,7 +26,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <section className="border-t pt-6">
       <h2 className="text-lg font-bold tracking-tight">{title}</h2>
-      <div className="mt-2 space-y-3 leading-relaxed text-foreground/90">{children}</div>
+      <div className="mt-2 max-w-[36rem] space-y-3 leading-relaxed text-foreground/90">{children}</div>
     </section>
   );
 }
@@ -39,7 +39,7 @@ export default async function AboutPage() {
     <div className="mx-auto max-w-2xl px-4 pt-8 pb-12 sm:px-6">
       <BrandMark className="size-14" />
       <h1 className="mt-5 text-2xl font-bold tracking-tight sm:text-3xl">About Remote Jobs</h1>
-      <p className="mt-3 text-lg leading-relaxed text-foreground/90">
+      <p className="mt-3 max-w-[34rem] text-lg leading-relaxed text-foreground/90">
         Remote Jobs helps you find tech companies that hire remotely: where they hire, what they build with, and who’s
         hiring right now. No sign-up, no ads, no noise.
       </p>

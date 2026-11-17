@@ -190,6 +190,11 @@
   h3 {
     text-wrap: balance;
   }
+  p,
+  li,
+  dd {
+    text-wrap: pretty;
+  }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
   }
