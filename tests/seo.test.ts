@@ -1,0 +1,62 @@
+import { describe, expect, it } from "vitest";
+import type { CompanyProfile } from "@/lib/data/parse";
+import { clip, companyJsonLd, companySeo, rolesPhrase } from "@/lib/seo";
+
+const company: CompanyProfile = {
+  slug: "acme",
+  name: "Acme",
+  website: "https://acme.dev",
+  domain: "acme.dev",
+  careersUrl: null,
+  region: "europe",
+  remotePolicy: "fully-remote",
+  companySize: "small",
+  technologies: [],
+  addedAt: null,
+  updatedAt: null,
+  blurb: "Acme builds rockets for coyotes.",
+  aliases: [],
+  sections: [],
+};
+
+describe("companySeo", () => {
+  it("leads with open roles when the company is hiring", () => {
+    expect(companySeo(company, { total: 12, remote: 5 })).toEqual({
+      title: "Acme remote jobs: 5 remote roles open now",
+      description: "Acme is fully remote and hires in Europe. Hiring now: 5 remote roles. Acme builds rockets for coyotes.",
+    });
+  });
+
+  it("answers 'is it remote?' when it isn't hiring", () => {
+    expect(companySeo(company, null).title).toBe("Is Acme remote? Fully remote, hires in Europe");
+    expect(companySeo({ ...company, remotePolicy: "" }, null).title).toBe("Is Acme remote? Remote-friendly, hires in Europe");
+  });
+});
+
+describe("rolesPhrase", () => {
+  it("prefers remote roles and handles singulars and zero", () => {
+    expect(rolesPhrase({ total: 3, remote: 1 })).toBe("1 remote role");
+    expect(rolesPhrase({ total: 3, remote: 0 })).toBe("3 open roles");
+    expect(rolesPhrase({ total: 0, remote: 0 })).toBeNull();
+  });
+});
+
+describe("clip", () => {
+  it("cuts at a word with an ellipsis", () => {
+    expect(clip("one two three four", 12)).toBe("one two…");
+    expect(clip("short", 12)).toBe("short");
+  });
+});
+
+describe("companyJsonLd", () => {
+  it("describes the organization and its breadcrumb", () => {
+    const [organization, breadcrumb] = companyJsonLd(company)["@graph"];
+    expect(organization).toMatchObject({
+      "@type": "Organization",
+      name: "Acme",
+      url: "https://acme.dev",
+      numberOfEmployees: { minValue: 11, maxValue: 50 },
+    });
+    expect(breadcrumb.itemListElement).toHaveLength(2);
+  });
+});

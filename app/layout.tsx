@@ -10,25 +10,30 @@ import { SiteHeader } from "@/components/shell/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BRAND } from "@/lib/brand-mark";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], display: "swap" });
 
-const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
-
 const description =
   "Find remote-friendly tech companies by region and stack, and see who's hiring right now.";
 
+// Search Console / Bing Webmaster verification codes, set as Vercel env vars.
+const verification: Metadata["verification"] = {
+  ...(process.env.GOOGLE_SITE_VERIFICATION && { google: process.env.GOOGLE_SITE_VERIFICATION }),
+  ...(process.env.BING_SITE_VERIFICATION && { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }),
+};
+
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: { default: "Remote Jobs: remote-friendly tech companies", template: "%s · Remote Jobs" },
+  metadataBase: new URL(SITE_URL),
+  title: { default: "Remote Jobs: remote-friendly tech companies", template: `%s · ${SITE_NAME}` },
   description,
-  applicationName: "Remote Jobs",
-  appleWebApp: { capable: true, title: "Remote Jobs", statusBarStyle: "default" },
+  applicationName: SITE_NAME,
+  appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
   formatDetection: { telephone: false },
-  openGraph: { type: "website", siteName: "Remote Jobs", description },
+  openGraph: { type: "website", siteName: SITE_NAME, description },
+  twitter: { card: "summary_large_image" },
+  verification,
 };
 
 export const viewport: Viewport = {
