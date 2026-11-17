@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRightIcon } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import { FilterChip } from "@/components/explore/filters";
 import { RelativeTime } from "@/components/relative-time";
 import { Button } from "@/components/ui/button";
 import type { OpenRoles, Role, Workplace } from "@/lib/data/job-boards";
+import { isPlaceholderRole, jobPath } from "@/lib/jobs";
 import { cn } from "@/lib/utils";
 
 const INITIAL_ROLES = 8;
@@ -16,24 +18,29 @@ const WORKPLACE: Record<Workplace, { label: string; className: string }> = {
   onsite: { label: "On-site", className: "border text-muted-foreground" },
 };
 
-function RoleRow({ role }: { role: Role }) {
+const rowLink =
+  "group flex items-start justify-between gap-3 font-semibold outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline";
+const rowIcon =
+  "mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5";
+
+function RoleRow({ role, company }: { role: Role; company: string }) {
   const workplace = role.workplace ? WORKPLACE[role.workplace] : null;
   const details = [role.location, role.team, role.employmentType].filter(Boolean);
   return (
     <li className="relative px-4 py-3.5 transition-colors duration-150 hover:bg-muted/60 has-[a:focus-visible]:bg-muted/60 sm:px-5">
-      <a
-        href={role.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group flex items-start justify-between gap-3 font-semibold outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
-      >
-        <span>{role.title}</span>
-        <ArrowUpRightIcon
-          className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-transform duration-150 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-          aria-hidden
-        />
-        <span className="sr-only">(opens in a new tab)</span>
-      </a>
+      {/* Remote roles have their own page here; others go straight to the board. */}
+      {role.workplace === "remote" && !isPlaceholderRole(role.title) ? (
+        <Link href={jobPath({ company, id: role.id })} className={rowLink}>
+          <span>{role.title}</span>
+          <ChevronRightIcon className={rowIcon} aria-hidden />
+        </Link>
+      ) : (
+        <a href={role.url} target="_blank" rel="noopener noreferrer" className={rowLink}>
+          <span>{role.title}</span>
+          <ArrowUpRightIcon className={`${rowIcon} group-hover:-translate-y-0.5`} aria-hidden />
+          <span className="sr-only">(opens in a new tab)</span>
+        </a>
+      )}
       <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
         {workplace && (
           <span className={cn("inline-flex h-5 items-center rounded-full px-2 text-xs font-semibold", workplace.className)}>
@@ -56,7 +63,7 @@ function RoleRow({ role }: { role: Role }) {
   );
 }
 
-export function RolesList({ data }: { data: OpenRoles }) {
+export function RolesList({ data, company }: { data: OpenRoles; company: string }) {
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const roles = remoteOnly ? data.roles.filter((role) => role.workplace === "remote") : data.roles;
@@ -85,7 +92,7 @@ export function RolesList({ data }: { data: OpenRoles }) {
 
       <ul className="mt-4 divide-y rounded-2xl border">
         {shown.map((role) => (
-          <RoleRow key={role.id} role={role} />
+          <RoleRow key={role.id} role={role} company={company} />
         ))}
       </ul>
 

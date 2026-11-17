@@ -21,6 +21,11 @@ const noop = () => () => {};
 let pageLoadedAt: number | null = null;
 const getNow = () => (pageLoadedAt ??= Date.now());
 
+/** The time the page loaded, in the browser; null in prerendered HTML. */
+export function usePageTime(): number | null {
+  return useSyncExternalStore(noop, getNow, () => null);
+}
+
 /** "3 days ago" in the browser; a plain date in the prerendered HTML. */
 export function RelativeTime({ iso, className }: { iso: string; className?: string }) {
   const now = useSyncExternalStore(noop, getNow, () => null);

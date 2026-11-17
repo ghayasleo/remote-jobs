@@ -222,10 +222,18 @@ export function describeFilters(params: ExploreParams, setParams: SetParams): Ac
   return filters;
 }
 
-export function ActiveFilters({ filters, onClearAll }: { filters: ActiveFilter[]; onClearAll: () => void }) {
+export function ActiveFilters({
+  filters,
+  onClearAll,
+  className = "px-4 pb-3 sm:px-6 lg:px-0",
+}: {
+  filters: ActiveFilter[];
+  onClearAll: () => void;
+  className?: string;
+}) {
   if (filters.length === 0) return null;
   return (
-    <div className="flex flex-wrap items-center gap-2 px-4 pb-3 sm:px-6 lg:px-0">
+    <div className={cn("flex flex-wrap items-center gap-2", className)}>
       {filters.map((filter) => (
         <span
           key={filter.id}

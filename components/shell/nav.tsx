@@ -2,23 +2,29 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookmarkIcon, CompassIcon, InfoIcon, type LucideIcon } from "lucide-react";
+import { BookmarkIcon, BriefcaseIcon, Building2Icon, InfoIcon, type LucideIcon } from "lucide-react";
 import { useSavedSlugs } from "@/lib/saved";
 import { cn } from "@/lib/utils";
 
 type NavItem = { href: string; label: string; icon: LucideIcon };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/", label: "Explore", icon: CompassIcon },
+  { href: "/", label: "Companies", icon: Building2Icon },
+  { href: "/jobs", label: "Jobs", icon: BriefcaseIcon },
   { href: "/saved", label: "Saved", icon: BookmarkIcon },
   { href: "/about", label: "About", icon: InfoIcon },
 ];
 
+// Detail screens (a company, a role) show their own action bar instead.
+const hasActionBar = (pathname: string) => /^\/(company-profiles\/[^/]+|jobs\/[^/]+\/[^/]+)\/?$/.test(pathname);
+
 function useActive() {
   const pathname = usePathname();
-  // Company pages belong to Explore.
+  // Company profiles and landing pages belong to Companies.
   return (href: string) =>
-    href === "/" ? pathname === "/" || pathname.startsWith("/company-profiles") : pathname.startsWith(href);
+    href === "/"
+      ? pathname === "/" || pathname.startsWith("/company-profiles") || pathname.startsWith("/remote")
+      : pathname.startsWith(href);
 }
 
 function SavedCount({ className }: { className?: string }) {
@@ -66,14 +72,13 @@ export function DesktopNav() {
 /** App-style tab bar pinned to the bottom of the screen on phones. */
 export function BottomNav() {
   const isActive = useActive();
-  // Company pages show their own action bar here instead.
-  if (usePathname().startsWith("/company-profiles/")) return null;
+  if (hasActionBar(usePathname())) return null;
   return (
     <nav
       aria-label="Main"
       className="fixed inset-x-0 bottom-0 z-(--z-nav) border-t bg-background pb-safe md:hidden"
     >
-      <ul className="mx-auto grid max-w-md grid-cols-3">
+      <ul className="mx-auto grid max-w-md grid-cols-4">
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
           const active = isActive(href);
           return (

@@ -5,7 +5,15 @@ import { SearchIcon, XIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 /** Search box that updates the results (and URL) shortly after typing stops. */
-export function SearchField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+export function SearchField({
+  value,
+  onChange,
+  placeholder = "Search companies, stacks or keywords",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
   const [draft, setDraft] = useState(value);
   const [synced, setSynced] = useState(value);
 
@@ -32,8 +40,8 @@ export function SearchField({ value, onChange }: { value: string; onChange: (val
         inputMode="search"
         enterKeyHint="search"
         autoComplete="off"
-        aria-label="Search companies"
-        placeholder="Search companies, stacks or keywords"
+        aria-label={placeholder}
+        placeholder={placeholder}
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         onKeyDown={(event) => {

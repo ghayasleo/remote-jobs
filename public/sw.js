@@ -40,7 +40,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(cacheFirst(request));
   } else if (url.pathname.startsWith("/logo/")) {
     event.respondWith(staleWhileRevalidate(event, request, LOGOS));
-  } else if (url.pathname === "/data/explore.json") {
+  } else if (url.pathname === "/data/explore.json" || url.pathname === "/data/jobs.json") {
     // The company list: instant from cache (and offline), refreshed in the background.
     event.respondWith(staleWhileRevalidate(event, request, DATA));
   }

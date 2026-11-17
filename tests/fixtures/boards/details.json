@@ -1,0 +1,63 @@
+{
+  "greenhouse": {
+    "id": 8801094002,
+    "title": "Agentic Operator, Growth Marketing",
+    "content": "&lt;article&gt;&lt;header&gt;&lt;/header&gt;\n&lt;section&gt;\n&lt;h2&gt;About the Role&lt;/h2&gt;\n&lt;p&gt;Most growth teams don&#39;t lack ideas. They lack the infrastructure to test them fast enough to matter.&lt;/p&gt;\n&lt;p&gt;We&#39;re hiring an Agentic Operator whose core output is one thing: r",
+    "pay_input_ranges": [
+      {
+        "min_cents": 11850000,
+        "max_cents": 17100000,
+        "currency_type": "USD",
+        "title": "United States Base Pay Range",
+        "blurb": ""
+      }
+    ]
+  },
+  "lever": {
+    "id": "5a9e3fae-86b6-4a83-9da3-aa60f864d71a",
+    "text": "Contract Technical Recruiter",
+    "description": "<div><span style=\"font-size: 18px;\">What is Findem:</span></div>\n<p>Findem is the AI platform for talent outcomes. Its Labeling Engine transforms billions of unstructured people data points into verif",
+    "lists": [
+      {
+        "text": "What You'll Do: ",
+        "content": "<div>\n<p>Every search follows the same evidence-first workflow, powered by Findem's AI agents and Claude:</p>\n<ol>\n<li>\n"
+      }
+    ],
+    "additional": "<div>\n<div><span style=\"font-size: 16px;\">We’re an Equal Opportunity Employer</span></div>\n<div>&nbs",
+    "salaryDescriptionPlain": "Pay is weighted toward results: a monthly base fee plus an uncapped fee of $1,000 for every position your pod closes.\n \n \n"
+  },
+  "workable": {
+    "shortcode": "81B46579FE",
+    "title": "Open-Source Machine Learning Engineer - EMEA Remote",
+    "description": "<p></p><p>At Hugging Face, we're on a journey to democratize good AI. We are building the fastest growing platform for AI builders with over 11 million users who collectively shared over 4 million mod",
+    "requirements": "<p>Please provide a cover letter mentioning why you would like to work in open-source at Hugging Face. We encourage you ",
+    "benefits": ""
+  },
+  "recruitee": {
+    "offer": {
+      "id": 2790099,
+      "title": "Experienced and Dutch speaking Forward Deployed Engineer (f/m/x) at Paperbox",
+      "description": "<h4>About Paperbox</h4><p><span style=\"color:#171E25\">Paperbox builds AI agents for claims and policy administration, serving insurers, banks, brokers and expertise firms across Europe. Their agents t",
+      "requirements": "<h4><strong><span style=\"color:#171E25\">Paperbox is open to medior and senior profiles. What matters most is that you ca",
+      "salary": {
+        "max": null,
+        "min": null,
+        "period": "month",
+        "currency": "EUR"
+      }
+    }
+  },
+  "ashby": {
+    "jobs": [
+      {
+        "id": "c30b2b86-47b1-453f-a2dc-7459a7c2fe80",
+        "title": "Senior Infrastructure Engineer",
+        "descriptionHtml": "<p style=\"min-height:1.5em\"><strong>Kindred is a members-only home swapping platform that unlocks the ability to live a travel-rich lifestyle through the power of community.</strong> By exchanging pri",
+        "shouldDisplayCompensationOnJobPostings": true,
+        "compensation": {
+          "compensationTierSummary": "$170K – $210K • Offers Equity"
+        }
+      }
+    ]
+  }
+}

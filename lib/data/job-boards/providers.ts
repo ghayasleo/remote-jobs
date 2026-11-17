@@ -21,10 +21,22 @@ export type Role = {
   team: string | null;
   employmentType: string | null;
   salary: string | null;
+  /** Structured pay, when the board gives numbers and a period. */
+  pay: Pay | null;
   url: string;
   /** ISO timestamp. */
   postedAt: string | null;
 };
+
+export type Pay = {
+  min: number | null;
+  max: number | null;
+  currency: string;
+  unit: "HOUR" | "DAY" | "MONTH" | "YEAR";
+};
+
+/** The full posting, for a role's own page. HTML is sanitized before display. */
+export type RoleDetail = { html: string; payText: string | null };
 
 type Provider = {
   label: string;
@@ -40,6 +52,9 @@ type Provider = {
   boardName?: (data: unknown) => string | null;
   /** Where boardName reads from, when it isn't the apiUrl response. */
   nameUrl?: (token: string) => string;
+  /** One posting's full details; providers without one read apiUrl's list. */
+  detailUrl?: (token: string, id: string) => string;
+  normalizeDetail: (data: unknown, id: string) => RoleDetail | null;
 };
 
 /* ---------- helpers ---------- */
@@ -128,6 +143,28 @@ export function salaryRange(min: unknown, max: unknown, currency: unknown, perio
   return unit ? `${amount} / ${unit}` : amount;
 }
 
+const PAY_UNITS: Record<string, Pay["unit"]> = { yr: "YEAR", mo: "MONTH", hr: "HOUR", day: "DAY" };
+
+export function payFrom(min: unknown, max: unknown, currency: unknown, period: unknown): Pay | null {
+  const unit = PAY_UNITS[PERIODS[str(period)?.toLowerCase() ?? ""] ?? ""];
+  const code = str(currency);
+  if (!unit || !code || (num(min) === null && num(max) === null)) return null;
+  return { min: num(min), max: num(max), currency: code.toUpperCase(), unit };
+}
+
+/** Greenhouse escapes its HTML once ("&lt;p&gt;"). */
+export function decodeEntities(text: string) {
+  return text
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&");
+}
+
+const section = (title: string, html: unknown) => (str(html) ? `<h3>${title}</h3>${html}` : "");
+
 const joinLocation = (...parts: unknown[]) =>
   [...new Set(parts.map(str).filter(Boolean))].join(", ");
 
@@ -156,12 +193,26 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
           team: null,
           employmentType: null,
           salary: null,
+          pay: null,
           url: str(j.absolute_url) ?? "",
           postedAt: isoDate(j.first_published) ?? isoDate(j.updated_at),
         };
       }),
     boardName: (data) => str(obj(data).name),
     nameUrl: (token) => `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(token)}`,
+    detailUrl: (token, id) =>
+      `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(token)}/jobs/${encodeURIComponent(id)}?pay_transparency=true`,
+    normalizeDetail: (data) => {
+      const job = obj(data);
+      const content = str(job.content);
+      if (!content) return null;
+      const range = obj(list(job.pay_input_ranges)[0]);
+      const amount = salaryRange(num(range.min_cents)! / 100, num(range.max_cents)! / 100, range.currency_type, null);
+      return {
+        html: decodeEntities(content),
+        payText: amount ? [amount, str(range.title)?.replace(/[\s:;,.]+$/, "")].filter(Boolean).join(" · ") : null,
+      };
+    },
   },
 
   lever: {
@@ -187,10 +238,21 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
           team: str(categories.team) ?? str(categories.department),
           employmentType: employmentType(categories.commitment),
           salary: salaryRange(range.min, range.max, range.currency, range.interval),
+          pay: payFrom(range.min, range.max, range.currency, range.interval),
           url: str(p.hostedUrl) ?? str(p.applyUrl) ?? "",
           postedAt: isoDate(p.createdAt),
         };
       }),
+    detailUrl: (token, id) =>
+      `https://api.lever.co/v0/postings/${encodeURIComponent(token)}/${encodeURIComponent(id)}`,
+    normalizeDetail: (data) => {
+      const posting = obj(data);
+      const lists = list(posting.lists)
+        .map((item) => section(str(obj(item).text) ?? "", `<ul>${str(obj(item).content) ?? ""}</ul>`))
+        .join("");
+      const html = [str(posting.description), lists, str(posting.additional)].filter(Boolean).join("");
+      return html ? { html, payText: str(posting.salaryDescriptionPlain) } : null;
+    },
   },
 
   ashby: {
@@ -226,10 +288,24 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
                 ? null
                 : str(compensation.compensationTierSummary) ??
                   str(compensation.scrapeableCompensationSalarySummary),
+            pay: null,
             url: str(j.jobUrl) ?? str(j.applyUrl) ?? "",
             postedAt: isoDate(j.publishedAt),
           };
         }),
+    // No public single-posting endpoint: the board list carries every description.
+    normalizeDetail: (data, id) => {
+      const job = obj(list(obj(data).jobs).find((item) => String(obj(item).id) === id));
+      const html = str(job.descriptionHtml);
+      const compensation = obj(job.compensation);
+      return html
+        ? {
+            html,
+            payText:
+              job.shouldDisplayCompensationOnJobPostings === false ? null : str(compensation.compensationTierSummary),
+          }
+        : null;
+    },
   },
 
   workable: {
@@ -250,11 +326,21 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
           team: str(j.department),
           employmentType: employmentType(j.employment_type),
           salary: null,
+          pay: null,
           url: str(j.url) ?? str(j.application_url) ?? "",
           postedAt: isoDate(j.published_on) ?? isoDate(j.created_at),
         };
       }),
     boardName: (data) => str(obj(data).name),
+    detailUrl: (token, id) =>
+      `https://apply.workable.com/api/v1/accounts/${encodeURIComponent(token)}/jobs/${encodeURIComponent(id)}`,
+    normalizeDetail: (data) => {
+      const job = obj(data);
+      const html = [str(job.description), section("Requirements", job.requirements), section("Benefits", job.benefits)]
+        .filter(Boolean)
+        .join("");
+      return html ? { html, payText: null } : null;
+    },
   },
 
   recruitee: {
@@ -283,11 +369,19 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
           team: str(o.department),
           employmentType: employmentType(o.employment_type_code),
           salary: salaryRange(salary.min, salary.max, salary.currency, salary.period),
+          pay: payFrom(salary.min, salary.max, salary.currency, salary.period),
           url: str(o.careers_url) ?? "",
           postedAt: isoDate(o.published_at) ?? isoDate(o.created_at),
         };
       }),
     boardName: (data) => str(obj(list(obj(data).offers)[0]).company_name),
+    detailUrl: (token, id) => `https://${encodeURIComponent(token)}.recruitee.com/api/offers/${encodeURIComponent(id)}`,
+    normalizeDetail: (data) => {
+      const offer = obj(obj(data).offer);
+      const html = [str(offer.description), section("Requirements", offer.requirements)].filter(Boolean).join("");
+      const pay = obj(offer.salary);
+      return html ? { html, payText: salaryRange(pay.min, pay.max, pay.currency, pay.period) } : null;
+    },
   },
 };
 

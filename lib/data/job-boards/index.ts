@@ -2,9 +2,10 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import boardsFile from "@/data/job-boards.json";
-import { PROVIDERS, type Board, type ProviderId, type Role } from "./providers";
+import { PROVIDERS, type Board, type ProviderId, type Role, type RoleDetail } from "./providers";
+import { sanitizePosting } from "./sanitize";
 
-export type { Board, ProviderId, Role, Workplace } from "./providers";
+export type { Board, Pay, ProviderId, Role, RoleDetail, Workplace } from "./providers";
 
 export type OpenRoles = {
   provider: ProviderId;
@@ -22,12 +23,13 @@ export type HiringSummary = Record<string, { total: number; remote: number }>;
 /** Board per company slug, found by scripts/find-job-boards.ts. */
 const BOARDS = (boardsFile as { boards: Record<string, Board> }).boards;
 
-const MAX_ROLES = 100;
+// Enough to keep every remote role of the busiest boards (remote roles sort first).
+const MAX_ROLES = 400;
 const FETCH_TIMEOUT_MS = 8_000;
-// Prerendering fails if a cache fill takes 50s, so the summary gives up on
-// slow boards well before that; they just show no badge until the next run.
-const SUMMARY_DEADLINE_MS = 30_000;
-const SUMMARY_CONCURRENCY = 24;
+// Prerendering fails if a cache fill takes 50s, so a pass over every board
+// gives up on slow ones well before that; they're simply skipped until the next run.
+const BOARDS_DEADLINE_MS = 30_000;
+const BOARDS_CONCURRENCY = 24;
 
 export function getBoard(slug: string): Board | null {
   return BOARDS[slug] ?? null;
@@ -66,6 +68,25 @@ export async function getOpenRoles(board: Board): Promise<OpenRoles | null> {
   }
 }
 
+/** Runs `visit` with each company's open roles, a few boards at a time, within a deadline. */
+export async function forEachBoard(visit: (slug: string, roles: OpenRoles) => void) {
+  const queue = Object.entries(BOARDS);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<void>((resolve) => {
+    timer = setTimeout(resolve, BOARDS_DEADLINE_MS);
+  });
+  const worker = async () => {
+    for (let next = queue.shift(); next; next = queue.shift()) {
+      const [slug, board] = next;
+      const roles = await getOpenRoles(board);
+      if (roles) visit(slug, roles);
+    }
+  };
+  await Promise.race([Promise.all(Array.from({ length: BOARDS_CONCURRENCY }, worker)), deadline]);
+  clearTimeout(timer);
+  queue.length = 0; // stop handing out boards once the deadline has passed
+}
+
 /** Open-role counts per company slug, for the badges on the list. */
 export async function getHiringSummary(): Promise<HiringSummary> {
   "use cache";
@@ -73,25 +94,34 @@ export async function getHiringSummary(): Promise<HiringSummary> {
   cacheTag("roles");
 
   const summary: HiringSummary = {};
-  const queue = Object.entries(BOARDS);
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const deadline = new Promise<void>((resolve) => {
-    timer = setTimeout(resolve, SUMMARY_DEADLINE_MS);
+  await forEachBoard((slug, roles) => {
+    if (roles.total > 0) summary[slug] = { total: roles.total, remote: roles.remote };
   });
-
-  const worker = async () => {
-    for (let next = queue.shift(); next; next = queue.shift()) {
-      const [slug, board] = next;
-      const roles = await getOpenRoles(board);
-      if (roles && roles.total > 0) summary[slug] = { total: roles.total, remote: roles.remote };
-    }
-  };
-  const workers = Array.from({ length: SUMMARY_CONCURRENCY }, worker);
-
-  await Promise.race([Promise.all(workers), deadline]);
-  clearTimeout(timer);
-  queue.length = 0; // stop handing out boards once the deadline has passed
   return { ...summary };
+}
+
+/** One posting's full description, sanitized. Postings rarely change, so it's cached for days. */
+export async function getRoleDetail(board: Board, id: string): Promise<RoleDetail | null> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("roles", `role:${board.provider}:${board.token}:${id}`);
+
+  const provider = PROVIDERS[board.provider];
+  if (!provider) return null;
+  try {
+    const url = provider.detailUrl?.(board.token, id) ?? provider.apiUrl(board.token);
+    const response = await fetch(url, {
+      headers: { accept: "application/json" },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+    if (!response.ok) return null;
+    const detail = provider.normalizeDetail(await response.json(), id);
+    if (!detail) return null;
+    const html = sanitizePosting(detail.html);
+    return html ? { ...detail, html } : null;
+  } catch {
+    return null;
+  }
 }
 
 /** How many companies have a job board we can read. */
