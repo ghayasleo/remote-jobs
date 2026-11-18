@@ -336,46 +336,121 @@ const EMPLOYMENT_TYPES: Record<string, string> = {
 export const schemaEmploymentType = (type: string | null) =>
   (type && EMPLOYMENT_TYPES[type.toLowerCase()]) || undefined;
 
-// Countries named in role locations ("Remote - US or Canada", "Remote (UK)").
-const COUNTRIES: [string, RegExp][] = [
-  ["United States", /\b(us|usa|u\.s\.a?\.?|united states|america)\b(?! dollars)/i],
-  ["Canada", /\bcanada\b/i],
-  ["United Kingdom", /\b(uk|u\.k\.|united kingdom|england|britain|scotland)\b/i],
-  ["Ireland", /\bireland\b/i],
-  ["Germany", /\bgermany\b/i],
-  ["France", /\bfrance\b/i],
-  ["Spain", /\bspain\b/i],
-  ["Portugal", /\bportugal\b/i],
-  ["Netherlands", /\b(netherlands|holland)\b/i],
-  ["Belgium", /\bbelgium\b/i],
-  ["Italy", /\bitaly\b/i],
-  ["Poland", /\bpoland\b/i],
-  ["Romania", /\bromania\b/i],
-  ["Sweden", /\bsweden\b/i],
-  ["Denmark", /\bdenmark\b/i],
-  ["Norway", /\bnorway\b/i],
-  ["Finland", /\bfinland\b/i],
-  ["Switzerland", /\bswitzerland\b/i],
-  ["Austria", /\baustria\b/i],
-  ["Czechia", /\b(czechia|czech republic)\b/i],
-  ["Greece", /\bgreece\b/i],
-  ["Ukraine", /\bukraine\b/i],
-  ["Israel", /\bisrael\b/i],
-  ["India", /\bindia\b/i],
-  ["Japan", /\bjapan\b/i],
-  ["Singapore", /\bsingapore\b/i],
-  ["Australia", /\baustralia\b/i],
-  ["New Zealand", /\bnew zealand\b/i],
-  ["Philippines", /\bphilippines\b/i],
-  ["Brazil", /\bbrazil\b/i],
-  ["Mexico", /\bmexico\b/i],
-  ["Argentina", /\bargentina\b/i],
-  ["Colombia", /\bcolombia\b/i],
-  ["Chile", /\bchile\b/i],
-  ["South Africa", /\bsouth africa\b/i],
+// Countries a role's location can name, with the region each belongs to.
+// Locations are free text ("Remote - US or Canada", "Remote (UK)", "Foster City, CA").
+const C = (name: string, pattern: RegExp, region: Exclude<JobRegion, "anywhere">) => ({ name, pattern, region });
+const COUNTRY_TABLE = [
+  C("United States", /\b(us|usa|u\.s\.a?\.?|united[- ]states)\b(?! dollars)/i, "us-canada"),
+  C("Canada", /\bcanada\b/i, "us-canada"),
+  C("Mexico", /(?<!new )\bm[eé]xico\b/i, "latin-america"),
+  C("Brazil", /\bbra[sz]il\b/i, "latin-america"),
+  C("Argentina", /\bargentina\b/i, "latin-america"),
+  C("Colombia", /\bcolombia\b/i, "latin-america"),
+  C("Chile", /\bchile\b/i, "latin-america"),
+  C("Peru", /\bperu\b/i, "latin-america"),
+  C("Uruguay", /\buruguay\b/i, "latin-america"),
+  C("Costa Rica", /\bcosta rica\b/i, "latin-america"),
+  C("Ecuador", /\becuador\b/i, "latin-america"),
+  C("Guatemala", /\bguatemala\b/i, "latin-america"),
+  C("Dominican Republic", /\bdominican republic\b/i, "latin-america"),
+  C("United Kingdom", /\b(uk|u\.k\.|united[- ]kingdom|england|britain|scotland|(?<!south )wales)\b/i, "europe"),
+  C("Ireland", /\bireland\b/i, "europe"),
+  C("Germany", /\b(germany|deutschland)\b/i, "europe"),
+  C("France", /\bfrance\b/i, "europe"),
+  C("Spain", /\bspain\b/i, "europe"),
+  C("Portugal", /\bportugal\b/i, "europe"),
+  C("Netherlands", /\b(netherlands|holland)\b/i, "europe"),
+  C("Belgium", /\bbelgium\b/i, "europe"),
+  C("Luxembourg", /\bluxembourg\b/i, "europe"),
+  C("Italy", /\bitaly\b/i, "europe"),
+  C("Switzerland", /\bswitzerland\b/i, "europe"),
+  C("Austria", /\baustria\b/i, "europe"),
+  C("Poland", /\bpoland\b/i, "europe"),
+  C("Czechia", /\b(czechia|czech republic)\b/i, "europe"),
+  C("Slovakia", /\bslovakia\b/i, "europe"),
+  C("Hungary", /\bhungary\b/i, "europe"),
+  C("Romania", /\bromania\b/i, "europe"),
+  C("Bulgaria", /\bbulgaria\b/i, "europe"),
+  C("Greece", /\bgreece\b/i, "europe"),
+  C("Croatia", /\bcroatia\b/i, "europe"),
+  C("Slovenia", /\bslovenia\b/i, "europe"),
+  C("Serbia", /\bserbia\b/i, "europe"),
+  C("Montenegro", /\bmontenegro\b/i, "europe"),
+  C("Sweden", /\bsweden\b/i, "europe"),
+  C("Denmark", /\bdenmark\b/i, "europe"),
+  C("Norway", /\bnorway\b/i, "europe"),
+  C("Finland", /\bfinland\b/i, "europe"),
+  C("Iceland", /\biceland\b/i, "europe"),
+  C("Estonia", /\bestonia\b/i, "europe"),
+  C("Latvia", /\blatvia\b/i, "europe"),
+  C("Lithuania", /\blithuania\b/i, "europe"),
+  C("Ukraine", /\bukraine\b/i, "europe"),
+  C("Moldova", /\bmoldova\b/i, "europe"),
+  C("Armenia", /\barmenia\b/i, "europe"),
+  C("Cyprus", /\bcyprus\b/i, "europe"),
+  C("Malta", /\bmalta\b/i, "europe"),
+  C("Turkey", /\b(turkey|t[uü]rkiye)\b/i, "europe"),
+  C("Israel", /\bisrael\b/i, "middle-east-africa"),
+  C("United Arab Emirates", /\b(uae|united arab emirates|dubai|abu dhabi)\b/i, "middle-east-africa"),
+  C("Saudi Arabia", /\b(saudi arabia|ksa)\b/i, "middle-east-africa"),
+  C("Qatar", /\bqatar\b/i, "middle-east-africa"),
+  C("Egypt", /\begypt\b/i, "middle-east-africa"),
+  C("South Africa", /\bsouth africa\b/i, "middle-east-africa"),
+  C("Nigeria", /\bnigeria\b/i, "middle-east-africa"),
+  C("Kenya", /\bkenya\b/i, "middle-east-africa"),
+  C("Ghana", /\bghana\b/i, "middle-east-africa"),
+  C("Morocco", /\bmorocco\b/i, "middle-east-africa"),
+  C("India", /\bindia\b/i, "asia-pacific"),
+  C("Pakistan", /\bpakistan\b/i, "asia-pacific"),
+  C("Bangladesh", /\bbangladesh\b/i, "asia-pacific"),
+  C("Sri Lanka", /\bsri lanka\b/i, "asia-pacific"),
+  C("Japan", /\bjapan\b/i, "asia-pacific"),
+  C("South Korea", /\b(south korea|korea)\b/i, "asia-pacific"),
+  C("China", /\bchina\b/i, "asia-pacific"),
+  C("Hong Kong", /\bhong kong\b/i, "asia-pacific"),
+  C("Taiwan", /\btaiwan\b/i, "asia-pacific"),
+  C("Singapore", /\bsingapore\b/i, "asia-pacific"),
+  C("Malaysia", /\bmalaysia\b/i, "asia-pacific"),
+  C("Indonesia", /\bindonesia\b/i, "asia-pacific"),
+  C("Thailand", /\bthailand\b/i, "asia-pacific"),
+  C("Vietnam", /\bviet ?nam\b/i, "asia-pacific"),
+  C("Philippines", /\bphilippines\b/i, "asia-pacific"),
+  C("Australia", /\baustralia\b/i, "asia-pacific"),
+  C("New Zealand", /\bnew zealand\b/i, "asia-pacific"),
+];
+
+// Places that name a country without saying it: US states, cities and time
+// zones ("Foster City, CA", "Remote - EST"), Canadian provinces and cities,
+// and country codes after a comma ("Remote, BR").
+const CANADA_HINT = /,\s*(ON|BC|QC|AB)\b|\b(toronto|vancouver|montr[eé]al|ottawa|calgary|waterloo|ontario|british columbia|quebec)\b/i;
+const NORTH_AMERICA = /\b(north america|namer|amer|americas)\b/i;
+const CODES: [RegExp, string][] = [
+  [/,\s*BR\b/, "Brazil"],
+  [/,\s*MX\b/, "Mexico"],
 ];
 
 /** Countries a remote role is open to, when its location names any. */
 export function locationCountries(location: string): string[] {
-  return COUNTRIES.filter(([, pattern]) => pattern.test(location)).map(([name]) => name);
+  const named = new Set(COUNTRY_TABLE.filter(({ pattern }) => pattern.test(location)).map(({ name }) => name));
+  for (const [pattern, name] of CODES) if (pattern.test(location)) named.add(name);
+  // A US or Canadian place without the country's name ("Foster City, CA",
+  // "Toronto"). "North America" and "AMER" are regions, not a place.
+  const usOrCanada = !named.has("United States") && !named.has("Canada") && !NORTH_AMERICA.test(location);
+  if (usOrCanada && jobRegions(location).includes("us-canada")) {
+    named.add(CANADA_HINT.test(location) ? "Canada" : "United States");
+  }
+  return COUNTRY_TABLE.map(({ name }) => name).filter((name) => named.has(name));
+}
+
+/**
+ * The countries Google Jobs should show a remote role to: the ones its
+ * location names, else every country in the regions it names ("EMEA",
+ * "APAC"). Empty when it only says "Remote" or "Anywhere": Google needs at
+ * least one country and has no "worldwide", so such roles get no markup.
+ */
+export function applicantCountries(location: string): string[] {
+  const named = locationCountries(location);
+  if (named.length) return named;
+  const regions = jobRegions(location);
+  return COUNTRY_TABLE.filter(({ region }) => regions.includes(region)).map(({ name }) => name);
 }
