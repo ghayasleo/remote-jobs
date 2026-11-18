@@ -9,7 +9,18 @@ const nextConfig: NextConfig = {
   experimental: {
     // Offline navigations wait and retry instead of failing; see useOffline().
     useOffline: true,
+    // The stylesheet ships inside the HTML, so the first paint doesn't wait
+    // on a separate request.
+    inlineCss: true,
   },
+
+  // User agents that get a blocking, uncached render so they find metadata in
+  // <head>. Next's default list also includes Chrome-Lighthouse, which made
+  // PageSpeed Insights measure a 2–5 s uncached render that no visitor sees:
+  // our prerendered pages already carry their metadata in <head>. This is the
+  // default list without it.
+  htmlLimitedBots:
+    /[\w-]+-Google|Google-[\w-]+|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight/i,
 
   async redirects() {
     return [
