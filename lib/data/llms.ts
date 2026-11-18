@@ -5,6 +5,7 @@ import { getLandingTopics } from "./explore-data";
 import { getCountryIndex } from "./countries";
 import { getInsights } from "./insights";
 import { getSalaryData } from "./salaries";
+import { getWeeklyReports } from "./weekly";
 import { PROVIDERS } from "./job-boards/providers";
 import { countryPath } from "@/lib/countries";
 import { salaryCategories, salaryPath, usd } from "@/lib/salaries";
@@ -23,11 +24,12 @@ export async function getLlmsText() {
   cacheLife("hours");
   cacheTag("roles", "companies");
 
-  const [insights, topics, { countries }, salaries] = await Promise.all([
+  const [insights, topics, { countries }, salaries, reports] = await Promise.all([
     getInsights(),
     getLandingTopics(),
     getCountryIndex(),
     getSalaryData(),
+    getWeeklyReports(),
   ]);
   const providers = list.format(Object.values(PROVIDERS).map((provider) => provider.label));
   const link = (title: string, path: string, note?: string) => `- [${title}](${absoluteUrl(path)})${note ? `: ${note}` : ""}`;
@@ -56,6 +58,10 @@ export async function getLlmsText() {
     ...salaryCategories(salaries.roles).map((category) =>
       link(`Remote ${category.label.toLowerCase()} salaries`, salaryPath(category.key), `median range ${usd(category.medianMin)}–${usd(category.medianMax)}`),
     ),
+    ...(reports.length > 0
+      ? [link("Weekly reports", "/weekly", "each week's remote roles opened and closed, top hirers and best-paid new roles")]
+      : []),
+    link("Daily hiring history (open data)", "https://github.com/ghayasleo/remote-jobs/tree/data/history"),
     link("About", "/about", "where the data comes from and who built the site"),
     "",
     "## Remote jobs by the country you live in",

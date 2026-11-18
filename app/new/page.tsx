@@ -4,6 +4,8 @@ import { CompanyRow } from "@/components/company/company-row";
 import { CopyFeedButton } from "@/components/copy-feed-button";
 import { JobRow } from "@/components/jobs/job-row";
 import { getNewThisWeek } from "@/lib/data/jobs";
+import { getWeeklyReports } from "@/lib/data/weekly";
+import { weekLabel, weeklyPath } from "@/lib/weekly";
 
 const SHOWN = 50;
 
@@ -17,7 +19,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NewThisWeekPage() {
-  const { jobs, companies } = await getNewThisWeek();
+  const [{ jobs, companies }, reports] = await Promise.all([getNewThisWeek(), getWeeklyReports()]);
+  const latestReport = reports[0];
   const byCompany = new Set(jobs.map((job) => job.company)).size;
 
   return (
@@ -32,6 +35,13 @@ export default async function NewThisWeekPage() {
           <CopyFeedButton path="/feeds/jobs.xml">Copy RSS address</CopyFeedButton>
           <p className="text-sm text-muted-foreground">to get new roles in your feed reader</p>
         </div>
+        {latestReport && (
+          <p className="mt-3 text-sm">
+            <Link href={weeklyPath(latestReport.key)} className="font-medium text-primary underline underline-offset-4">
+              Read last week’s report ({weekLabel(latestReport)})
+            </Link>
+          </p>
+        )}
       </header>
 
       <section aria-labelledby="new-roles">
