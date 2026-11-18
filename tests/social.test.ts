@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 import type { JobListing } from "@/lib/jobs";
-import { HASHTAGS, blueskyLinkCard, blueskyPost, pickDailyRoles, readsInEnglish } from "@/lib/social";
+import {
+  HASHTAGS,
+  blueskyLinkCard,
+  blueskyPost,
+  isoWeek,
+  pickDailyRoles,
+  planExtraPosts,
+  readsInEnglish,
+  richText,
+  type SocialData,
+} from "@/lib/social";
 
 const job = (id: string, company: string, postedAt: string | null, title = `Role ${id}`, companyName = company.toUpperCase()): JobListing => ({
   id,
@@ -70,5 +80,89 @@ describe("blueskyLinkCard", () => {
       $type: "app.bsky.embed.external",
       external: { uri: "https://x.dev/new", title: "New", description: "Fresh roles" },
     });
+  });
+});
+
+
+const url = (path: string) => `https://x.dev${path}`;
+const DATA: SocialData = {
+  weekly: {
+    key: "2026-w47",
+    start: "2026-11-16",
+    end: "2026-11-22",
+    label: "Nov 16 – 22, 2026",
+    opened: 412,
+    closed: 380,
+    openAtEnd: 2790,
+    topCompanies: [
+      { name: "GitLab", count: 40 },
+      { name: "Stripe", count: 25 },
+      { name: "Kraken", count: 18 },
+    ],
+  },
+  remoteRoles: 2700,
+  companies: 876,
+  paySharePercent: 12,
+  topHirer: { name: "GitLab", slug: "gitlab", remote: 226 },
+  biggestKind: { label: "Engineering", sharePercent: 32 },
+  worldwideCompanies: 397,
+  salaries: [{ key: "engineering", label: "Engineering", min: "$180K", max: "$280K" }],
+  countries: [{ name: "Pakistan", slug: "pakistan", total: 135 }],
+  newCompanies: [{ name: "Acme", slug: "acme" }],
+};
+const text = (post: { segments: Parameters<typeof richText>[0] }) => richText(post.segments).text;
+
+describe("richText", () => {
+  it("marks links and hashtags at their UTF-8 bytes", () => {
+    const { text: body, facets } = richText(["Café → ", { link: "https://x.dev/new" }, " ", { tag: "RemoteJobs" }]);
+    expect(body).toBe("Café → x.dev/new #RemoteJobs");
+    const bytes = new TextEncoder().encode(body);
+    const slice = (i: number) => new TextDecoder().decode(bytes.slice(facets[i].index.byteStart, facets[i].index.byteEnd));
+    expect(slice(0)).toBe("x.dev/new");
+    expect(facets[0].features[0].uri).toBe("https://x.dev/new");
+    expect(slice(1)).toBe("#RemoteJobs");
+  });
+});
+
+describe("planExtraPosts", () => {
+  it("posts the weekly report on the Monday after the week", () => {
+    const [post] = planExtraPosts("2026-11-23", DATA, url);
+    expect(post.kind).toBe("weekly");
+    expect(text(post)).toContain("412 roles opened and 380 closed");
+    expect(text(post)).toContain("x.dev/weekly/2026-w47");
+    expect(post.image?.alt).toContain("GitLab 40");
+  });
+
+  it("skips Monday when the latest report isn't last week's", () => {
+    expect(planExtraPosts("2026-11-30", DATA, url)).toEqual([]);
+  });
+
+  it("rotates insight cards on Wednesday and Friday", () => {
+    const wednesday = planExtraPosts("2026-11-25", DATA, url);
+    const friday = planExtraPosts("2026-11-27", DATA, url);
+    expect(wednesday).toHaveLength(1);
+    expect(friday).toHaveLength(1);
+    expect(wednesday[0].kind).not.toBe(friday[0].kind);
+    expect(wednesday[0].image?.alt).toBeTruthy();
+  });
+
+  it("names the week's new companies on Saturday, and stays quiet otherwise", () => {
+    expect(text(planExtraPosts("2026-11-28", DATA, url)[0])).toContain("New on remotejobs this week: Acme");
+    expect(planExtraPosts("2026-11-28", { ...DATA, newCompanies: [] }, url)).toEqual([]);
+    expect(planExtraPosts("2026-11-24", DATA, url)).toEqual([]);
+  });
+
+  it("keeps every post within 300 graphemes", () => {
+    const days = ["2026-11-23", "2026-11-25", "2026-11-27", "2026-11-28", "2026-12-02", "2026-12-04", "2026-12-09"];
+    for (const day of days) {
+      for (const post of planExtraPosts(day, DATA, (path) => `https://remotejobs.ghayasuddin.net${path}`)) {
+        expect([...new Intl.Segmenter().segment(text(post))].length).toBeLessThanOrEqual(300);
+      }
+    }
+  });
+
+  it("counts ISO weeks", () => {
+    expect(isoWeek("2026-11-18")).toBe(47);
+    expect(isoWeek("2027-01-01")).toBe(53);
   });
 });
