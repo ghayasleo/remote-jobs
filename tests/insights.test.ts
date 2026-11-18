@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Role } from "@/lib/data/job-boards/providers";
 import type { CompanyListItem } from "@/lib/data/parse";
-import { computeInsights } from "@/lib/insights";
+import { computeInsights, insightsFaqs } from "@/lib/insights";
 
 const company = (slug: string, overrides: Partial<CompanyListItem> = {}): CompanyListItem => ({
   slug,
@@ -89,5 +89,16 @@ describe("computeInsights", () => {
   it("summarises published pay", () => {
     expect(insights.pay.published).toBe(3);
     expect(insights.pay.annualUsd).toEqual({ count: 2, medianMin: 90000, medianMax: 130000 });
+  });
+});
+
+describe("insightsFaqs", () => {
+  it("answers each question from the numbers, with the date", () => {
+    const insights = computeInsights(COMPANIES, BOARDS);
+    const faqs = insightsFaqs(insights, "2026-11-18T10:00:00.000Z");
+    expect(faqs[0].question).toBe("How many remote tech jobs are open right now?");
+    expect(faqs[0].answer).toContain(`${insights.remoteRoles} remote roles were open`);
+    expect(faqs[0].answer).toContain("Nov");
+    expect(faqs.at(-1)!.question).toBe("Do remote job listings show pay?");
   });
 });

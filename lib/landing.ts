@@ -1,4 +1,5 @@
-import { TECHS, techLabels, type Tech } from "@/lib/data/labels";
+import { REMOTE_POLICIES, TECHS, remotePolicyLabels, techLabels, type Region, type Tech } from "@/lib/data/labels";
+import { formatCount, listAnd, type Faq } from "@/lib/faq";
 import {
   DEFAULT_PARAMS,
   REGION_FILTER_KEYS,
@@ -109,4 +110,79 @@ export function topicSummary(
     remoteRoles,
     fullyRemote,
   };
+}
+
+// Where a company hires, as it reads after "hire": "hire in Europe".
+const HIRES_IN: Record<Region, string> = {
+  worldwide: "worldwide",
+  americas: "in the Americas",
+  europe: "in Europe",
+  "americas-europe": "in the Americas and Europe",
+  "asia-pacific": "in Asia Pacific",
+  other: "elsewhere",
+};
+
+const SOURCE_ANSWER =
+  "Company profiles come from remoteintech/remote-jobs, a community-run list of remote-friendly tech companies on GitHub. Open roles are read every hour from each company's own job board, and you apply on the company's site.";
+
+/** Questions a landing page answers, from its own companies and roles. */
+export function topicFaqs(topic: Topic, companies: ExploreCompany[], hiring: HiringCounts): Faq[] {
+  const { searchTitle, tech, place } = topicCopy(topic);
+  const total = companies.length;
+  const of = (count: number) => `${formatCount(count)} of the ${formatCount(total)}`;
+  const remote = (company: ExploreCompany) => hiring[company.slug]?.remote ?? 0;
+  const roles = (count: number) => `${formatCount(count)} open remote ${count === 1 ? "role" : "roles"}`;
+  const { remoteRoles, fullyRemote } = topicSummary(topic, companies, hiring);
+
+  const hiringRemote = companies.filter((company) => remote(company) > 0).sort((a, b) => remote(b) - remote(a));
+  const top = hiringRemote.slice(0, 3);
+  const whoIsHiring =
+    top.length === 0
+      ? `None of the ${formatCount(total)} companies here lists an open remote role on a job board we can read right now. Their careers pages may still have openings.`
+      : hiringRemote.length === 1
+        ? `Right now only ${top[0].name} is, with ${roles(remote(top[0]))}.`
+        : `${listAnd(top.map((company) => `${company.name} (${formatCount(remote(company))} ${remote(company) === 1 ? "role" : "roles"})`))} have the most open remote roles. In all, ${of(hiringRemote.length)} companies here are hiring for remote roles, with ${roles(remoteRoles)} between them.`;
+
+  const others = REMOTE_POLICIES.filter((policy) => policy !== "fully-remote")
+    .map((policy) => ({ policy, count: companies.filter((company) => company.remotePolicy === policy).length }))
+    .filter(({ count }) => count > 0)
+    .map(({ policy, count }) => `${formatCount(count)} ${remotePolicyLabels[policy].toLowerCase()}`);
+  const howRemote =
+    fullyRemote === total
+      ? `Yes, all ${formatCount(total)} are fully remote.`
+      : `${fullyRemote === 0 ? "None of them is" : `${of(fullyRemote)} are`} fully remote${others.length ? `; ${listAnd(others)}` : ""}. Each profile says how the company works.`;
+
+  const worldwide = companies.filter((company) => company.region === "worldwide").length;
+  const where = (() => {
+    if (topic.region === "worldwide") {
+      return {
+        question: `Do these ${tech ?? "tech"} companies really hire from anywhere?`,
+        answer: `They say so: each of the ${formatCount(total)} lists itself as hiring worldwide. A single role can still be limited to some countries or time zones, so check its location before you apply.`,
+      };
+    }
+    if (topic.region) {
+      return {
+        question: `Do these companies hire people who live in ${place}?`,
+        answer: `Yes. Each of the ${formatCount(total)} hires in ${place}, ${worldwide > 0 ? `and ${of(worldwide)} hire worldwide` : "though none of them hires worldwide"}. A single role can still be limited to some countries, so check its location before you apply.`,
+      };
+    }
+    const regions = Object.entries(
+      companies.reduce<Partial<Record<Region, number>>>((counts, company) => {
+        const region = company.region as Region | null;
+        if (region && region in HIRES_IN) counts[region] = (counts[region] ?? 0) + 1;
+        return counts;
+      }, {}),
+    ).sort((a, b) => b[1] - a[1]) as [Region, number][];
+    return {
+      question: `Where do remote ${tech} companies hire?`,
+      answer: `${listAnd(regions.slice(0, 3).map(([region, count]) => `${formatCount(count)} hire ${HIRES_IN[region]}`))}, out of ${formatCount(total)}. Each profile says where the company hires.`,
+    };
+  })();
+
+  return [
+    { question: `Who is hiring for ${searchTitle.replace(/^Remote/, "remote")} right now?`, answer: whoIsHiring },
+    { question: "Are these companies fully remote?", answer: howRemote },
+    where,
+    { question: "Where does this list come from?", answer: SOURCE_ANSWER },
+  ];
 }

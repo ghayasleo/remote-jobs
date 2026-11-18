@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { ArrowRightIcon, ChevronRightIcon } from "lucide-react";
 import { CompanyRow } from "@/components/company/company-row";
+import { FaqSection } from "@/components/faq-section";
 import { Button } from "@/components/ui/button";
 import type { ExploreData } from "@/lib/data/explore-data";
 import { techLabels } from "@/lib/data/labels";
 import { REGION_FILTERS, isRecent, type ExploreCompany } from "@/lib/explore";
-import { exploreHref, topicCopy, topicPath, topicSummary, type Topic } from "@/lib/landing";
+import { exploreHref, topicCopy, topicFaqs, topicPath, topicSummary, type Topic } from "@/lib/landing";
 import { absoluteUrl, jsonLd } from "@/lib/site";
 
 const SHOWN = 30;
@@ -159,6 +160,7 @@ export function LandingView({
       )}
 
       <div className="mt-10 space-y-8">
+        <FaqSection faqs={topicFaqs(topic, companies, hiring)} className="px-4 sm:px-6" />
         <RelatedLinks
           title={tech ? `${tech} companies in other places` : "Other places"}
           links={otherRegions}

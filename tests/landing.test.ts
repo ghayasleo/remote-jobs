@@ -6,6 +6,7 @@ import {
   parseTopic,
   topicCompanies,
   topicCopy,
+  topicFaqs,
   topicPath,
   topicSummary,
 } from "@/lib/landing";
@@ -79,5 +80,32 @@ describe("topics", () => {
     expect(topicSummary({ region: "europe", stack: "python" }, companies, HIRING).intro).toBe(
       "3 remote-friendly tech companies that use Python and hire people based in Europe (including companies that hire worldwide). 2 of them are hiring right now, with 3 open remote roles between them. 2 are fully remote.",
     );
+  });
+});
+
+describe("topicFaqs", () => {
+  const europe = topicCompanies(COMPANIES, { region: "europe" }, HIRING, "2000-01-01");
+
+  it("answers who is hiring first, from the page's own numbers", () => {
+    const [hiring] = topicFaqs({ region: "europe" }, europe, HIRING);
+    expect(hiring.question).toBe("Who is hiring for remote tech jobs in Europe right now?");
+    expect(hiring.answer).toMatch(/^Right now only A is, with 3 open remote roles\./);
+  });
+
+  it("says how remote the companies are", () => {
+    const [, policy] = topicFaqs({ region: "europe" }, europe, HIRING);
+    expect(policy.answer).toBe("2 of the 3 are fully remote; 1 hybrid. Each profile says how the company works.");
+  });
+
+  it("asks where a stack page's companies hire", () => {
+    const python = topicCompanies(COMPANIES, { stack: "python" }, HIRING, "2000-01-01");
+    const [, , where] = topicFaqs({ stack: "python" }, python, HIRING);
+    expect(where.question).toBe("Where do remote Python companies hire?");
+    expect(where.answer).toContain("1 hire in Europe");
+  });
+
+  it("handles a page where nobody is hiring", () => {
+    const [hiring] = topicFaqs({ region: "europe" }, europe, {});
+    expect(hiring.answer).toMatch(/^None of the 3 companies/);
   });
 });

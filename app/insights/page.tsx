@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { FaqSection } from "@/components/faq-section";
 import { BarChart, type BarRow } from "@/components/insights/bar-chart";
 import { getLandingTopics } from "@/lib/data/explore-data";
 import { getInsights } from "@/lib/data/insights";
+import { insightsFaqs } from "@/lib/insights";
 import { regionLabels, remotePolicyLabels, techLabels, type Tech } from "@/lib/data/labels";
 import { formatDate } from "@/lib/format";
 import { JOB_CATEGORIES } from "@/lib/jobs";
@@ -177,6 +179,8 @@ export default async function InsightsPage() {
             Many companies only publish pay where the law asks them to, so these numbers lean towards US-based roles.
           </p>
         </Section>
+
+        <FaqSection faqs={insightsFaqs(insights, insights.updatedAt)} />
 
         <section className="rounded-2xl border p-5 text-sm leading-relaxed">
           <h2 className="text-base font-bold">How we count</h2>
