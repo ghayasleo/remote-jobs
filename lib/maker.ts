@@ -6,7 +6,6 @@ import { absoluteUrl } from "./site";
 export const MAKER = {
   name: "Ghayas Ud Din",
   jobTitle: "Senior Software Engineer",
-  location: "Islamabad",
   portfolio: "https://www.ghayasuddin.net",
   work: "https://www.ghayasuddin.net/#work",
   github: "https://github.com/ghayasleo",
