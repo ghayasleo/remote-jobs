@@ -4,6 +4,7 @@ import { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpDownIcon, CalendarIcon, SearchXIcon } from "lucide-react";
 import { ChoiceMenu } from "@/components/choice-menu";
+import { CopyFeedButton } from "@/components/copy-feed-button";
 import { ActiveFilters, FilterChip, FilterSheet } from "@/components/explore/filters";
 import { ListSkeleton } from "@/components/explore/results";
 import { SearchField } from "@/components/explore/search-field";
@@ -85,6 +86,12 @@ export function JobsFeed({ preview, total, companies }: { preview: JobListing[];
               See what’s new this week
             </Link>
           </p>
+          <CopyFeedButton
+            path={`/feeds/jobs.xml${serializeJobParams({ ...params, sort: "newest" })}`}
+            className="mt-3 h-9 px-3.5 text-sm"
+          >
+            {isDefaultView ? "Follow new roles by RSS" : "Follow this search by RSS"}
+          </CopyFeedButton>
         </header>
 
         {/* On phones the search and quick filters stay pinned under the top bar. */}
