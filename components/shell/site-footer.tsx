@@ -42,7 +42,7 @@ export function SiteFooter() {
     <footer className="hidden border-t md:block">
       <div className="mx-auto grid max-w-6xl grid-cols-[1.3fr_repeat(3,1fr)] gap-x-6 px-6 pt-10 pb-8">
         <div className="max-w-xs">
-          <Link href="/" className="-mx-1 inline-block rounded-lg px-1 py-1" aria-label="Remote Jobs, home">
+          <Link href="/" className="-mx-1 inline-block rounded-lg px-1 py-1">
             <Wordmark />
           </Link>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">

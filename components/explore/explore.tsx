@@ -23,14 +23,15 @@ export function Explore({
   discover,
 }: ExplorePreview & { discover?: React.ReactNode }) {
   const [params, setParams] = useExploreParams();
-  const data = useExploreData();
+  const isDefaultView = serializeParams(params) === "";
+  // The default view's first page is in the HTML, so the full list can wait.
+  const data = useExploreData(isDefaultView ? "soon" : "now");
   const failed = useExploreDataFailed();
   const hiring = data?.hiring ?? previewHiring;
   const results = useMemo(
     () => (data ? filterCompanies(data.companies, params, data.hiring, data.newSince) : null),
     [data, params],
   );
-  const isDefaultView = serializeParams(params) === "";
   const shown = results ?? (isDefaultView ? preview : null);
   const count = results?.length ?? (isDefaultView ? total : null);
   const filters = describeFilters(params, setParams);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { CONSENT_KEY, googleTagsScript, parseGaId, parseGtmId } from "@/lib/google-tags";
+import { CONSENT_KEY, TAGS_DELAY_MS, googleTagsScript, parseGaId, parseGtmId } from "@/lib/google-tags";
 
 describe("tag IDs", () => {
   it("accepts real-looking IDs and normalizes case", () => {
@@ -33,6 +33,14 @@ describe("googleTagsScript", () => {
     expect(Math.max(regional, general, saved)).toBeLessThan(Math.min(ga, gtm));
     expect(script).toContain('"GB"');
     expect(script).toContain("ad_storage:'denied'");
+  });
+
+  it("waits for the first interaction or a timeout before loading tags", () => {
+    const start = script.indexOf("function start(){");
+    expect(start).toBeGreaterThan(-1);
+    expect(script.indexOf("gtm.js?id=")).toBeGreaterThan(start);
+    expect(script).toContain("addEventListener(e,start");
+    expect(script).toContain(`setTimeout(start,${TAGS_DELAY_MS})`);
   });
 
   it("loads only what's configured", () => {

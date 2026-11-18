@@ -35,20 +35,24 @@ export function BrandMark({ className, title }: { className?: string; title?: st
 }
 
 /**
- * The logo: "remotejobs" in one ink colour, with the sun as the "o". Its
- * accessible name comes from the link around it ("Remote Jobs, home").
+ * The logo: "remotejobs" in one ink colour, with the sun as the "o". Screen
+ * readers hear "Remote Jobs" instead of the drawn letters.
  */
 export function Wordmark({ className }: { className?: string }) {
   return (
-    <span
-      className={cn(
-        "inline-flex items-baseline text-[1.375rem] leading-none font-extrabold tracking-[-0.04em] text-foreground",
-        className,
-      )}
-    >
-      rem
-      <Sun className="mx-[0.015em] size-[0.7em] translate-y-[0.075em]" />
-      tejobs
-    </span>
+    <>
+      <span
+        aria-hidden
+        className={cn(
+          "inline-flex items-baseline text-[1.375rem] leading-none font-extrabold tracking-[-0.04em] text-foreground",
+          className,
+        )}
+      >
+        rem
+        <Sun className="mx-[0.015em] size-[0.7em] translate-y-[0.075em]" />
+        tejobs
+      </span>
+      <span className="sr-only">Remote Jobs</span>
+    </>
   );
 }
