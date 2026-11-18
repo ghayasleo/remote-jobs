@@ -4,6 +4,7 @@ import { FaqSection } from "@/components/faq-section";
 import { BarChart, type BarRow } from "@/components/insights/bar-chart";
 import { getLandingTopics } from "@/lib/data/explore-data";
 import { getInsights } from "@/lib/data/insights";
+import { getWeeklyReports } from "@/lib/data/weekly";
 import { insightsFaqs } from "@/lib/insights";
 import { regionLabels, remotePolicyLabels, techLabels, type Tech } from "@/lib/data/labels";
 import { formatDate } from "@/lib/format";
@@ -35,7 +36,7 @@ function Section({ title, takeaway, children }: { title: string; takeaway: React
 }
 
 export default async function InsightsPage() {
-  const [insights, landing] = await Promise.all([getInsights(), getLandingTopics()]);
+  const [insights, landing, reports] = await Promise.all([getInsights(), getLandingTopics(), getWeeklyReports()]);
   const pages = new Set(landing.map((page) => page.path));
   const { topCompanies, categories, regions, policies, stacks, pay } = insights;
 
@@ -200,6 +201,25 @@ export default async function InsightsPage() {
             <Link href="/insights" className="font-medium text-primary underline underline-offset-4">
               {absoluteUrl("/insights")}
             </Link>
+            . The{" "}
+            <a
+              href="https://github.com/ghayasleo/remote-jobs/tree/data/history"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary underline underline-offset-4"
+            >
+              daily history
+            </a>{" "}
+            behind them is free to download
+            {reports.length > 0 && (
+              <>
+                , and{" "}
+                <Link href="/weekly" className="font-medium text-primary underline underline-offset-4">
+                  weekly reports
+                </Link>{" "}
+                sum up each week
+              </>
+            )}
             .
           </p>
         </section>
