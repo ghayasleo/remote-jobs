@@ -1,7 +1,9 @@
 import type { Role } from "@/lib/data/job-boards/providers";
 import { COMPANY_SIZES, REGIONS, REMOTE_POLICIES, TECHS, type Tech } from "@/lib/data/labels";
 import type { CompanyListItem } from "@/lib/data/parse";
-import { JOB_CATEGORY_KEYS, isPlaceholderRole, jobCategory, type JobCategory } from "@/lib/jobs";
+import { formatCount, listAnd, type Faq } from "@/lib/faq";
+import { formatDate } from "@/lib/format";
+import { JOB_CATEGORIES, JOB_CATEGORY_KEYS, isPlaceholderRole, jobCategory, type JobCategory } from "@/lib/jobs";
 
 // "State of remote hiring": aggregate numbers from the company list and every
 // readable job board. Pure, so it's easy to test.
@@ -80,3 +82,38 @@ export function computeInsights(companies: CompanyListItem[], boards: CompanyRol
 }
 
 export type Insights = ReturnType<typeof computeInsights>;
+
+const percent = new Intl.NumberFormat("en", { style: "percent", maximumFractionDigits: 0 });
+const usd = new Intl.NumberFormat("en", { style: "currency", currency: "USD", notation: "compact", maximumFractionDigits: 0 });
+const share = (part: number, whole: number) => percent.format(whole ? part / whole : 0);
+
+/** The questions "State of remote hiring" answers, from its own numbers. */
+export function insightsFaqs(insights: Insights, updatedAt: string): Faq[] {
+  const { companies, hiringCompanies, remoteRoles, allRoles, topCompanies, categories, pay } = insights;
+  const faqs: Faq[] = [
+    {
+      question: "How many remote tech jobs are open right now?",
+      answer: `${formatCount(remoteRoles)} remote roles were open at ${formatCount(hiringCompanies)} of the ${formatCount(companies)} remote-friendly tech companies we track on ${formatDate(updatedAt)}. That's ${share(remoteRoles, allRoles)} of all the roles those companies list.`,
+    },
+  ];
+  if (topCompanies.length >= 3) {
+    faqs.push({
+      question: "Which companies are hiring the most remote roles?",
+      answer: `${listAnd(topCompanies.slice(0, 3).map((company) => `${company.name} (${formatCount(company.remote)} roles)`))} have the most open remote roles right now.`,
+    });
+  }
+  const [first, second, third] = categories;
+  if (first) {
+    const next = [second, third].filter(Boolean).map((category) => JOB_CATEGORIES[category.key]);
+    faqs.push({
+      question: "What kinds of remote jobs are most common?",
+      answer: `${JOB_CATEGORIES[first.key]} roles: ${share(first.count, remoteRoles)} of open remote roles${next.length ? `, followed by ${listAnd(next)}` : ""}.`,
+    });
+  }
+  const { medianMin, medianMax, count } = pay.annualUsd;
+  faqs.push({
+    question: "Do remote job listings show pay?",
+    answer: `${pay.published === 0 ? "None" : pay.share >= 0.5 ? "Most" : "Fewer than half"} do: ${formatCount(pay.published)} of ${formatCount(remoteRoles)} remote roles (${percent.format(pay.share)}) show pay on the listing.${count >= 20 && medianMin && medianMax ? ` Among the ${formatCount(count)} with an annual US-dollar range, the median range is ${usd.format(medianMin)}–${usd.format(medianMax)}.` : ""}`,
+  });
+  return faqs;
+}
