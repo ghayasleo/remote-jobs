@@ -13,7 +13,7 @@ import { BOARD_COUNT } from "@/lib/data/job-boards";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { MAKER, makerJsonLd } from "@/lib/maker";
 import photo from "@/public/images/ghayas-ud-din.webp";
-import { REPOSITORY_URL, jsonLd } from "@/lib/site";
+import { BLUESKY_URL, REPOSITORY_URL, jsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -178,15 +178,26 @@ export default async function AboutPage() {
             <External href={UPSTREAM_REPO_URL}>remoteintech/remote-jobs</External> and are used under its{" "}
             <External href={`${UPSTREAM_REPO_URL}/blob/main/LICENSE`}>ISC license</External>.
           </p>
-          <a
-            href={REPOSITORY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
-          >
-            Source code on GitHub <ArrowUpRightIcon className="size-4" aria-hidden />
-            <span className="sr-only"> (opens in a new tab)</span>
-          </a>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">
+            <a
+              href={REPOSITORY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+            >
+              Source code on GitHub <ArrowUpRightIcon className="size-4" aria-hidden />
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+            <a
+              href={BLUESKY_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+            >
+              Follow on Bluesky <ArrowUpRightIcon className="size-4" aria-hidden />
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          </div>
         </Section>
       </div>
     </div>
