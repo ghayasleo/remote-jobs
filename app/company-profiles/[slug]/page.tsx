@@ -6,6 +6,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 import { CompanyActionBar } from "@/components/company/action-bar";
 import { Tag } from "@/components/company/chips";
 import { CompanyLogo } from "@/components/company/company-logo";
+import { CompanyRow } from "@/components/company/company-row";
 import { CompanySkeleton } from "@/components/company/company-skeleton";
 import { OpenRoles } from "@/components/company/open-roles";
 import { CompanyFacts, ProfileSectionView } from "@/components/company/profile";
@@ -15,9 +16,10 @@ import { formatDate } from "@/lib/format";
 import { BackButton } from "@/components/shell/navigation";
 import { Button } from "@/components/ui/button";
 import { findSlugByAlias, getCompany, getCompanyIndex, upstreamFileUrl } from "@/lib/data/companies";
-import { getLandingTopics } from "@/lib/data/explore-data";
+import { getLandingTopics, getSimilarCompanies } from "@/lib/data/explore-data";
 import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
 import { label, techLabels } from "@/lib/data/labels";
+import { isRecent } from "@/lib/explore";
 import { companyJsonLd, companySeo } from "@/lib/seo";
 import { OG_BASE, jsonLd } from "@/lib/site";
 
@@ -64,9 +66,10 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
   }
 
   const board = getBoard(slug);
-  const [roles, landing] = await Promise.all([
+  const [roles, landing, similar] = await Promise.all([
     board ? getOpenRoles(board) : null,
     getLandingTopics().then((pages) => new Set(pages.map((page) => page.path))),
+    getSimilarCompanies(slug),
   ]);
   const regionPage = `/remote/${company.region}`;
   const careersUrl = company.careersUrl ?? company.website;
@@ -150,6 +153,27 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
         {sections.map((section) => (
           <ProfileSectionView key={section.title} section={section} />
         ))}
+
+        {similar.companies.length > 0 && (
+          <section aria-labelledby="similar-title">
+            <h2 id="similar-title" className="text-lg font-bold tracking-tight">
+              Similar companies
+            </h2>
+            <p className="mt-0.5 mb-3 text-sm text-muted-foreground">
+              Same stack, same places they hire, or both.
+            </p>
+            <ul className="divide-y rounded-2xl border">
+              {similar.companies.map((other) => (
+                <CompanyRow
+                  key={other.slug}
+                  company={other}
+                  hiring={similar.hiring[other.slug]}
+                  isNew={isRecent(other, similar.newSince)}
+                />
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
 
       <footer className="mt-12 border-t pt-5 text-sm text-muted-foreground">

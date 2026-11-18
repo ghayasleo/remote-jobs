@@ -5,6 +5,7 @@ import { getCompanyIndex } from "./companies";
 import { getHiringSummary } from "./job-boards";
 import { DEFAULT_PARAMS, filterCompanies, newSinceDate, toExploreCompany } from "@/lib/explore";
 import { landingTopics, topicPath } from "@/lib/landing";
+import { similarCompanies } from "@/lib/similar";
 
 /**
  * Every company the Explore and Saved lists can show. Served as one static
@@ -61,4 +62,21 @@ export async function getLandingTopics() {
 
   const { companies, hiring, newSince } = await getExploreData();
   return landingTopics(companies, hiring, newSince).map(({ topic, count }) => ({ topic, count, path: topicPath(topic) }));
+}
+
+/** A company's most similar companies, with their open roles, for its profile page. */
+export async function getSimilarCompanies(slug: string) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("companies", "roles");
+
+  const { companies, hiring, newSince } = await getExploreData();
+  const company = companies.find((candidate) => candidate.slug === slug);
+  if (!company) return { companies: [], hiring: {}, newSince };
+  const similar = similarCompanies(company, companies, hiring);
+  return {
+    companies: similar,
+    hiring: Object.fromEntries(similar.filter(({ slug }) => slug in hiring).map(({ slug }) => [slug, hiring[slug]])),
+    newSince,
+  };
 }
