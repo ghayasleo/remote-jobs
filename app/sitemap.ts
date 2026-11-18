@@ -34,6 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/remote/in"), changeFrequency: "daily", priority: 0.8 },
     ...countries.map((country) => ({ url: absoluteUrl(countryPath(country)), changeFrequency: "daily" as const, priority: 0.8 })),
     { url: absoluteUrl("/new"), changeFrequency: "daily", priority: 0.7 },
+    { url: absoluteUrl("/market"), changeFrequency: "daily", priority: 0.8 },
     { url: absoluteUrl("/insights"), changeFrequency: "daily", priority: 0.7 },
     { url: absoluteUrl("/salaries"), changeFrequency: "daily", priority: 0.8 },
     ...(reports.length > 0 ? [{ url: absoluteUrl("/weekly"), changeFrequency: "weekly" as const, priority: 0.6 }] : []),

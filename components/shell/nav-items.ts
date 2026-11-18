@@ -8,6 +8,7 @@ import {
   GlobeIcon,
   InfoIcon,
   SparklesIcon,
+  TrendingUpIcon,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,6 +23,7 @@ export const MAIN_ITEMS: NavItem[] = [
 
 /** Everything else, behind "More" (and in the footer). */
 export const MORE_ITEMS: NavItem[] = [
+  { href: "/market", label: "Hiring market", icon: TrendingUpIcon, description: "Who’s hiring more, who’s slowing, and the news" },
   { href: "/new", label: "New this week", icon: SparklesIcon, description: "The freshest remote roles" },
   { href: "/remote/in", label: "Jobs by country", icon: GlobeIcon, description: "Roles open to people where you live" },
   { href: "/salaries", label: "Remote salaries", icon: BanknoteIcon, description: "What remote roles pay, by kind of work" },

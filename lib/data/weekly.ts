@@ -2,31 +2,9 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getCompanyIndex } from "./companies";
+import { getHistoryDay, laterDate as later, shiftDate as shift } from "./history";
 import type { HistoryDay } from "@/lib/history";
 import { HISTORY_START, buildWeeklyReport, datesBetween, finishedWeeks, weekRange } from "@/lib/weekly";
-
-// The daily history the record-history workflow keeps on the repo's "data" branch.
-const HISTORY_URL = "https://raw.githubusercontent.com/ghayasleo/remote-jobs/data/history/days";
-
-const shift = (date: string, days: number) => new Date(Date.parse(`${date}T00:00:00Z`) + days * 86_400_000).toISOString().slice(0, 10);
-const later = (a: string, b: string) => (a > b ? a : b);
-
-/** One day's record, or null if that day wasn't recorded. A recorded day never changes. */
-async function getHistoryDay(date: string): Promise<HistoryDay | null> {
-  "use cache";
-  try {
-    const response = await fetch(`${HISTORY_URL}/${date}.json`, { signal: AbortSignal.timeout(15_000) });
-    if (!response.ok) {
-      cacheLife("hours");
-      return null;
-    }
-    cacheLife("max");
-    return (await response.json()) as HistoryDay;
-  } catch {
-    cacheLife("minutes");
-    return null;
-  }
-}
 
 /** A finished week's report, or null if the week isn't finished or has nothing recorded. */
 export async function getWeeklyReport(key: string) {
