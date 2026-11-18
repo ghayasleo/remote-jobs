@@ -55,7 +55,10 @@ async function postToBluesky(post: ReturnType<typeof blueskyPost>, card: ReturnT
     body: JSON.stringify({ identifier: process.env.BLUESKY_HANDLE, password: process.env.BLUESKY_APP_PASSWORD }),
     signal: TIMEOUT(10_000),
   });
-  if (!session.ok) return `login failed (${session.status})${"error" in image ? `; ${image.error}` : ""}`;
+  if (!session.ok) {
+    const imageState = "error" in image ? image.error : `image ready (${Math.round(image.bytes.byteLength / 1024)} KB)`;
+    return `login failed (${session.status}); ${imageState}`;
+  }
   const { accessJwt, did } = (await session.json()) as { accessJwt: string; did: string };
   const thumb = await uploadThumb(accessJwt, image);
   const embed = "blob" in thumb ? { ...card, external: { ...card.external, thumb: thumb.blob } } : card;
