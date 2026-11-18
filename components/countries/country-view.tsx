@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronRightIcon } from "lucide-react";
+import { CopyFeedButton } from "@/components/copy-feed-button";
 import { FaqSection } from "@/components/faq-section";
 import { JobRow } from "@/components/jobs/job-row";
 import { countryFaqs, countryPath, regionName } from "@/lib/countries";
@@ -135,6 +136,9 @@ export function CountryView({ page, neighbours }: { page: CountryPage; neighbour
         <p className="mt-2 text-xs text-muted-foreground">
           Counted <time dateTime={updatedAt}>{asOf}</time>; open roles refresh every hour.
         </p>
+        <CopyFeedButton path={`/feeds/jobs.xml?country=${country.slug}`} className="mt-4 h-9 px-3.5 text-sm">
+          Follow these roles by RSS
+        </CopyFeedButton>
       </header>
 
       <RoleSection

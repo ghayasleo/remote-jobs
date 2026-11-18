@@ -1,18 +1,50 @@
+import { countryBySlug, countryRoles } from "@/lib/countries";
+import { getCompanyIndex } from "@/lib/data/companies";
 import { getRemoteJobs } from "@/lib/data/jobs";
-import { JOB_CATEGORIES, jobPath } from "@/lib/jobs";
-import { rssFeed, rssResponse } from "@/lib/rss";
-import { absoluteUrl } from "@/lib/site";
+import { techLabels } from "@/lib/data/labels";
+import { JOB_CATEGORIES, JOB_REGIONS, filterJobs, jobPath, parseJobParams, serializeJobParams } from "@/lib/jobs";
+import { RSS_CACHE_CONTROL, rssFeed, rssResponse } from "@/lib/rss";
+import { SITE_BRAND, absoluteUrl } from "@/lib/site";
 
-// The newest remote roles, for feed readers. Refreshed with the hourly role data.
-export async function GET() {
-  const jobs = (await getRemoteJobs()).slice(0, 60);
-  return rssResponse(
+const ITEMS = 60;
+
+/**
+ * The newest remote roles, for feed readers. Takes the same filters as the
+ * Jobs page (?category=engineering&where=europe&q=python&pay=true) plus
+ * ?country=<slug> for the roles open to people living there, so any search
+ * can be followed. Each address is cached at the edge for an hour.
+ */
+export async function GET(request: Request) {
+  const search = new URL(request.url).searchParams;
+  const params = { ...parseJobParams(search.toString()), sort: "newest" as const };
+  const country = countryBySlug(search.get("country") ?? "");
+
+  let jobs = await getRemoteJobs();
+  if (country) {
+    const regions = new Map((await getCompanyIndex()).map((company) => [company.slug, company.region]));
+    const roles = countryRoles(jobs, country, (slug) => regions.get(slug));
+    jobs = [...roles.named, ...roles.regional, ...roles.worldwide];
+  }
+  const items = filterJobs(jobs, params, Date.now()).slice(0, ITEMS);
+
+  const about = [
+    params.q.trim() && `“${params.q.trim()}”`,
+    ...params.category.map((key) => JOB_CATEGORIES[key]),
+    ...params.stack.map((key) => techLabels[key]),
+    ...params.where.map((key) => JOB_REGIONS[key]),
+    country && `open to people in ${country.name}`,
+    params.pay && "pay listed",
+  ].filter(Boolean);
+  const query = serializeJobParams(params);
+  const feedQuery = [query.slice(1), country && `country=${country.slug}`].filter(Boolean).join("&");
+
+  const response = rssResponse(
     rssFeed({
-      title: "Remote Jobs: new remote roles",
+      title: about.length ? `${SITE_BRAND}: remote roles · ${about.join(" · ")}` : `${SITE_BRAND}: new remote roles`,
       description: "The newest remote roles at remote-friendly tech companies, straight from their job boards.",
-      siteUrl: absoluteUrl("/jobs"),
-      feedUrl: absoluteUrl("/feeds/jobs.xml"),
-      items: jobs.map((job) => ({
+      siteUrl: absoluteUrl(country && !query ? `/remote/in/${country.slug}` : `/jobs${query}`),
+      feedUrl: absoluteUrl(`/feeds/jobs.xml${feedQuery ? `?${feedQuery}` : ""}`),
+      items: items.map((job) => ({
         title: `${job.title} at ${job.companyName}`,
         url: absoluteUrl(jobPath(job)),
         description: [job.location || "Remote", job.employmentType, job.salary].filter(Boolean).join(" · "),
@@ -21,4 +53,6 @@ export async function GET() {
       })),
     }),
   );
+  response.headers.set("cache-control", RSS_CACHE_CONTROL);
+  return response;
 }
