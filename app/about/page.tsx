@@ -152,7 +152,6 @@ export default async function AboutPage() {
             <div>
               <p className="font-semibold">{MAKER.name}</p>
               <p className="text-sm">{MAKER.jobTitle}</p>
-              <p className="text-sm text-muted-foreground">Working remotely from {MAKER.location}</p>
             </div>
           </div>
           <div className="mt-4 max-w-[36rem] space-y-3 leading-relaxed text-foreground/90">
