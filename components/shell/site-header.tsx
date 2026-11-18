@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/logo";
+import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { DesktopNav } from "./nav";
-import { ThemeToggle } from "./theme-toggle";
 
 export function SiteHeader() {
   return (
@@ -12,7 +12,7 @@ export function SiteHeader() {
         </Link>
         <div className="flex items-center gap-2">
           <DesktopNav />
-          <ThemeToggle />
+          <AnimatedThemeToggler />
         </div>
       </div>
     </header>
