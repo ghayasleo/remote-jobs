@@ -4,7 +4,7 @@ import type { CompanyProfile } from "@/lib/data/parse";
 import type { Insights } from "@/lib/insights";
 import { applicantCountries, schemaEmploymentType } from "@/lib/jobs";
 import { MAKER } from "@/lib/maker";
-import { absoluteUrl } from "@/lib/site";
+import { REPOSITORY_URL, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 
 // Titles, descriptions and structured data written for how people search:
 // "<company> remote jobs", "is <company> remote", "remote python jobs europe".
@@ -167,3 +167,35 @@ export function insightsDatasetJsonLd(insights: Pick<Insights, "companies">, upd
     ],
   };
 }
+
+const ORGANIZATION_ID = `${SITE_URL}/#organization`;
+
+/** Who runs the site and what it is, for the homepage: name, logo, maker and source. */
+export function siteJsonLd(description: string) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": ORGANIZATION_ID,
+        name: SITE_NAME,
+        url: absoluteUrl("/"),
+        logo: { "@type": "ImageObject", url: absoluteUrl("/icons/icon-512.png"), width: 512, height: 512 },
+        description,
+        founder: { "@type": "Person", name: MAKER.name, url: MAKER.portfolio, sameAs: [MAKER.github, MAKER.linkedin] },
+        sameAs: [REPOSITORY_URL],
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}/#website`,
+        name: SITE_NAME,
+        alternateName: "remotejobs",
+        url: absoluteUrl("/"),
+        description,
+        inLanguage: "en",
+        publisher: { "@id": ORGANIZATION_ID },
+      },
+    ],
+  };
+}
+

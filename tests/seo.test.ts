@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CompanyProfile } from "@/lib/data/parse";
-import { clip, companyJsonLd, companySeo, insightsDatasetJsonLd, rolesPhrase } from "@/lib/seo";
+import { clip, companyJsonLd, companySeo, insightsDatasetJsonLd, rolesPhrase, siteJsonLd } from "@/lib/seo";
 
 const company: CompanyProfile = {
   slug: "acme",
@@ -69,5 +69,15 @@ describe("insightsDatasetJsonLd", () => {
     expect(dataset.description).toContain("876");
     expect(dataset.dateModified).toBe("2026-11-18T10:00:00.000Z");
     expect(dataset.temporalCoverage).toBe("2026-11-18");
+  });
+});
+
+describe("siteJsonLd", () => {
+  it("names the site's organization, logo and publisher", () => {
+    const [organization, website] = siteJsonLd("A directory.")["@graph"];
+    expect(organization["@type"]).toBe("Organization");
+    expect(organization.logo?.url).toMatch(/\/icons\/icon-512\.png$/);
+    expect(organization.sameAs).toContain("https://github.com/ghayasleo/remote-jobs");
+    expect(website.publisher?.["@id"]).toBe(organization["@id"]);
   });
 });

@@ -13,7 +13,7 @@ import { BOARD_COUNT } from "@/lib/data/job-boards";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { MAKER, makerJsonLd } from "@/lib/maker";
 import photo from "@/public/images/ghayas-ud-din.webp";
-import { jsonLd } from "@/lib/site";
+import { REPOSITORY_URL, jsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -179,7 +179,7 @@ export default async function AboutPage() {
             <External href={`${UPSTREAM_REPO_URL}/blob/main/LICENSE`}>ISC license</External>.
           </p>
           <a
-            href="https://github.com/ghayasleo/remote-jobs"
+            href={REPOSITORY_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"

@@ -3,7 +3,8 @@ import { DiscoverLinks } from "@/components/explore/discover-links";
 import { Explore } from "@/components/explore/explore";
 import { getExplorePreview } from "@/lib/data/explore-data";
 import { getNewThisWeek } from "@/lib/data/jobs";
-import { SITE_NAME, SITE_URL, jsonLd } from "@/lib/site";
+import { siteJsonLd } from "@/lib/seo";
+import { SITE_NAME, jsonLd } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { total, hiringCount } = await getExplorePreview();
@@ -22,7 +23,11 @@ export default async function ExplorePage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={jsonLd({ "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: SITE_URL })}
+        dangerouslySetInnerHTML={jsonLd(
+          siteJsonLd(
+            `A free directory of ${preview.total} remote-friendly tech companies and the remote roles they're hiring for, built on the community-run remoteintech list.`,
+          ),
+        )}
       />
       <Explore {...preview} discover={<DiscoverLinks newRoles={fresh.jobs.length} />} />
     </>
