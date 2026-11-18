@@ -4,8 +4,10 @@ import { cacheLife, cacheTag } from "next/cache";
 import { getLandingTopics } from "./explore-data";
 import { getCountryIndex } from "./countries";
 import { getInsights } from "./insights";
+import { getSalaryData } from "./salaries";
 import { PROVIDERS } from "./job-boards/providers";
 import { countryPath } from "@/lib/countries";
+import { salaryCategories, salaryPath, usd } from "@/lib/salaries";
 import { topicCopy, type Topic } from "@/lib/landing";
 import { absoluteUrl } from "@/lib/site";
 
@@ -21,7 +23,12 @@ export async function getLlmsText() {
   cacheLife("hours");
   cacheTag("roles", "companies");
 
-  const [insights, topics, { countries }] = await Promise.all([getInsights(), getLandingTopics(), getCountryIndex()]);
+  const [insights, topics, { countries }, salaries] = await Promise.all([
+    getInsights(),
+    getLandingTopics(),
+    getCountryIndex(),
+    getSalaryData(),
+  ]);
   const providers = list.format(Object.values(PROVIDERS).map((provider) => provider.label));
   const link = (title: string, path: string, note?: string) => `- [${title}](${absoluteUrl(path)})${note ? `: ${note}` : ""}`;
   const topicLink = ({ topic, count, path }: { topic: Topic; count: number; path: string }) =>
@@ -45,6 +52,10 @@ export async function getLlmsText() {
     link("Remote jobs", "/jobs", "every open remote role, filterable by region, kind of work and the company's details"),
     link("New this week", "/new", "roles posted in the last 7 days and the newest companies on the list"),
     link("State of remote hiring", "/insights", "who's hiring most, what kind of work is remote, where companies hire and pay transparency"),
+    link("Remote tech salaries", "/salaries", "what remote job postings with a US-dollar range pay, and the highest-paying roles"),
+    ...salaryCategories(salaries.roles).map((category) =>
+      link(`Remote ${category.label.toLowerCase()} salaries`, salaryPath(category.key), `median range ${usd(category.medianMin)}–${usd(category.medianMax)}`),
+    ),
     link("About", "/about", "where the data comes from and who built the site"),
     "",
     "## Remote jobs by the country you live in",

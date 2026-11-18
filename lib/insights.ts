@@ -3,6 +3,7 @@ import { COMPANY_SIZES, REGIONS, REMOTE_POLICIES, TECHS, type Tech } from "@/lib
 import type { CompanyListItem } from "@/lib/data/parse";
 import { formatCount, listAnd, type Faq } from "@/lib/faq";
 import { formatDate } from "@/lib/format";
+import { annualUsd } from "@/lib/salaries";
 import { JOB_CATEGORIES, JOB_CATEGORY_KEYS, isPlaceholderRole, jobCategory, type JobCategory } from "@/lib/jobs";
 
 // "State of remote hiring": aggregate numbers from the company list and every
@@ -48,7 +49,8 @@ export function computeInsights(companies: CompanyListItem[], boards: CompanyRol
   }
 
   // Pay: only structured, annual, US-dollar ranges are comparable.
-  const annualUsd = remoteRoles.filter((role) => role.pay?.unit === "YEAR" && role.pay.currency === "USD");
+  // Structured pay or pay text, whichever the board gives: annual US-dollar ranges only.
+  const usdRanges = remoteRoles.map(annualUsd).filter((range) => range !== null);
   const withPay = remoteRoles.filter((role) => role.salary || role.pay).length;
 
   return {
@@ -73,9 +75,9 @@ export function computeInsights(companies: CompanyListItem[], boards: CompanyRol
       published: withPay,
       share: remoteRoles.length ? withPay / remoteRoles.length : 0,
       annualUsd: {
-        count: annualUsd.length,
-        medianMin: median(annualUsd.map((role) => role.pay!.min).filter((value): value is number => value !== null)),
-        medianMax: median(annualUsd.map((role) => role.pay!.max).filter((value): value is number => value !== null)),
+        count: usdRanges.length,
+        medianMin: median(usdRanges.map((range) => range.min).filter((value): value is number => value !== null)),
+        medianMax: median(usdRanges.map((range) => range.max).filter((value): value is number => value !== null)),
       },
     },
   };
