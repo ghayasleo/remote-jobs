@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3Icon, ChevronRightIcon, CompassIcon, GlobeIcon, SparklesIcon, type LucideIcon } from "lucide-react";
+import { ChevronRightIcon, CompassIcon, GlobeIcon, SparklesIcon, TrendingUpIcon, type LucideIcon } from "lucide-react";
 
 function DiscoverLink({ href, icon: Icon, children }: { href: string; icon: LucideIcon; children: React.ReactNode }) {
   return (
@@ -30,8 +30,8 @@ export function DiscoverLinks({ newRoles }: { newRoles: number }) {
         <DiscoverLink href="/remote" icon={CompassIcon}>
           Browse by stack & region
         </DiscoverLink>
-        <DiscoverLink href="/insights" icon={BarChart3Icon}>
-          State of remote hiring
+        <DiscoverLink href="/market" icon={TrendingUpIcon}>
+          Hiring market
         </DiscoverLink>
       </ul>
     </nav>

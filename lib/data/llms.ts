@@ -53,6 +53,7 @@ export async function getLlmsText() {
     link("Explore companies", "/", "every company, filterable by region, remote policy, size, tech stack and whether it's hiring"),
     link("Remote jobs", "/jobs", "every open remote role, filterable by region, kind of work and the company's details"),
     link("New this week", "/new", "roles posted in the last 7 days and the newest companies on the list"),
+    link("Remote hiring market", "/market", "which companies are hiring more, slowing or paused, who's posting the most, and company news"),
     link("State of remote hiring", "/insights", "who's hiring most, what kind of work is remote, where companies hire and pay transparency"),
     link("Remote tech salaries", "/salaries", "what remote job postings with a US-dollar range pay, and the highest-paying roles"),
     ...salaryCategories(salaries.roles).map((category) =>

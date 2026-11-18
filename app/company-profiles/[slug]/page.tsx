@@ -6,7 +6,9 @@ import { ArrowUpRightIcon } from "lucide-react";
 import { CompanyActionBar } from "@/components/company/action-bar";
 import { Tag } from "@/components/company/chips";
 import { CompanyLogo } from "@/components/company/company-logo";
+import { CompanyNews } from "@/components/company/company-news";
 import { CompanyRow } from "@/components/company/company-row";
+import { HiringMomentum } from "@/components/company/hiring-momentum";
 import { CompanySkeleton } from "@/components/company/company-skeleton";
 import { OpenRoles } from "@/components/company/open-roles";
 import { CompanyFacts, ProfileSectionView } from "@/components/company/profile";
@@ -16,8 +18,10 @@ import { formatDate } from "@/lib/format";
 import { BackButton } from "@/components/shell/navigation";
 import { Button } from "@/components/ui/button";
 import { findSlugByAlias, getCompany, getCompanyIndex, upstreamFileUrl } from "@/lib/data/companies";
+import { getCompanyNews } from "@/lib/data/company-news";
 import { getLandingTopics, getSimilarCompanies } from "@/lib/data/explore-data";
 import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
+import { getCompanyHiring } from "@/lib/data/market";
 import { label, techLabels } from "@/lib/data/labels";
 import { isRecent } from "@/lib/explore";
 import { companyJsonLd, companySeo } from "@/lib/seo";
@@ -66,10 +70,12 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
   }
 
   const board = getBoard(slug);
-  const [roles, landing, similar] = await Promise.all([
+  const [roles, landing, similar, hiring, news] = await Promise.all([
     board ? getOpenRoles(board) : null,
     getLandingTopics().then((pages) => new Set(pages.map((page) => page.path))),
     getSimilarCompanies(slug),
+    getCompanyHiring(slug),
+    getCompanyNews(slug, company.name, company.domain),
   ]);
   const regionPage = `/remote/${company.region}`;
   const careersUrl = company.careersUrl ?? company.website;
@@ -143,12 +149,16 @@ async function CompanyProfile({ params }: Pick<Props, "params">) {
       <div className="mt-8 space-y-9">
         {about && <ProfileSectionView section={about} />}
 
+        {hiring && <HiringMomentum {...hiring} />}
+
         <section id="open-roles" aria-labelledby="open-roles-title" className="scroll-mt-24">
           <h2 id="open-roles-title" className="mb-3 text-lg font-bold tracking-tight">
             Open roles
           </h2>
           <OpenRoles roles={roles} hasBoard={board !== null} careersUrl={careersUrl} name={company.name} slug={company.slug} />
         </section>
+
+        <CompanyNews name={company.name} items={news} />
 
         {sections.map((section) => (
           <ProfileSectionView key={section.title} section={section} />
