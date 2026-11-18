@@ -1,3 +1,4 @@
+import renderShareImage from "@/app/opengraph-image";
 import { getNewThisWeek, getRemoteJobs } from "@/lib/data/jobs";
 import { absoluteUrl } from "@/lib/site";
 import { blueskyLinkCard, blueskyPost, pickDailyRoles } from "@/lib/social";
@@ -12,35 +13,52 @@ const TIMEOUT = AbortSignal.timeout.bind(AbortSignal);
 // Bluesky refuses blobs over 1 MB; the share card is about 60 KB.
 const MAX_THUMB_BYTES = 950_000;
 
-/** Uploads the share image for the link card; null if anything goes wrong, so the post still goes out. */
-async function uploadThumb(accessJwt: string) {
+/**
+ * The site's share card as PNG bytes, rendered right here rather than fetched
+ * from the site: a request from Vercel's own servers to the site can be
+ * challenged by bot protection, which left the first card without an image.
+ */
+async function shareImage(): Promise<{ bytes: ArrayBuffer; type: string } | { error: string }> {
   try {
-    const image = await fetch(absoluteUrl("/opengraph-image"), { signal: TIMEOUT(15_000) });
-    const bytes = image.ok ? await image.arrayBuffer() : null;
-    if (!bytes || bytes.byteLength > MAX_THUMB_BYTES) return null;
+    const response = await renderShareImage();
+    const bytes = await response.arrayBuffer();
+    if (bytes.byteLength > MAX_THUMB_BYTES) return { error: `image too big (${bytes.byteLength} bytes)` };
+    return { bytes, type: response.headers.get("content-type") ?? "image/png" };
+  } catch (error) {
+    return { error: `image: ${error instanceof Error ? error.message : String(error)}` };
+  }
+}
+
+/** Uploads the card image; the reason instead of a blob when that fails, so the post still goes out. */
+async function uploadThumb(accessJwt: string, image: Awaited<ReturnType<typeof shareImage>>) {
+  if ("error" in image) return image;
+  try {
     const upload = await fetch(`${BLUESKY}/com.atproto.repo.uploadBlob`, {
       method: "POST",
-      headers: { "content-type": image.headers.get("content-type") ?? "image/png", authorization: `Bearer ${accessJwt}` },
-      body: bytes,
+      headers: { "content-type": image.type, authorization: `Bearer ${accessJwt}` },
+      body: image.bytes,
       signal: TIMEOUT(15_000),
     });
-    return upload.ok ? ((await upload.json()) as { blob: unknown }).blob : null;
-  } catch {
-    return null;
+    if (!upload.ok) return { error: `upload ${upload.status}: ${(await upload.text()).slice(0, 160)}` };
+    return { blob: ((await upload.json()) as { blob: unknown }).blob };
+  } catch (error) {
+    return { error: `upload: ${error instanceof Error ? error.message : String(error)}` };
   }
 }
 
 async function postToBluesky(post: ReturnType<typeof blueskyPost>, card: ReturnType<typeof blueskyLinkCard>) {
+  // Ready before logging in, so a broken image shows up even when login fails.
+  const image = await shareImage();
   const session = await fetch(`${BLUESKY}/com.atproto.server.createSession`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ identifier: process.env.BLUESKY_HANDLE, password: process.env.BLUESKY_APP_PASSWORD }),
     signal: TIMEOUT(10_000),
   });
-  if (!session.ok) return `login failed (${session.status})`;
+  if (!session.ok) return `login failed (${session.status})${"error" in image ? `; ${image.error}` : ""}`;
   const { accessJwt, did } = (await session.json()) as { accessJwt: string; did: string };
-  const thumb = await uploadThumb(accessJwt);
-  const embed = thumb ? { ...card, external: { ...card.external, thumb } } : card;
+  const thumb = await uploadThumb(accessJwt, image);
+  const embed = "blob" in thumb ? { ...card, external: { ...card.external, thumb: thumb.blob } } : card;
   const response = await fetch(`${BLUESKY}/com.atproto.repo.createRecord`, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${accessJwt}` },
@@ -51,7 +69,8 @@ async function postToBluesky(post: ReturnType<typeof blueskyPost>, card: ReturnT
     }),
     signal: TIMEOUT(10_000),
   });
-  return response.ok ? (thumb ? "posted" : "posted without image") : `failed (${response.status})`;
+  if (!response.ok) return `failed (${response.status})`;
+  return "blob" in thumb ? "posted" : `posted without image (${thumb.error})`;
 }
 
 export async function GET(request: Request) {

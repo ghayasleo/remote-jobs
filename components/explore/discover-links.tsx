@@ -6,7 +6,7 @@ function DiscoverLink({ href, icon: Icon, children }: { href: string; icon: Luci
     <li className="shrink-0">
       <Link
         href={href}
-        className="flex h-10 items-center gap-2 rounded-full bg-secondary pr-3 pl-3.5 text-sm font-medium text-secondary-foreground transition-colors duration-150 outline-none hover:bg-secondary/70 focus-visible:ring-3 focus-visible:ring-ring/50"
+        className="flex h-10 items-center gap-2 rounded-full bg-secondary pr-3 pl-2.5 text-[13px] font-medium text-secondary-foreground transition-colors duration-150 outline-none hover:bg-secondary/70 focus-visible:ring-3 focus-visible:ring-ring/50"
       >
         <Icon className="size-4" aria-hidden />
         {children}
