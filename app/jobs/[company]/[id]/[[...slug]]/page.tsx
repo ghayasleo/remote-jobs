@@ -125,17 +125,12 @@ async function JobView({ params }: Pick<Props, "params">) {
   const facts = [role.location, role.team, role.employmentType].filter(Boolean);
   const pay = detail?.payText ?? role.salary;
   const others = toListings(company, job.others);
+  const posting =
+    detail && jobPostingJsonLd({ company, role, html: detail.html, url: absoluteUrl(path), fallbackDate: job.fetchedAt });
 
   return (
     <article className="mx-auto max-w-3xl px-4 pt-3 pb-10 sm:px-6">
-      {detail && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={jsonLd(
-            jobPostingJsonLd({ company, role, html: detail.html, url: absoluteUrl(path), fallbackDate: job.fetchedAt }),
-          )}
-        />
-      )}
+      {posting && <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(posting)} />}
       <BackButton label="All jobs" fallbackHref="/jobs" />
 
       <header className="mt-3">

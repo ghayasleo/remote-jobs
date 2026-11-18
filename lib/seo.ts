@@ -1,7 +1,7 @@
 import type { Role } from "@/lib/data/job-boards/providers";
 import { label, remotePolicyLabels } from "@/lib/data/labels";
 import type { CompanyProfile } from "@/lib/data/parse";
-import { locationCountries, schemaEmploymentType } from "@/lib/jobs";
+import { applicantCountries, schemaEmploymentType } from "@/lib/jobs";
 import { absoluteUrl } from "@/lib/site";
 
 // Titles, descriptions and structured data written for how people search:
@@ -99,7 +99,10 @@ export function jobPostingJsonLd({
   url: string;
   fallbackDate: string;
 }) {
-  const countries = locationCountries(role.location);
+  const countries = applicantCountries(role.location);
+  // Google requires at least one country for a remote job; without one the
+  // posting would be invalid, so the page goes without job markup.
+  if (countries.length === 0) return null;
   return {
     "@context": "https://schema.org",
     "@type": "JobPosting",
@@ -114,9 +117,7 @@ export function jobPostingJsonLd({
       ...(company.domain && { logo: absoluteUrl(`/logo/${company.domain}`) }),
     },
     jobLocationType: "TELECOMMUTE",
-    ...(countries.length > 0 && {
-      applicantLocationRequirements: countries.map((name) => ({ "@type": "Country", name })),
-    }),
+    applicantLocationRequirements: countries.map((name) => ({ "@type": "Country", name })),
     ...(role.pay && {
       baseSalary: {
         "@type": "MonetaryAmount",

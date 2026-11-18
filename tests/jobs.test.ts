@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   DEFAULT_JOB_PARAMS,
   activeJobFilterCount,
+  applicantCountries,
   filterJobs,
   isPlaceholderRole,
   jobCategory,
@@ -198,5 +199,35 @@ describe("Google Jobs helpers", () => {
     expect(locationCountries("Remote (UK)")).toEqual(["United Kingdom"]);
     expect(locationCountries("Remote, EMEA")).toEqual([]);
     expect(locationCountries("Australia / New Zealand")).toEqual(["Australia", "New Zealand"]);
+    expect(locationCountries("Remote - Latin America")).toEqual([]);
+    expect(locationCountries("Sydney, New South Wales")).toEqual([]);
+    expect(locationCountries("New Mexico")).toEqual(["United States"]);
+  });
+
+  it("finds countries in US and Canadian places", () => {
+    expect(locationCountries("Foster City, CA")).toEqual(["United States"]);
+    expect(locationCountries("Remote - EST")).toEqual(["United States"]);
+    expect(locationCountries("Toronto, ON")).toEqual(["Canada"]);
+    expect(locationCountries("Remote, BR")).toEqual(["Brazil"]);
+    expect(locationCountries("Remote - North America")).toEqual([]);
+  });
+
+  it("expands regions into the countries Google Jobs needs", () => {
+    expect(applicantCountries("Remote (UK)")).toEqual(["United Kingdom"]);
+    expect(applicantCountries("Remote - North America")).toEqual(["United States", "Canada"]);
+    const emea = applicantCountries("EMEA Remote");
+    expect(emea).toContain("Germany");
+    expect(emea).toContain("South Africa");
+    expect(emea).not.toContain("India");
+    const latam = applicantCountries("Remote - Latin America");
+    expect(latam).toContain("Brazil");
+    expect(latam).not.toContain("United States");
+    expect(applicantCountries("APAC")).toContain("Japan");
+  });
+
+  it("has no countries for worldwide roles", () => {
+    expect(applicantCountries("Remote")).toEqual([]);
+    expect(applicantCountries("Anywhere")).toEqual([]);
+    expect(applicantCountries("Worldwide")).toEqual([]);
   });
 });
