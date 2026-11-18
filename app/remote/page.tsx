@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { countryPath } from "@/lib/countries";
+import { getCountryIndex } from "@/lib/data/countries";
 import { getLandingTopics } from "@/lib/data/explore-data";
 import { techLabels } from "@/lib/data/labels";
 import { REGION_FILTERS } from "@/lib/explore";
@@ -37,7 +39,12 @@ function Links({ title, hint, pages, name }: { title: string; hint?: string; pag
 }
 
 export default async function BrowsePage() {
-  const pages = await getLandingTopics();
+  const [pages, { countries }] = await Promise.all([getLandingTopics(), getCountryIndex()]);
+  // Countries with the most roles of their own (not counting worldwide ones), as page-shaped links.
+  const countryLinks = [...countries]
+    .sort((a, b) => b.named + b.regional - (a.named + a.regional))
+    .slice(0, 16)
+    .map((country) => ({ path: countryPath(country), count: country.total, name: country.name }));
   const regions = pages.filter((page) => page.topic.region && !page.topic.stack);
   const stacks = pages.filter((page) => page.topic.stack && !page.topic.region).sort((a, b) => b.count - a.count);
   const combos = pages.filter((page) => page.topic.region && page.topic.stack).sort((a, b) => b.count - a.count).slice(0, 24);
@@ -55,6 +62,31 @@ export default async function BrowsePage() {
           pages={regions}
           name={(page) => REGION_FILTERS[page.topic.region!].label}
         />
+        <section>
+          <h2 className="text-lg font-bold tracking-tight">Jobs by the country you live in</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">Remote roles open to people there, including worldwide ones.</p>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {countryLinks.map((link) => (
+              <li key={link.path}>
+                <Link
+                  href={link.path}
+                  className="inline-flex h-10 items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors hover:bg-muted"
+                >
+                  {link.name}
+                  <span className="text-muted-foreground tabular-nums">{link.count}</span>
+                </Link>
+              </li>
+            ))}
+            <li>
+              <Link
+                href="/remote/in"
+                className="inline-flex h-10 items-center rounded-full px-4 text-sm font-medium text-primary underline underline-offset-4"
+              >
+                All countries
+              </Link>
+            </li>
+          </ul>
+        </section>
         <Links title="By tech stack" pages={stacks} name={(page) => techLabels[page.topic.stack!]} />
         <Links
           title="Popular combinations"
