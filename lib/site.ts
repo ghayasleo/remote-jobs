@@ -6,6 +6,19 @@ export const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 
 export const SITE_NAME = "Remote Jobs";
 
+/**
+ * The site's name in search results, written as the wordmark writes it. Google
+ * picks a site name from the WebSite markup, og:site_name and the titles, so
+ * all three use this one; "Remote Jobs" is its alternate name.
+ */
+export const SITE_BRAND = "remotejobs";
+
+/**
+ * Open Graph fields every page shares. A page that sets its own openGraph
+ * replaces the layout's whole object, so it spreads these in.
+ */
+export const OG_BASE = { type: "website", siteName: SITE_BRAND, locale: "en_US" } as const;
+
 /** This site's source code. */
 export const REPOSITORY_URL = "https://github.com/ghayasleo/remote-jobs";
 

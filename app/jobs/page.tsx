@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { JobsFeed } from "@/components/jobs/jobs-feed";
 import { getJobsPreview } from "@/lib/data/jobs";
-import { DEFAULT_OG_IMAGE } from "@/lib/site";
+import { DEFAULT_OG_IMAGE, OG_BASE } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { total, companies } = await getJobsPreview();
@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `Remote tech jobs: ${total} open roles`,
     description,
     alternates: { canonical: "/jobs" },
-    openGraph: { description, url: "/jobs", images: [DEFAULT_OG_IMAGE] },
+    openGraph: { ...OG_BASE, description, url: "/jobs", images: [DEFAULT_OG_IMAGE] },
   };
 }
 

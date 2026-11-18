@@ -4,7 +4,7 @@ import type { CompanyProfile } from "@/lib/data/parse";
 import type { Insights } from "@/lib/insights";
 import { applicantCountries, schemaEmploymentType } from "@/lib/jobs";
 import { MAKER } from "@/lib/maker";
-import { REPOSITORY_URL, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import { REPOSITORY_URL, SITE_BRAND, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
 
 // Titles, descriptions and structured data written for how people search:
 // "<company> remote jobs", "is <company> remote", "remote python jobs europe".
@@ -178,7 +178,8 @@ export function siteJsonLd(description: string) {
       {
         "@type": "Organization",
         "@id": ORGANIZATION_ID,
-        name: SITE_NAME,
+        name: SITE_BRAND,
+        alternateName: SITE_NAME,
         url: absoluteUrl("/"),
         logo: { "@type": "ImageObject", url: absoluteUrl("/icons/icon-512.png"), width: 512, height: 512 },
         description,
@@ -188,8 +189,8 @@ export function siteJsonLd(description: string) {
       {
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
-        name: SITE_NAME,
-        alternateName: "remotejobs",
+        name: SITE_BRAND,
+        alternateName: [SITE_NAME, new URL(SITE_URL).host],
         url: absoluteUrl("/"),
         description,
         inLanguage: "en",
