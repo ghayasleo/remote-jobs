@@ -20,5 +20,14 @@ export default async function RegionStackPage({ params }: PageProps<"/remote/[to
   const { topic, stack } = await params;
   const [data, pages] = await Promise.all([landingData(parseTopic(topic, stack)), getLandingTopics()]);
   if (!data) notFound();
-  return <LandingView topic={data.topic} companies={data.matches} hiring={data.hiring} newSince={data.newSince} pages={pages} />;
+  return (
+    <LandingView
+      topic={data.topic}
+      companies={data.matches}
+      hiring={data.hiring}
+      newSince={data.newSince}
+      updatedAt={data.updatedAt}
+      pages={pages}
+    />
+  );
 }

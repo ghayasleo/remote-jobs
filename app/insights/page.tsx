@@ -8,7 +8,8 @@ import { insightsFaqs } from "@/lib/insights";
 import { regionLabels, remotePolicyLabels, techLabels, type Tech } from "@/lib/data/labels";
 import { formatDate } from "@/lib/format";
 import { JOB_CATEGORIES } from "@/lib/jobs";
-import { DEFAULT_OG_IMAGE, absoluteUrl } from "@/lib/site";
+import { insightsDatasetJsonLd } from "@/lib/seo";
+import { DEFAULT_OG_IMAGE, absoluteUrl, jsonLd } from "@/lib/site";
 
 const number = new Intl.NumberFormat("en");
 const percent = new Intl.NumberFormat("en", { style: "percent", maximumFractionDigits: 0 });
@@ -77,10 +78,11 @@ export default async function InsightsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 pt-6 pb-12 sm:px-6">
+      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLd(insightsDatasetJsonLd(insights, insights.updatedAt))} />
       <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">State of remote hiring</h1>
       <p className="mt-2 max-w-[36rem] leading-relaxed text-foreground/85">
         Live numbers from {number.format(insights.companies)} remote-friendly tech companies and the job boards they hire
-        through. Updated every hour; last updated {formatDate(insights.updatedAt)}.
+        through. Updated every hour; last updated <time dateTime={insights.updatedAt}>{formatDate(insights.updatedAt)}</time>.
       </p>
 
       <dl className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border bg-border sm:grid-cols-4">

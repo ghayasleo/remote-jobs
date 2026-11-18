@@ -5,6 +5,7 @@ import { FaqSection } from "@/components/faq-section";
 import { Button } from "@/components/ui/button";
 import type { ExploreData } from "@/lib/data/explore-data";
 import { techLabels } from "@/lib/data/labels";
+import { formatDate } from "@/lib/format";
 import { REGION_FILTERS, isRecent, type ExploreCompany } from "@/lib/explore";
 import { exploreHref, topicCopy, topicFaqs, topicPath, topicSummary, type Topic } from "@/lib/landing";
 import { absoluteUrl, jsonLd } from "@/lib/site";
@@ -70,12 +71,14 @@ export function LandingView({
   companies,
   hiring,
   newSince,
+  updatedAt,
   pages,
 }: {
   topic: Topic;
   companies: ExploreCompany[];
   hiring: ExploreData["hiring"];
   newSince: string;
+  updatedAt: string;
   pages: LandingLink[];
 }) {
   const { heading, tech, place } = topicCopy(topic);
@@ -137,6 +140,9 @@ export function LandingView({
             </div>
           ))}
         </dl>
+        <p className="mt-2 text-xs text-muted-foreground">
+          As of <time dateTime={updatedAt}>{formatDate(updatedAt)}</time>; open roles refresh every hour.
+        </p>
         <Button asChild className="mt-5 h-11 rounded-full px-5">
           <Link href={exploreHref(topic)}>
             Search and filter these

@@ -9,9 +9,9 @@ import { DEFAULT_OG_IMAGE } from "@/lib/site";
 /** The companies on a landing page, or null when the page shouldn't exist. */
 export async function landingData(topic: Topic | null) {
   if (!topic) return null;
-  const { companies, hiring, newSince } = await getExploreData();
+  const { companies, hiring, newSince, updatedAt } = await getExploreData();
   const matches = topicCompanies(companies, topic, hiring, newSince);
-  return matches.length >= MIN_COMPANIES ? { topic, matches, hiring, newSince } : null;
+  return matches.length >= MIN_COMPANIES ? { topic, matches, hiring, newSince, updatedAt } : null;
 }
 
 export async function landingMetadata(topic: Topic | null): Promise<Metadata> {
