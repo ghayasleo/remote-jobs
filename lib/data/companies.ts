@@ -17,7 +17,6 @@ export const upstreamFileUrl = (slug: string) =>
 
 const COMPANY_FILE = /^[^/]+\/src\/companies\/([^/]+)\.md$/;
 const VALID_SLUG = /^[a-z0-9-]+$/i;
-const ARCHIVE_TTL_MS = 60 * 60 * 1000;
 
 type Archive = Map<string, CompanyProfile>;
 
@@ -58,21 +57,18 @@ async function downloadArchive(): Promise<Archive> {
   return companies;
 }
 
-// One download per server process (or build worker), refreshed hourly. The
-// cached functions below decide how long their own results live.
-let archive: { promise: Promise<Archive>; loadedAt: number } | null = null;
+/**
+ * Every company profile, keyed by slug: one download shared by the functions
+ * below. It's a cached function rather than a module-level promise, so Next
+ * does the sharing: a "use cache" function mustn't await a promise another
+ * one started (development mode rejects it, and it breaks cache isolation).
+ */
+async function getArchive(): Promise<Record<string, CompanyProfile>> {
+  "use cache";
+  cacheLife("days");
+  cacheTag("companies");
 
-function loadArchive(): Promise<Archive> {
-  const now = Date.now();
-  if (!archive || now - archive.loadedAt > ARCHIVE_TTL_MS) {
-    const promise = downloadArchive();
-    archive = { promise, loadedAt: now };
-    // Don't keep a failed download around.
-    promise.catch(() => {
-      if (archive?.promise === promise) archive = null;
-    });
-  }
-  return archive.promise;
+  return Object.fromEntries(await downloadArchive());
 }
 
 const byName = (a: { name: string }, b: { name: string }) =>
@@ -83,8 +79,7 @@ export async function getCompanyIndex(): Promise<CompanyListItem[]> {
   cacheLife("days");
   cacheTag("companies");
 
-  const companies = await loadArchive();
-  return [...companies.values()].map(toListItem).sort(byName);
+  return Object.values(await getArchive()).map(toListItem).sort(byName);
 }
 
 export async function getCompany(slug: string): Promise<CompanyProfile | null> {
@@ -93,7 +88,7 @@ export async function getCompany(slug: string): Promise<CompanyProfile | null> {
   cacheTag("companies", `company:${slug}`);
 
   if (!VALID_SLUG.test(slug)) return null;
-  return (await loadArchive()).get(slug) ?? null;
+  return (await getArchive())[slug] ?? null;
 }
 
 /** Current slug for a company that was renamed upstream (from its redirectFrom). */
@@ -102,7 +97,7 @@ export async function findSlugByAlias(slug: string): Promise<string | null> {
   cacheLife("days");
   cacheTag("companies");
 
-  for (const company of (await loadArchive()).values()) {
+  for (const company of Object.values(await getArchive())) {
     if (company.aliases.includes(slug)) return company.slug;
   }
   return null;
