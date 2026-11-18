@@ -133,7 +133,7 @@ export function CountryView({ page, neighbours }: { page: CountryPage; neighbour
           ))}
         </dl>
         <p className="mt-2 text-xs text-muted-foreground">
-          As of <time dateTime={updatedAt}>{asOf}</time>; open roles refresh every hour.
+          Counted <time dateTime={updatedAt}>{asOf}</time>; open roles refresh every hour.
         </p>
       </header>
 

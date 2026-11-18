@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CountryView } from "@/components/countries/country-view";
-import { countryPath } from "@/lib/countries";
+import { COUNTRIES, countryPath } from "@/lib/countries";
 import { getCountryIndex, getCountryPage } from "@/lib/data/countries";
 import { clip } from "@/lib/seo";
 import { DEFAULT_OG_IMAGE, OG_BASE } from "@/lib/site";
 
 export async function generateStaticParams() {
   const { countries } = await getCountryIndex();
-  return countries.map((country) => ({ country: country.slug }));
+  // Cache Components needs at least one; if the boards were unreachable at
+  // build time, this one renders "not found" until the data comes back.
+  return countries.length > 0 ? countries.map((country) => ({ country: country.slug })) : [{ country: COUNTRIES[0].slug }];
 }
 
 export async function generateMetadata({ params }: PageProps<"/remote/in/[country]">): Promise<Metadata> {
