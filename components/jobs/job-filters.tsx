@@ -49,7 +49,7 @@ export function JobFilterPanel({ params, setParams }: { params: JobParams; setPa
     <div className="space-y-7">
       <FilterGroup
         title="Where you live"
-        hint="Roles you can apply to from there: ones that name it, ones open across its region and ones open worldwide."
+        hint="Roles you can apply to from there: ones that name it, ones open across its region and ones open worldwide. “Use my current location” only picks the country; your location isn’t stored."
       >
         <CountrySelect
           value={params.country}
