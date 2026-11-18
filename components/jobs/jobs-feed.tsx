@@ -54,11 +54,12 @@ function JobList({ jobs, pending }: { jobs: JobListing[]; pending: boolean }) {
 /** Every remote role. HTML carries the newest few; the rest loads from /data/jobs.json. */
 export function JobsFeed({ preview, total, companies }: { preview: JobListing[]; total: number; companies: number }) {
   const [params, setParams] = useJobParams();
-  const jobs = useJobs();
+  const isDefaultView = serializeJobParams(params) === "";
+  // The newest roles are in the HTML, so the full list can wait.
+  const jobs = useJobs(isDefaultView ? "soon" : "now");
   const failed = useJobsFailed();
   const now = usePageTime();
   const results = useMemo(() => (jobs && now !== null ? filterJobs(jobs, params, now) : null), [jobs, params, now]);
-  const isDefaultView = serializeJobParams(params) === "";
   const shown = results ?? (isDefaultView ? preview : null);
   const count = results?.length ?? (isDefaultView ? total : null);
   const onSearch = useCallback((q: string) => setParams({ q }), [setParams]);

@@ -24,10 +24,15 @@ export const CONSENT_REGIONS = [
   "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "IS", "LI", "NO", "GB", "CH",
 ];
 
+/** Tags wait for the visitor's first tap, key or scroll, or this long, whichever comes first. */
+export const TAGS_DELAY_MS = 6000;
+
 /**
- * The inline script that sets consent defaults, re-applies a saved choice,
- * then loads Tag Manager and/or GA4, in that order. IDs are validated above,
- * so they're safe to embed.
+ * The inline script that sets consent defaults and re-applies a saved choice
+ * straight away, then loads Tag Manager and/or GA4 on the visitor's first
+ * interaction (or after TAGS_DELAY_MS), so ~180 KB of tag code never competes
+ * with the first paint or the first tap. IDs are validated above, so they're
+ * safe to embed.
  */
 export function googleTagsScript({ gtmId, gaId }: { gtmId: string | null; gaId: string | null }) {
   const lines = [
@@ -39,6 +44,7 @@ export function googleTagsScript({ gtmId, gaId }: { gtmId: string | null; gaId: 
     "gtag('consent','default',Object.assign({analytics_storage:'granted'},noAds));",
     `try{var c=localStorage.getItem(${JSON.stringify(CONSENT_KEY)});if(c==='granted'||c==='denied')gtag('consent','update',{analytics_storage:c});}catch(e){}`,
     "function load(src){var s=document.createElement('script');s.async=true;s.src=src;document.head.appendChild(s);}",
+    "var started=false;function start(){if(started)return;started=true;",
   ];
   if (gaId) {
     lines.push(
@@ -53,5 +59,10 @@ export function googleTagsScript({ gtmId, gaId }: { gtmId: string | null; gaId: 
       `load('https://www.googletagmanager.com/gtm.js?id=${gtmId}');`,
     );
   }
+  lines.push(
+    "}",
+    "['pointerdown','keydown','touchstart','scroll'].forEach(function(e){addEventListener(e,start,{once:true,passive:true,capture:true});});",
+    `setTimeout(start,${TAGS_DELAY_MS});`,
+  );
   return `(function(){${lines.join("")}})();`;
 }

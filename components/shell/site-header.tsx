@@ -7,7 +7,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-(--z-nav) border-b bg-background pt-safe">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="-mx-1 rounded-lg px-1 py-1" aria-label="Remote Jobs, home">
+        <Link href="/" className="-mx-1 rounded-lg px-1 py-1">
           <Wordmark />
         </Link>
         <div className="flex items-center gap-2">

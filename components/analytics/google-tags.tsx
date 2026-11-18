@@ -7,9 +7,9 @@ export function GoogleTags() {
   if (!GTM_ID && !GA_ID) return null;
   return (
     <>
-      {/* After the page has loaded and gone idle, so the tags never compete
-          with the first paint or the first tap. */}
-      <Script id="google-tags" strategy="lazyOnload">
+      {/* Consent defaults apply at once; the tags themselves wait for the
+          first interaction (see googleTagsScript). */}
+      <Script id="google-tags" strategy="afterInteractive">
         {googleTagsScript({ gtmId: GTM_ID, gaId: GA_ID })}
       </Script>
       <ConsentBanner />
