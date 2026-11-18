@@ -1,0 +1,46 @@
+# Every Monday, re-detect which job board each company uses
+# (scripts/find-job-boards.mts) and commit data/job-boards.json if it changed.
+# The push to main redeploys the site on Vercel.
+name: Refresh job boards
+
+on:
+  schedule:
+    - cron: "17 6 * * 1" # Mondays, 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-job-boards
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci --no-audit --no-fund
+
+      - name: Scan careers pages for job boards
+        run: npm run boards:scan
+
+      - name: Commit if the boards changed
+        run: |
+          status=$(node scripts/check-board-changes.mjs)
+          if [ "$status" != "changed" ]; then
+            echo "Only the timestamp changed; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/job-boards.json
+          git commit -m "Refreshed job boards"
+          git push
