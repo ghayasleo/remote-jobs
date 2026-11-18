@@ -1,6 +1,7 @@
 "use client";
 
 import { FilterChip, FilterGroup, type ActiveFilter, type FilterKind } from "@/components/explore/filters";
+import { CountrySelect } from "@/components/jobs/country-select";
 import {
   COMPANY_SIZES,
   REMOTE_POLICIES,
@@ -15,6 +16,7 @@ import {
   JOB_REGIONS,
   JOB_REGION_KEYS,
   POSTED_WITHIN,
+  countryFromSlug,
   type JobListParam,
   type JobParams,
 } from "@/lib/jobs";
@@ -45,6 +47,18 @@ export function JobFilterPanel({ params, setParams }: { params: JobParams; setPa
 
   return (
     <div className="space-y-7">
+      <FilterGroup
+        title="Where you live"
+        hint="Roles you can apply to from there: ones that name it, ones open across its region and ones open worldwide."
+      >
+        <CountrySelect
+          value={params.country}
+          onChange={(country) => setParams({ country })}
+          placeholder="Pick a country"
+          className="w-full"
+        />
+      </FilterGroup>
+
       <FilterGroup title="Show only">
         <FilterChip pressed={params.pay} onPressedChange={(pay) => setParams({ pay })}>
           Pay listed
@@ -97,6 +111,8 @@ export function describeJobFilters(params: JobParams, setParams: SetJobParams): 
   if (params.q.trim()) filters.push({ id: "q", label: `“${params.q.trim()}”`, remove: () => setParams({ q: "" }) });
   filters.push(...list("category", kind("category", "Kind of work"), (value) => JOB_CATEGORIES[value as keyof typeof JOB_CATEGORIES]));
   filters.push(...list("where", kind("where", "Location"), (value) => JOB_REGIONS[value as keyof typeof JOB_REGIONS]));
+  const country = countryFromSlug(params.country);
+  if (country) filters.push({ id: "country", label: `Open to ${country.name}`, remove: () => setParams({ country: "" }) });
   if (params.posted) filters.push({ id: "posted", label: POSTED_WITHIN[params.posted], remove: () => setParams({ posted: "" }) });
   if (params.pay) filters.push({ id: "pay", label: "Pay listed", remove: () => setParams({ pay: false }) });
   filters.push(

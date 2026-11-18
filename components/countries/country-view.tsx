@@ -6,11 +6,11 @@ import { JobRow } from "@/components/jobs/job-row";
 import { countryFaqs, countryPath, regionName } from "@/lib/countries";
 import type { CountryIndexEntry, CountryPage } from "@/lib/data/countries";
 import { formatDate } from "@/lib/format";
-import { DEFAULT_JOB_PARAMS, serializeJobParams, type JobListing, type JobRegion } from "@/lib/jobs";
+import { DEFAULT_JOB_PARAMS, serializeJobParams, type JobListing } from "@/lib/jobs";
 import { absoluteUrl, jsonLd } from "@/lib/site";
 
 const number = new Intl.NumberFormat("en");
-const jobsHref = (where: JobRegion) => `/jobs${serializeJobParams({ ...DEFAULT_JOB_PARAMS, where: [where] })}`;
+const jobsHref = (country: string) => `/jobs${serializeJobParams({ ...DEFAULT_JOB_PARAMS, country })}`;
 
 const pill =
   "inline-flex h-9 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium transition-colors hover:bg-muted";
@@ -136,7 +136,7 @@ export function CountryView({ page, neighbours }: { page: CountryPage; neighbour
         <p className="mt-2 text-xs text-muted-foreground">
           Counted <time dateTime={updatedAt}>{asOf}</time>; open roles refresh every hour.
         </p>
-        <CopyFeedButton path={`/feeds/jobs.xml?country=${country.slug}`} className="mt-4 h-9 px-3.5 text-sm">
+        <CopyFeedButton path={`/feeds/jobs.xml${serializeJobParams({ ...DEFAULT_JOB_PARAMS, country: country.slug })}`} className="mt-4 h-9 px-3.5 text-sm">
           Follow these roles by RSS
         </CopyFeedButton>
       </header>
@@ -147,7 +147,7 @@ export function CountryView({ page, neighbours }: { page: CountryPage; neighbour
         hint={`The posting lists ${country.name} among the places you can work from.`}
         jobs={page.named}
         count={counts.named}
-        more={{ href: jobsHref(country.region), label: `See more roles in ${region}` }}
+        more={{ href: jobsHref(country.slug), label: `See all ${number.format(counts.total)} in Jobs` }}
       />
       <RoleSection
         id="regional"
@@ -155,7 +155,7 @@ export function CountryView({ page, neighbours }: { page: CountryPage; neighbour
         hint={`The posting names the region (like “EMEA” or “APAC”) rather than countries, so check that ${country.name} is included.`}
         jobs={page.regional}
         count={counts.regional}
-        more={{ href: jobsHref(country.region), label: `See all roles in ${region}` }}
+        more={{ href: jobsHref(country.slug), label: `See all ${number.format(counts.total)} in Jobs` }}
       />
       <RoleSection
         id="worldwide"
@@ -163,7 +163,7 @@ export function CountryView({ page, neighbours }: { page: CountryPage; neighbour
         hint="Open from anywhere, including roles listed only as “Remote” at companies that hire worldwide."
         jobs={page.worldwide}
         count={counts.worldwide}
-        more={{ href: jobsHref("anywhere"), label: "See all worldwide roles" }}
+        more={{ href: jobsHref(country.slug), label: `See all ${number.format(counts.total)} in Jobs` }}
       />
 
       <div className="mt-10 space-y-8 px-4 sm:px-6">

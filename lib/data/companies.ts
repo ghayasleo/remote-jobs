@@ -23,12 +23,17 @@ type Archive = Map<string, CompanyProfile>;
 
 const DOWNLOAD_ATTEMPTS = 3;
 
-/** The tarball, retried with backoff so a network blip doesn't fail a build. */
+/**
+ * The unzipped tarball, retried with backoff so a network blip doesn't fail a
+ * build. It skips Next's fetch cache: the download takes about a second, every
+ * build gets today's list, and a corrupted copy saved by an earlier build can't
+ * fail every build after it. The parsed list is memoized below instead.
+ */
 async function fetchTarball(attempt = 1): Promise<Buffer> {
   try {
-    const response = await fetch(TARBALL_URL, { signal: AbortSignal.timeout(30_000) });
+    const response = await fetch(TARBALL_URL, { signal: AbortSignal.timeout(30_000), cache: "no-store" });
     if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-    return Buffer.from(await response.arrayBuffer());
+    return gunzipSync(Buffer.from(await response.arrayBuffer()));
   } catch (error) {
     if (attempt >= DOWNLOAD_ATTEMPTS) {
       throw new Error(`Downloading ${TARBALL_URL} failed after ${attempt} attempts`, { cause: error });
@@ -40,10 +45,10 @@ async function fetchTarball(attempt = 1): Promise<Buffer> {
 
 async function downloadArchive(): Promise<Archive> {
   // Read and parse in one go: few awaits keep React's dev-only async tracking happy.
-  const tarball = await fetchTarball();
+  const tar = await fetchTarball();
 
   const companies: Archive = new Map();
-  readTar(gunzipSync(tarball), (path, content) => {
+  readTar(tar, (path, content) => {
     const slug = COMPANY_FILE.exec(path)?.[1];
     if (!slug) return;
     const company = parseCompanyFile(slug, content.toString("utf8"));

@@ -20,6 +20,8 @@ export type JobListing = {
   // From the company's profile, for the company filters. Optional: a copy of
   // the list cached before these existed simply doesn't match them.
   companyPolicy?: string | null;
+  /** Where the company hires (remoteintech's region), for "where I live". */
+  companyRegion?: string | null;
   companySize?: string | null;
   companyStack?: string[];
 };
@@ -216,6 +218,8 @@ export type JobParams = {
   /** Where the role can be done from. */
   where: JobRegion[];
   posted: PostedWithin;
+  /** The country the person lives in (a slug), for roles open to them there. */
+  country: string;
   /** Only roles that publish pay. */
   pay: boolean;
   /** The company's remote policy, size and stack. */
@@ -229,6 +233,7 @@ export const DEFAULT_JOB_PARAMS: JobParams = {
   category: [],
   where: [],
   posted: "",
+  country: "",
   pay: false,
   policy: [],
   size: [],
@@ -259,6 +264,7 @@ export function parseJobParams(query: string): JobParams {
     category: list("category"),
     where: list("where"),
     posted: posted in POSTED_WITHIN ? (posted as PostedWithin) : "",
+    country: countryFromSlug(search.get("country") ?? "") ? search.get("country")! : "",
     pay: search.get("pay") === "true",
     policy: list("policy"),
     size: list("size"),
@@ -271,6 +277,7 @@ export function serializeJobParams(params: JobParams): string {
   const search = new URLSearchParams();
   if (params.q.trim()) search.set("q", params.q.trim());
   for (const key of ["category", "where"] as const) if (params[key].length) search.set(key, params[key].join(","));
+  if (params.country) search.set("country", params.country);
   if (params.posted) search.set("posted", params.posted);
   if (params.pay) search.set("pay", "true");
   for (const key of ["policy", "size", "stack"] as const) if (params[key].length) search.set(key, params[key].join(","));
@@ -283,6 +290,7 @@ export function serializeJobParams(params: JobParams): string {
 export const activeJobFilterCount = (params: JobParams) =>
   params.category.length +
   params.where.length +
+  Number(Boolean(params.country)) +
   Number(Boolean(params.posted)) +
   Number(params.pay) +
   params.policy.length +
@@ -302,6 +310,7 @@ const haystack = (job: JobListing) => {
 export function filterJobs(jobs: JobListing[], params: JobParams, now: number): JobListing[] {
   const queryWords = params.q.toLowerCase().split(/\s+/).filter(Boolean);
   const since = params.posted ? new Date(now - POSTED_DAYS[params.posted] * 86_400_000).toISOString() : null;
+  const country = params.country ? countryFromSlug(params.country) : null;
   const matches = jobs.filter(
     (job) =>
       queryWords.every((word) => haystack(job).includes(word)) &&
@@ -309,6 +318,7 @@ export function filterJobs(jobs: JobListing[], params: JobParams, now: number): 
       // A role open anywhere counts for every region.
       (params.where.length === 0 ||
         regionsOf(job).some((region) => region === "anywhere" || params.where.includes(region))) &&
+      (!country || countryMatch(job, country, job.companyRegion) !== null) &&
       (!since || (job.postedAt !== null && job.postedAt >= since)) &&
       (!params.pay || job.salary !== null) &&
       (params.policy.length === 0 || (params.policy as string[]).includes(job.companyPolicy ?? "")) &&
@@ -421,6 +431,35 @@ const COUNTRY_TABLE = [
 
 /** Every country a location can name, with its region, in display order. */
 export const COUNTRY_LIST = COUNTRY_TABLE.map(({ name, region }) => ({ name, region }));
+
+export const countrySlug = (name: string) =>
+  name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+const COUNTRY_SLUGS = new Map(COUNTRY_LIST.map((country) => [countrySlug(country.name), country]));
+/** A country from its slug ("united-kingdom"), or null. */
+export const countryFromSlug = (slug: string) => COUNTRY_SLUGS.get(slug) ?? null;
+
+/**
+ * How a role is open to someone living in a country: its location names the
+ * country, names the country's region but no country ("EMEA"), or is open
+ * worldwide ("Anywhere", or plainly "Remote" at a company that hires
+ * worldwide). null when it isn't open to them, e.g. it names other countries.
+ */
+export function countryMatch(
+  job: Pick<JobListing, "location">,
+  country: { name: string; region: Exclude<JobRegion, "anywhere"> },
+  companyRegion?: string | null,
+): "named" | "regional" | "worldwide" | null {
+  const names = locationCountries(job.location);
+  if (names.length > 0) return names.includes(country.name) ? "named" : null;
+  const regions = jobRegions(job.location);
+  if (regions.includes(country.region)) return "regional";
+  if (regions.includes("anywhere") || (regions.length === 0 && companyRegion === "worldwide")) return "worldwide";
+  return null;
+}
 
 // Places that name a country without saying it: US states, cities and time
 // zones ("Foster City, CA", "Remote - EST"), Canadian provinces and cities,

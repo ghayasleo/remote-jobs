@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpDownIcon, CalendarIcon, SearchXIcon } from "lucide-react";
 import { ChoiceMenu } from "@/components/choice-menu";
 import { CopyFeedButton } from "@/components/copy-feed-button";
+import { CountrySelect } from "@/components/jobs/country-select";
 import { ActiveFilters, FilterChip, FilterSheet } from "@/components/explore/filters";
 import { ListSkeleton } from "@/components/explore/results";
 import { SearchField } from "@/components/explore/search-field";
@@ -105,6 +106,7 @@ export function JobsFeed({ preview, total, companies }: { preview: JobListing[];
             >
               <JobFilterPanel params={params} setParams={setParams} />
             </FilterSheet>
+            <CountrySelect value={params.country} onChange={(country) => setParams({ country })} placeholder="Where I live" />
             <FilterChip pressed={params.pay} onPressedChange={(pay) => setParams({ pay })}>
               Pay listed
             </FilterChip>

@@ -3,6 +3,8 @@ import {
   DEFAULT_JOB_PARAMS,
   activeJobFilterCount,
   applicantCountries,
+  countryFromSlug,
+  countryMatch,
   filterJobs,
   isPlaceholderRole,
   jobCategory,
@@ -118,6 +120,38 @@ describe("job params", () => {
     });
     expect(activeJobFilterCount(params)).toBe(7);
     expect(serializeJobParams(params)).toBe("?where=anywhere,europe&pay=true&policy=fully-remote&size=small&stack=python,go");
+  });
+
+  it("keeps a real country and drops a made-up one", () => {
+    const params = parseJobParams("?country=pakistan&category=engineering");
+    expect(params.country).toBe("pakistan");
+    expect(activeJobFilterCount(params)).toBe(2);
+    expect(serializeJobParams(params)).toBe("?category=engineering&country=pakistan");
+    expect(parseJobParams("?country=atlantis").country).toBe("");
+  });
+});
+
+describe("where I live", () => {
+  const germany = countryFromSlug("germany")!;
+
+  it("says how a role is open to someone in a country", () => {
+    expect(countryMatch({ location: "Remote - Germany" }, germany)).toBe("named");
+    expect(countryMatch({ location: "EMEA" }, germany)).toBe("regional");
+    expect(countryMatch({ location: "Anywhere" }, germany)).toBe("worldwide");
+    expect(countryMatch({ location: "Remote" }, germany, "worldwide")).toBe("worldwide");
+    expect(countryMatch({ location: "Remote" }, germany, "americas")).toBeNull();
+    expect(countryMatch({ location: "Remote - US" }, germany)).toBeNull();
+  });
+
+  it("filters the feed to roles open to the country", () => {
+    const jobs = [
+      job({ id: "de", location: "Berlin, Germany" }),
+      job({ id: "emea", location: "Remote, EMEA" }),
+      job({ id: "us", location: "Remote - US" }),
+      job({ id: "plain", location: "Remote", companyRegion: "worldwide" }),
+    ];
+    const ids = filterJobs(jobs, { ...DEFAULT_JOB_PARAMS, country: "germany" }, Date.now()).map((j) => j.id);
+    expect(ids.sort()).toEqual(["de", "emea", "plain"]);
   });
 });
 
