@@ -1,16 +1,12 @@
 import { formatCount, listAnd, type Faq } from "@/lib/faq";
-import { COUNTRY_LIST, JOB_REGIONS, jobRegions, locationCountries, type JobListing, type JobRegion } from "@/lib/jobs";
+import { COUNTRY_LIST, JOB_REGIONS, countryMatch, countrySlug, type JobListing, type JobRegion } from "@/lib/jobs";
 
 // "Remote jobs in <country>": the roles someone living there can apply to.
 // Pure, so it's easy to test; lib/data/countries.ts feeds it live roles.
 
 export type Country = { name: string; slug: string; region: Exclude<JobRegion, "anywhere"> };
 
-export const countrySlug = (name: string) =>
-  name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+export { countrySlug };
 
 export const COUNTRIES: Country[] = COUNTRY_LIST.map((country) => ({ ...country, slug: countrySlug(country.name) }));
 
@@ -41,16 +37,8 @@ export function countryRoles<T extends Pick<JobListing, "company" | "location">>
 ): CountryRoles<T> {
   const roles: CountryRoles<T> = { named: [], regional: [], worldwide: [] };
   for (const job of jobs) {
-    const names = locationCountries(job.location);
-    if (names.length > 0) {
-      if (names.includes(country.name)) roles.named.push(job);
-      continue;
-    }
-    const regions = jobRegions(job.location);
-    if (regions.includes(country.region)) roles.regional.push(job);
-    else if (regions.includes("anywhere") || (regions.length === 0 && companyRegion(job.company) === "worldwide")) {
-      roles.worldwide.push(job);
-    }
+    const match = countryMatch(job, country, companyRegion(job.company));
+    if (match) roles[match].push(job);
   }
   return roles;
 }
