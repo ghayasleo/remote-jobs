@@ -178,7 +178,11 @@ export default async function InsightsPage() {
           }
         >
           <p className="text-sm text-muted-foreground">
-            Many companies only publish pay where the law asks them to, so these numbers lean towards US-based roles.
+            Many companies only publish pay where the law asks them to, so these numbers lean towards US-based roles.{" "}
+            <Link href="/salaries" className="font-medium text-primary underline underline-offset-4">
+              See salaries by kind of work
+            </Link>
+            .
           </p>
         </Section>
 
