@@ -22,6 +22,9 @@ export const OG_BASE = { type: "website", siteName: SITE_BRAND, locale: "en_US" 
 /** This site's source code. */
 export const REPOSITORY_URL = "https://github.com/ghayasleo/remote-jobs";
 
+/** The site's Bluesky account, which posts the day's new roles. */
+export const BLUESKY_URL = "https://bsky.app/profile/remotejobs.ghayasuddin.net";
+
 export const absoluteUrl = (path: string) => new URL(path, SITE_URL).toString();
 
 /**
