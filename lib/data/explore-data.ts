@@ -21,6 +21,8 @@ export async function getExploreData() {
     hiring,
     // Fixed when the cache fills, so server and browser agree on what's "new".
     newSince: newSinceDate(Date.now()),
+    // When these numbers were counted, for "as of" dates.
+    updatedAt: new Date().toISOString(),
   };
 }
 

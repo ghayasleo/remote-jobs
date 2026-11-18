@@ -18,5 +18,14 @@ export default async function TopicPage({ params }: PageProps<"/remote/[topic]">
   const { topic } = await params;
   const [data, pages] = await Promise.all([landingData(parseTopic(topic)), getLandingTopics()]);
   if (!data) notFound();
-  return <LandingView topic={data.topic} companies={data.matches} hiring={data.hiring} newSince={data.newSince} pages={pages} />;
+  return (
+    <LandingView
+      topic={data.topic}
+      companies={data.matches}
+      hiring={data.hiring}
+      newSince={data.newSince}
+      updatedAt={data.updatedAt}
+      pages={pages}
+    />
+  );
 }

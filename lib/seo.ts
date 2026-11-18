@@ -1,7 +1,9 @@
 import type { Role } from "@/lib/data/job-boards/providers";
 import { label, remotePolicyLabels } from "@/lib/data/labels";
 import type { CompanyProfile } from "@/lib/data/parse";
+import type { Insights } from "@/lib/insights";
 import { applicantCountries, schemaEmploymentType } from "@/lib/jobs";
+import { MAKER } from "@/lib/maker";
 import { absoluteUrl } from "@/lib/site";
 
 // Titles, descriptions and structured data written for how people search:
@@ -133,5 +135,35 @@ export function jobPostingJsonLd({
     directApply: false,
     identifier: { "@type": "PropertyValue", name: company.name, value: role.id },
     url,
+  };
+}
+
+/**
+ * "State of remote hiring" as a Dataset, so dataset search and AI assistants
+ * know what the numbers measure, where they come from and how fresh they are.
+ */
+export function insightsDatasetJsonLd(insights: Pick<Insights, "companies">, updatedAt: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: "State of remote tech hiring",
+    description: `Live numbers on remote tech hiring from the ${insights.companies} remote-friendly companies on the community-run remoteintech list and the public job boards of those that hire through Greenhouse, Lever, Ashby, Workable or Recruitee: open remote roles, who is hiring most, what kind of work is remote, where companies hire, how remote they are, which stacks they use and how often listings show pay. Recounted every hour.`,
+    url: absoluteUrl("/insights"),
+    dateModified: updatedAt,
+    temporalCoverage: updatedAt.slice(0, 10),
+    isAccessibleForFree: true,
+    isBasedOn: "https://github.com/remoteintech/remote-jobs",
+    creator: { "@type": "Person", name: MAKER.name, url: MAKER.portfolio },
+    keywords: ["remote work", "remote jobs", "tech hiring", "job market"],
+    variableMeasured: [
+      "Open remote roles",
+      "Companies hiring",
+      "Share of open roles that are remote",
+      "Remote roles by kind of work",
+      "Companies by where they hire",
+      "Companies by remote policy",
+      "Tech stacks at companies hiring now",
+      "Share of remote roles that show pay",
+    ],
   };
 }

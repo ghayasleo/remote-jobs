@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { CompanyProfile } from "@/lib/data/parse";
-import { clip, companyJsonLd, companySeo, rolesPhrase } from "@/lib/seo";
+import { clip, companyJsonLd, companySeo, insightsDatasetJsonLd, rolesPhrase } from "@/lib/seo";
 
 const company: CompanyProfile = {
   slug: "acme",
@@ -58,5 +58,16 @@ describe("companyJsonLd", () => {
       numberOfEmployees: { minValue: 11, maxValue: 50 },
     });
     expect(breadcrumb.itemListElement).toHaveLength(2);
+  });
+});
+
+describe("insightsDatasetJsonLd", () => {
+  it("describes the dataset with its date", () => {
+    const dataset = insightsDatasetJsonLd({ companies: 876 }, "2026-11-18T10:00:00.000Z");
+    expect(dataset["@type"]).toBe("Dataset");
+    expect(dataset.description.length).toBeGreaterThan(50);
+    expect(dataset.description).toContain("876");
+    expect(dataset.dateModified).toBe("2026-11-18T10:00:00.000Z");
+    expect(dataset.temporalCoverage).toBe("2026-11-18");
   });
 });
