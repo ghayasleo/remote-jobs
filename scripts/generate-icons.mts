@@ -38,6 +38,8 @@ mkdirSync(out("public/icons"), { recursive: true });
 const files: [string, Buffer | Promise<Buffer>][] = [
   ["app/icon.svg", rounded],
   ["app/apple-icon.png", png(square, 180)], // iOS rounds the corners itself
+  // Search results use a raster favicon whose size is a multiple of 48 px.
+  ["app/icon1.png", png(rounded, 96)],
   ["public/icons/icon-192.png", png(rounded, 192)],
   ["public/icons/icon-512.png", png(rounded, 512)],
   ["public/icons/maskable-512.png", png(square, 512)],

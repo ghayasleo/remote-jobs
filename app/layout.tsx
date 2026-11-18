@@ -12,7 +12,7 @@ import { SiteHeader } from "@/components/shell/site-header";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BRAND } from "@/lib/brand-mark";
-import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { OG_BASE, SITE_BRAND, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], display: "swap" });
@@ -28,12 +28,12 @@ const verification: Metadata["verification"] = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Remote Jobs: remote-friendly tech companies", template: `%s · ${SITE_NAME}` },
+  title: { default: `${SITE_BRAND}: remote-friendly tech companies`, template: `%s · ${SITE_BRAND}` },
   description,
-  applicationName: SITE_NAME,
+  applicationName: SITE_BRAND,
   appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },
   formatDetection: { telephone: false },
-  openGraph: { type: "website", siteName: SITE_NAME, description },
+  openGraph: { ...OG_BASE, description },
   twitter: { card: "summary_large_image" },
   verification,
 };

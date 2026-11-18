@@ -19,7 +19,7 @@ import { getLandingTopics } from "@/lib/data/explore-data";
 import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
 import { label, techLabels } from "@/lib/data/labels";
 import { companyJsonLd, companySeo } from "@/lib/seo";
-import { jsonLd } from "@/lib/site";
+import { OG_BASE, jsonLd } from "@/lib/site";
 
 type Props = PageProps<"/company-profiles/[slug]">;
 
@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url },
+    openGraph: { ...OG_BASE, title, description, url },
   };
 }
 

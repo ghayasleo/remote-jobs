@@ -4,16 +4,16 @@ import { Explore } from "@/components/explore/explore";
 import { getExplorePreview } from "@/lib/data/explore-data";
 import { getNewThisWeek } from "@/lib/data/jobs";
 import { siteJsonLd } from "@/lib/seo";
-import { SITE_NAME, jsonLd } from "@/lib/site";
+import { OG_BASE, SITE_BRAND, jsonLd } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { total, hiringCount } = await getExplorePreview();
   const description = `Search ${total} tech companies that hire remotely by where you live and what you build with, plus live openings from ${hiringCount} companies hiring now.`;
   return {
-    title: { absolute: `Remote tech jobs at ${total} remote-friendly companies · ${SITE_NAME}` },
+    title: { absolute: `${SITE_BRAND}: remote tech jobs at ${total} remote-friendly companies` },
     description,
     alternates: { canonical: "/" },
-    openGraph: { description, url: "/" },
+    openGraph: { ...OG_BASE, description, url: "/" },
   };
 }
 
