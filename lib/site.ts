@@ -6,6 +6,9 @@ export const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 
 export const SITE_NAME = "Remote Jobs";
 
+/** This site's source code. */
+export const REPOSITORY_URL = "https://github.com/ghayasleo/remote-jobs";
+
 export const absoluteUrl = (path: string) => new URL(path, SITE_URL).toString();
 
 /**
