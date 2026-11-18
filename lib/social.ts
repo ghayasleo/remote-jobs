@@ -1,7 +1,7 @@
 import type { JobListing } from "@/lib/jobs";
 
-// Daily "new remote roles" posts for Telegram and Bluesky. Pure formatting
-// here; sending lives in app/api/cron/social/route.ts.
+// The daily "new remote roles" post on Bluesky. Pure formatting here;
+// sending lives in app/api/cron/social/route.ts.
 
 const DAY_MS = 86_400_000;
 
@@ -17,25 +17,6 @@ export function pickDailyRoles(jobs: JobListing[], now: number, limit = 10) {
     if (picked.length === limit) break;
   }
   return { picked, total: jobs.filter((job) => job.postedAt && job.postedAt >= since).length };
-}
-
-const escapeHtml = (text: string) => text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-/** A Telegram message (HTML parse mode) listing the picked roles. */
-export function telegramDigest(picked: JobListing[], total: number, roleUrl: (job: JobListing) => string, moreUrl: string) {
-  const lines = picked.map(
-    (job) =>
-      `• <a href="${escapeHtml(roleUrl(job))}">${escapeHtml(job.title)}</a> at ${escapeHtml(job.companyName)}${
-        job.location ? ` (${escapeHtml(job.location)})` : ""
-      }`,
-  );
-  return [
-    `<b>${total} new remote ${total === 1 ? "role" : "roles"} today</b>`,
-    "",
-    ...lines,
-    "",
-    `<a href="${escapeHtml(moreUrl)}">See everything new this week</a>`,
-  ].join("\n");
 }
 
 const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });

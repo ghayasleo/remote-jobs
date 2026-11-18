@@ -36,17 +36,16 @@ npm run dev        # http://localhost:3000
 
 Run `boards:scan` every few weeks, or when companies are added upstream, and commit the updated JSON. A board is only kept when the provider's API answers for it and, where the API reports a company name, the name matches. If a wrong match slips through, add the company to `EXCLUDE` in `scripts/find-job-boards.mts`.
 
-## Daily social posts (optional)
+## Daily Bluesky post (optional)
 
-`/api/cron/social` runs every day at 09:00 UTC (Vercel Cron, see `vercel.json`) and posts the last day's new remote roles. It only posts to networks whose credentials are set as Vercel environment variables:
+`/api/cron/social` runs every day at 09:00 UTC (Vercel Cron, see `vercel.json`) and posts the last day's new remote roles on Bluesky, linking to `/new`. It only posts when these are set as Vercel environment variables:
 
 | Variable | What it is |
 | --- | --- |
-| `CRON_SECRET` | Already set for IndexNow. Vercel sends it with each cron call; other callers get 401. |
-| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` | Create a bot with @BotFather, add it as an admin of your channel, and use the channel's `@name` as the chat ID. |
-| `BLUESKY_HANDLE`, `BLUESKY_APP_PASSWORD` | Your handle and an app password from Bluesky's Settings → Privacy and security → App passwords. |
+| `BLUESKY_HANDLE` | The account's handle, e.g. `remotejobs.bsky.social`. |
+| `BLUESKY_APP_PASSWORD` | An app password from Bluesky's Settings → Privacy and security → App passwords (never the main password). |
 
-Both APIs are free. Nothing is posted until the variables are set; after adding them, redeploy so the job sees them.
+`CRON_SECRET` (already set for IndexNow) keeps other callers out. Bluesky's API is free. Redeploy after adding the variables.
 
 ## Project layout
 

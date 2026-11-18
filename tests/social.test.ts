@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { JobListing } from "@/lib/jobs";
-import { blueskyPost, pickDailyRoles, telegramDigest } from "@/lib/social";
+import { blueskyPost, pickDailyRoles } from "@/lib/social";
 
 const job = (id: string, company: string, postedAt: string | null, title = `Role ${id}`): JobListing => ({
   id,
@@ -17,7 +17,7 @@ const job = (id: string, company: string, postedAt: string | null, title = `Role
 });
 const NOW = Date.parse("2026-11-17T09:00:00Z");
 const JOBS = [
-  job("1", "a", "2026-11-17T08:00:00Z", "Engineer <Senior> & Lead"),
+  job("1", "a", "2026-11-17T08:00:00Z", "Lead Engineer"),
   job("2", "a", "2026-11-17T07:00:00Z"),
   job("3", "b", "2026-11-16T10:00:00Z"),
   job("4", "c", "2026-11-15T10:00:00Z"),
@@ -28,16 +28,6 @@ describe("pickDailyRoles", () => {
     const { picked, total } = pickDailyRoles(JOBS, NOW);
     expect(picked.map((j) => j.id)).toEqual(["1", "3"]);
     expect(total).toBe(3);
-  });
-});
-
-describe("telegramDigest", () => {
-  it("escapes HTML and links each role", () => {
-    const { picked, total } = pickDailyRoles(JOBS, NOW);
-    const message = telegramDigest(picked, total, (j) => `https://x.dev/jobs/${j.company}/${j.id}`, "https://x.dev/new");
-    expect(message).toContain("<b>3 new remote roles today</b>");
-    expect(message).toContain('• <a href="https://x.dev/jobs/a/1">Engineer &lt;Senior&gt; &amp; Lead</a> at A (Remote)');
-    expect(message).toContain('<a href="https://x.dev/new">See everything new this week</a>');
   });
 });
 
