@@ -1,0 +1,49 @@
+# Every day, record the site's hiring numbers and the roles that opened and
+# closed (scripts/record-history.mts) onto the "data" branch. The data branch
+# never deploys (its vercel.json turns deployments off), so the site isn't
+# rebuilt for it, and main stays untouched.
+name: Record hiring history
+
+on:
+  schedule:
+    - cron: "40 6 * * *" # 06:40 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: record-history
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/checkout@v5
+        with:
+          ref: data
+          path: data-branch
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Record today
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/record-history.mts data-branch
+
+      - name: Commit to the data branch
+        working-directory: data-branch
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nothing new to record."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add history
+          git commit -m "Recorded $(date -u +%F)"
+          git push

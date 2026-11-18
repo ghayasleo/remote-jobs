@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "boards:scan": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/find-job-boards.mts",
-    "icons": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-icons.mts"
+    "icons": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/generate-icons.mts",
+    "history:record": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/record-history.mts"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
