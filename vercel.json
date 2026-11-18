@@ -1,4 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "fluid": true
+  "fluid": true,
+  "crons": [
+    {
+      "path": "/api/indexnow",
+      "schedule": "0 7 * * *"
+    }
+  ]
 }
