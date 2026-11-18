@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3Icon, ChevronRightIcon, CompassIcon, SparklesIcon, type LucideIcon } from "lucide-react";
+import { BarChart3Icon, ChevronRightIcon, CompassIcon, GlobeIcon, SparklesIcon, type LucideIcon } from "lucide-react";
 
 function DiscoverLink({ href, icon: Icon, children }: { href: string; icon: LucideIcon; children: React.ReactNode }) {
   return (
@@ -23,6 +23,9 @@ export function DiscoverLinks({ newRoles }: { newRoles: number }) {
       <ul className="-mx-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:flex-wrap lg:px-0">
         <DiscoverLink href="/new" icon={SparklesIcon}>
           {newRoles > 0 ? `${newRoles} new roles this week` : "New this week"}
+        </DiscoverLink>
+        <DiscoverLink href="/remote/in" icon={GlobeIcon}>
+          Jobs by country
         </DiscoverLink>
         <DiscoverLink href="/remote" icon={CompassIcon}>
           Browse by stack & region

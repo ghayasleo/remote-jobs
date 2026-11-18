@@ -419,6 +419,9 @@ const COUNTRY_TABLE = [
   C("New Zealand", /\bnew zealand\b/i, "asia-pacific"),
 ];
 
+/** Every country a location can name, with its region, in display order. */
+export const COUNTRY_LIST = COUNTRY_TABLE.map(({ name, region }) => ({ name, region }));
+
 // Places that name a country without saying it: US states, cities and time
 // zones ("Foster City, CA", "Remote - EST"), Canadian provinces and cities,
 // and country codes after a comma ("Remote, BR").

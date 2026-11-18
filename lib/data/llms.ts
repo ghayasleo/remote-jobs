@@ -2,8 +2,10 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getLandingTopics } from "./explore-data";
+import { getCountryIndex } from "./countries";
 import { getInsights } from "./insights";
 import { PROVIDERS } from "./job-boards/providers";
+import { countryPath } from "@/lib/countries";
 import { topicCopy, type Topic } from "@/lib/landing";
 import { absoluteUrl } from "@/lib/site";
 
@@ -19,7 +21,7 @@ export async function getLlmsText() {
   cacheLife("hours");
   cacheTag("roles", "companies");
 
-  const [insights, topics] = await Promise.all([getInsights(), getLandingTopics()]);
+  const [insights, topics, { countries }] = await Promise.all([getInsights(), getLandingTopics(), getCountryIndex()]);
   const providers = list.format(Object.values(PROVIDERS).map((provider) => provider.label));
   const link = (title: string, path: string, note?: string) => `- [${title}](${absoluteUrl(path)})${note ? `: ${note}` : ""}`;
   const topicLink = ({ topic, count, path }: { topic: Topic; count: number; path: string }) =>
@@ -44,6 +46,13 @@ export async function getLlmsText() {
     link("New this week", "/new", "roles posted in the last 7 days and the newest companies on the list"),
     link("State of remote hiring", "/insights", "who's hiring most, what kind of work is remote, where companies hire and pay transparency"),
     link("About", "/about", "where the data comes from and who built the site"),
+    "",
+    "## Remote jobs by the country you live in",
+    "",
+    link("All countries", "/remote/in", "pick a country to see the remote roles open to people living there"),
+    ...countries.map((country) =>
+      link(`Remote jobs in ${country.name}`, countryPath(country), `${number.format(country.total)} roles open to people there`),
+    ),
     "",
     "## Companies by region and technology",
     "",
