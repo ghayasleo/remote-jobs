@@ -38,9 +38,12 @@ const host = (url: string) => {
   }
 };
 
+// "no-store" skips Next's fetch cache, which getCompanyNews already covers. That
+// cache keeps reading a response to the end even after the timeout gives up on
+// it, so one slow feed (hudl's trickles in over ~50 s) stalls the build.
 async function fetchText(url: string) {
   try {
-    const response = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8_000) });
+    const response = await fetch(url, { headers: HEADERS, signal: AbortSignal.timeout(8_000), cache: "no-store" });
     return response.ok ? await response.text() : null;
   } catch {
     return null;

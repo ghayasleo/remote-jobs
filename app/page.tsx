@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { total, hiringCount } = await getExplorePreview();
   const description = `Search ${total} tech companies that hire remotely by where you live and what you build with, plus live openings from ${hiringCount} companies hiring now.`;
   return {
-    title: { absolute: `${SITE_BRAND}: remote tech jobs at ${total} remote-friendly companies` },
+    title: { absolute: `Remote tech jobs at ${total} remote-friendly companies · ${SITE_BRAND}` },
     description,
     alternates: { canonical: "/" },
     openGraph: { ...OG_BASE, description, url: "/" },
