@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 import { getCompany, getCompanyIndex } from "@/lib/data/companies";
 import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
 import { label, regionLabels, remotePolicyLabels } from "@/lib/data/labels";
-import { OG, OG_SIZE, OgChip, OgHorizonSun, OgWordmark, ogClip, ogFonts } from "@/lib/og";
+import { OG, OG_SIZE, OgChip, OgHorizonSun, OgWordmark, ogClip, ogFonts, ogText } from "@/lib/og";
 
 export const alt = "Company profile on Remote Jobs";
 export const size = OG_SIZE;
@@ -35,7 +35,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const company = await getCompany(slug);
   const board = getBoard(slug);
   const [roles, logo] = await Promise.all([board ? getOpenRoles(board) : null, logoDataUrl(company?.domain ?? null)]);
-  const name = company?.name ?? "Remote Jobs";
+  const name = ogText(company?.name ?? "Remote Jobs");
   const hiring = roles?.total ?? 0;
   const remote = roles?.remote ?? 0;
   const blurb = company?.blurb ? ogClip(company.blurb, 118) : null;

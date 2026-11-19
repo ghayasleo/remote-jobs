@@ -47,9 +47,12 @@ export async function getOpenRoles(board: Board): Promise<OpenRoles | null> {
   const provider = PROVIDERS[board.provider];
   if (!provider) return null;
   try {
+    // "no-store": this function's own cache keeps the result, and Next's fetch
+    // cache would keep reading a slow response past the timeout.
     const response = await fetch(provider.apiUrl(board.token), {
       headers: { accept: "application/json" },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      cache: "no-store",
     });
     if (!response.ok) return null;
     const roles = provider.normalize(await response.json()).filter((role) => role.url);
@@ -113,6 +116,7 @@ export async function getRoleDetail(board: Board, id: string): Promise<RoleDetai
     const response = await fetch(url, {
       headers: { accept: "application/json" },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      cache: "no-store",
     });
     if (!response.ok) return null;
     const detail = provider.normalizeDetail(await response.json(), id);

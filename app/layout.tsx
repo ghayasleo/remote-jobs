@@ -28,7 +28,7 @@ const verification: Metadata["verification"] = {
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: `${SITE_BRAND}: remote-friendly tech companies`, template: `%s · ${SITE_BRAND}` },
+  title: { default: `Remote-friendly tech companies · ${SITE_BRAND}`, template: `%s · ${SITE_BRAND}` },
   description,
   applicationName: SITE_BRAND,
   appleWebApp: { capable: true, title: SITE_NAME, statusBarStyle: "default" },

@@ -79,8 +79,19 @@ export function OgChip({ children, tone = "plain" }: { children: React.ReactNode
   );
 }
 
+/**
+ * Swaps characters the bundled Figtree subset lacks for ones it has. A missing
+ * glyph makes ImageResponse fetch a fallback font from Google Fonts, which can
+ * stall or fail a build; non-breaking hyphens and spaces turn up in company names
+ * and blurbs.
+ */
+export function ogText(text: string) {
+  return text.replace(/[\u2010\u2011]/g, "-").replace(/[\u00a0\u2007\u202f]/g, " ");
+}
+
 /** Cuts text at a word boundary so it fits in roughly `max` characters. */
 export function ogClip(text: string, max: number) {
+  text = ogText(text);
   if (text.length <= max) return text;
   const cut = text.slice(0, max + 1);
   return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[,.;:\s]+$/, "")}…`;
