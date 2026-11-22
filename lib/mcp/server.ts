@@ -7,6 +7,7 @@ import { getJob } from "@/lib/data/jobs";
 import { COMPANY_SIZES, REMOTE_POLICIES, TECHS } from "@/lib/data/labels";
 import { REGION_FILTER_KEYS, SORTS, type SortKey } from "@/lib/explore";
 import { JOB_CATEGORY_KEYS, JOB_REGION_KEYS, JOB_SORTS, POSTED_WITHIN, countrySlug, jobPath, type JobSort } from "@/lib/jobs";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 import { loadExplore, loadInsights, loadJobs, siteOrigin } from "./data";
 import {
   MAX_RESULTS,
@@ -23,7 +24,21 @@ import {
 
 // The tools the MCP endpoint (app/mcp/route.ts) offers. All read public data.
 
-export const SERVER_INFO = { name: "remotejobs", version: "1.0.0" };
+// The title, description and icons are what a client shows for the server once
+// it connects (MCP 2025-11-25). Without them, some clients show the favicon of
+// the parent domain, ghayasuddin.net, instead of this site's.
+export const SERVER_INFO = {
+  name: "remotejobs",
+  title: SITE_NAME,
+  version: "1.0.0",
+  description: "Remote-friendly tech companies and the remote roles open on their job boards, refreshed hourly.",
+  websiteUrl: SITE_URL,
+  icons: [
+    { src: `${SITE_URL}/icon.svg`, mimeType: "image/svg+xml", sizes: ["any"] },
+    { src: `${SITE_URL}/icons/icon-512.png`, mimeType: "image/png", sizes: ["512x512"] },
+    { src: `${SITE_URL}/icons/icon-192.png`, mimeType: "image/png", sizes: ["192x192"] },
+  ],
+};
 
 export const SERVER_INSTRUCTIONS = `Remote Jobs (remotejobs.ghayasuddin.net) lists remote-friendly tech companies from the open-source remoteintech/remote-jobs list, and the remote roles open on their public job boards (Greenhouse, Lever, Ashby, Workable, Recruitee), refreshed hourly.
 Use search_jobs to find roles, search_companies to find employers, get_company and get_job for details, salary_insights for pay and market_overview for the overall picture.
