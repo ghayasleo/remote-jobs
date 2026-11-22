@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRightIcon } from "lucide-react";
+import { ArrowUpRightIcon, PlugIcon } from "lucide-react";
 import { CookieChoicesButton } from "@/components/analytics/cookie-choices-button";
 import { BrandMark } from "@/components/brand/logo";
-import { CopyFeedButton } from "@/components/copy-feed-button";
+import { CopyAddressButton, CopyFeedButton } from "@/components/copy-feed-button";
 import { InstallApp } from "@/components/install-app";
 import { Button } from "@/components/ui/button";
 import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
@@ -13,7 +13,7 @@ import { BOARD_COUNT } from "@/lib/data/job-boards";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { MAKER, makerJsonLd } from "@/lib/maker";
 import photo from "@/public/images/ghayas-ud-din.webp";
-import { BLUESKY_URL, REPOSITORY_URL, jsonLd } from "@/lib/site";
+import { BLUESKY_URL, REPOSITORY_URL, absoluteUrl, jsonLd } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "About",
@@ -31,9 +31,9 @@ function External({ href, children }: { href: string; children: React.ReactNode 
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
   return (
-    <section className="border-t pt-6">
+    <section id={id} className="scroll-mt-20 border-t pt-6">
       <h2 className="text-lg font-bold tracking-tight">{title}</h2>
       <div className="mt-2 max-w-[36rem] space-y-3 leading-relaxed text-foreground/90">{children}</div>
     </section>
@@ -110,6 +110,26 @@ export default async function AboutPage() {
             <CopyFeedButton path="/feeds/jobs.xml">New roles feed</CopyFeedButton>
             <CopyFeedButton path="/feeds/companies.xml">New companies feed</CopyFeedButton>
           </div>
+        </Section>
+
+        <Section id="mcp" title="Use it from an AI assistant">
+          <p>
+            Remote Jobs has an MCP server, so AI assistants such as Claude, ChatGPT, Cursor and VS Code can search these
+            companies and remote roles for you, with links back to their pages here. It’s free and needs no account or
+            key.
+          </p>
+          <p>
+            In Claude, add it as a custom connector. In ChatGPT, Cursor or VS Code, add it as a remote MCP server. The
+            address is <code className="rounded bg-muted px-1.5 py-0.5 text-sm break-all">{absoluteUrl("/mcp")}</code>.
+          </p>
+          <CopyAddressButton
+            path="/mcp"
+            icon={<PlugIcon aria-hidden />}
+            what="MCP address"
+            hint="Paste it into your AI assistant as a custom connector or remote MCP server."
+          >
+            Copy MCP address
+          </CopyAddressButton>
         </Section>
 
         <Section title="Use it like an app">
