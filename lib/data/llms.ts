@@ -83,6 +83,7 @@ export async function getLlmsText() {
       "/mcp",
       "Streamable HTTP, no key needed. Tools: search_jobs, search_companies, get_company, get_job, salary_insights and market_overview",
     ),
+    link("How to add it", "/ai", "Setup steps for Claude, ChatGPT, Claude Code, VS Code and Cursor"),
     "",
     "## Feeds",
     "",

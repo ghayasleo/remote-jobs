@@ -116,11 +116,12 @@ export default async function AboutPage() {
           <p>
             Remote Jobs has an MCP server, so AI assistants such as Claude, ChatGPT, Cursor and VS Code can search these
             companies and remote roles for you, with links back to their pages here. It’s free and needs no account or
-            key.
-          </p>
-          <p>
-            In Claude, add it as a custom connector. In ChatGPT, Cursor or VS Code, add it as a remote MCP server. The
-            address is <code className="rounded bg-muted px-1.5 py-0.5 text-sm break-all">{absoluteUrl("/mcp")}</code>.
+            key. The address is{" "}
+            <code className="rounded bg-muted px-1.5 py-0.5 text-sm break-all">{absoluteUrl("/mcp")}</code>, and{" "}
+            <Link href="/ai" className="font-medium text-primary underline underline-offset-4">
+              this page
+            </Link>{" "}
+            shows how to add it to each one.
           </p>
           <CopyAddressButton
             path="/mcp"

@@ -55,6 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily" as const,
       priority: 0.6,
     })),
+    { url: absoluteUrl("/ai"), changeFrequency: "monthly", priority: 0.5 },
     { url: absoluteUrl("/about"), changeFrequency: "monthly", priority: 0.3 },
     ...companies.map((company) => ({
       url: absoluteUrl(`/company-profiles/${company.slug}`),

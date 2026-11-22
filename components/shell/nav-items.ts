@@ -2,6 +2,7 @@ import {
   BanknoteIcon,
   BarChart3Icon,
   BookmarkIcon,
+  BotIcon,
   BriefcaseIcon,
   Building2Icon,
   CompassIcon,
@@ -29,6 +30,7 @@ export const MORE_ITEMS: NavItem[] = [
   { href: "/salaries", label: "Remote salaries", icon: BanknoteIcon, description: "What remote roles pay, by kind of work" },
   { href: "/remote", label: "Browse by stack & region", icon: CompassIcon, description: "Python in Europe, Go worldwide and more" },
   { href: "/insights", label: "State of remote hiring", icon: BarChart3Icon, description: "Live numbers, updated every hour" },
+  { href: "/ai", label: "Use with AI", icon: BotIcon, description: "Search these roles from Claude, ChatGPT and more" },
   { href: "/about", label: "About", icon: InfoIcon, description: "Where the data comes from" },
 ];
 
