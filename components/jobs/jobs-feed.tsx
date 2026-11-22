@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
-import { ArrowUpDownIcon, CalendarIcon, SearchXIcon } from "lucide-react";
+import { ArrowUpDownIcon, BotIcon, CalendarIcon, SearchXIcon } from "lucide-react";
 import { ChoiceMenu } from "@/components/choice-menu";
 import { CopyFeedButton } from "@/components/copy-feed-button";
 import { CountrySelect } from "@/components/jobs/country-select";
@@ -87,12 +87,20 @@ export function JobsFeed({ preview, total, companies }: { preview: JobListing[];
               See what’s new this week
             </Link>
           </p>
-          <CopyFeedButton
-            path={`/feeds/jobs.xml${serializeJobParams({ ...params, sort: "newest" })}`}
-            className="mt-3 h-9 px-3.5 text-sm"
-          >
-            {isDefaultView ? "Follow new roles by RSS" : "Follow this search by RSS"}
-          </CopyFeedButton>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <CopyFeedButton
+              path={`/feeds/jobs.xml${serializeJobParams({ ...params, sort: "newest" })}`}
+              className="h-9 px-3.5 text-sm"
+            >
+              {isDefaultView ? "Follow new roles by RSS" : "Follow this search by RSS"}
+            </CopyFeedButton>
+            <Button asChild variant="outline" className="h-9 rounded-full px-3.5 text-sm">
+              <Link href="/ai">
+                <BotIcon aria-hidden />
+                Search from Claude or ChatGPT
+              </Link>
+            </Button>
+          </div>
         </header>
 
         {/* On phones the search and quick filters stay pinned under the top bar. */}

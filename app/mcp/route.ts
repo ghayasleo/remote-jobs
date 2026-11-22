@@ -4,7 +4,7 @@ import { SERVER_INFO, SERVER_INSTRUCTIONS, registerTools } from "@/lib/mcp/serve
 // The MCP server: AI assistants (Claude, ChatGPT, Cursor, VS Code…) connect to
 // https://remotejobs.ghayasuddin.net/mcp to search this site's companies and
 // remote roles. Streamable HTTP, stateless (no sessions or storage), read-only
-// and public, so there's no login. The About page explains how to add it.
+// and public, so there's no login. The /ai page explains how to add it.
 
 const mcp = createMcpHandler(registerTools, { serverInfo: SERVER_INFO, instructions: SERVER_INSTRUCTIONS });
 
@@ -25,9 +25,9 @@ async function handle(request: Request) {
 }
 
 export async function GET(request: Request) {
-  // Someone opening the address in a browser gets the section that explains it.
+  // Someone opening the address in a browser gets the page that explains it.
   if (request.headers.get("accept")?.includes("text/html")) {
-    return Response.redirect(new URL("/about#mcp", request.url), 307);
+    return Response.redirect(new URL("/ai", request.url), 307);
   }
   return handle(request);
 }
