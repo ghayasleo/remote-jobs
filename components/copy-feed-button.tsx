@@ -15,11 +15,13 @@ export function CopyAddressButton({
   icon,
   what,
   hint,
+  variant = "outline",
 }: CopyButtonProps & {
   /** A rendered icon (a server page can't pass the component itself). */
   icon: React.ReactNode;
   what: string;
   hint: string;
+  variant?: "default" | "outline";
 }) {
   const onClick = async () => {
     const url = new URL(path, window.location.origin).toString();
@@ -32,7 +34,7 @@ export function CopyAddressButton({
   };
 
   return (
-    <Button variant="outline" onClick={onClick} className={cn("h-10 rounded-full px-4", className)}>
+    <Button variant={variant} onClick={onClick} className={cn("h-10 rounded-full px-4", className)}>
       {icon}
       {children}
     </Button>
