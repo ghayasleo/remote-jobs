@@ -4,7 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-const SIZES = { md: "size-11 rounded-xl text-base", lg: "size-16 rounded-2xl text-xl" };
+const SIZES = {
+  xs: "size-5 rounded-md text-[0.5625rem]",
+  md: "size-11 rounded-xl text-base",
+  lg: "size-16 rounded-2xl text-xl",
+};
+// The smallest tile has no room to spare around the mark.
+const PADDING = { xs: "p-0", md: "p-1.5", lg: "p-1.5" };
 
 function initials(name: string) {
   const words = name.replace(/[^\p{L}\p{N} ]/gu, " ").split(/\s+/).filter(Boolean);
@@ -36,7 +42,7 @@ export function CompanyLogo({
   return (
     // Logos are made for light backgrounds (many are dark marks on transparency),
     // so the tile stays white in dark mode too.
-    <span className={cn(box, "grid place-items-center overflow-hidden bg-white p-1.5 dark:border-white/10")}>
+    <span className={cn(box, "grid place-items-center overflow-hidden bg-white dark:border-white/10", PADDING[size])}>
       <Image
         src={`/logo/${domain}`}
         alt=""
