@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-17T12:47:54.507Z",
+  "generatedAt": "2026-11-23T18:06:12.255Z",
   "source": "https://codeload.github.com/remoteintech/remote-jobs/tar.gz/main",
   "counts": {
-    "greenhouse": 91,
+    "greenhouse": 76,
     "lever": 13,
     "ashby": 41,
     "workable": 17,
-    "recruitee": 4
+    "recruitee": 5
   },
   "boards": {
     "1password": {
@@ -16,6 +16,10 @@
     "acquia": {
       "provider": "greenhouse",
       "token": "acquia"
+    },
+    "aerolab": {
+      "provider": "recruitee",
+      "token": "aerolab"
     },
     "aerostrat": {
       "provider": "lever",
@@ -337,10 +341,6 @@
       "provider": "ashby",
       "token": "Mapbox"
     },
-    "marco-polo": {
-      "provider": "lever",
-      "token": "marcopolo"
-    },
     "mariadb": {
       "provider": "greenhouse",
       "token": "mariadbplc"
@@ -372,10 +372,6 @@
     "mixcloud": {
       "provider": "workable",
       "token": "mixcloud-limited"
-    },
-    "mixmax": {
-      "provider": "greenhouse",
-      "token": "mixmax"
     },
     "modern-health": {
       "provider": "greenhouse",
@@ -433,10 +429,6 @@
       "provider": "greenhouse",
       "token": "okta"
     },
-    "ollie": {
-      "provider": "lever",
-      "token": "myollie"
-    },
     "openrouter": {
       "provider": "ashby",
       "token": "openrouter"
@@ -472,6 +464,10 @@
     "procurify": {
       "provider": "ashby",
       "token": "procurify"
+    },
+    "prominent-edge": {
+      "provider": "lever",
+      "token": "prominentedge"
     },
     "recharge": {
       "provider": "ashby",
@@ -541,21 +537,13 @@
       "provider": "lever",
       "token": "sonatype"
     },
+    "spreedly": {
+      "provider": "lever",
+      "token": "spreedly"
+    },
     "sticker-mule": {
       "provider": "ashby",
       "token": "stickermule"
-    },
-    "stitch-fix": {
-      "provider": "greenhouse",
-      "token": "stitchfix"
-    },
-    "streamnative": {
-      "provider": "greenhouse",
-      "token": "streamnative"
-    },
-    "stripe": {
-      "provider": "greenhouse",
-      "token": "stripe"
     },
     "supabase": {
       "provider": "ashby",
@@ -565,73 +553,29 @@
       "provider": "ashby",
       "token": "Svix"
     },
-    "tailscale": {
-      "provider": "greenhouse",
-      "token": "tailscale"
-    },
     "teamsnap": {
       "provider": "lever",
       "token": "teamsnap"
-    },
-    "tenable": {
-      "provider": "greenhouse",
-      "token": "tenableinc"
     },
     "testgorilla": {
       "provider": "ashby",
       "token": "testgorilla"
     },
-    "thorn": {
-      "provider": "greenhouse",
-      "token": "thorn"
-    },
-    "thrive-market": {
-      "provider": "greenhouse",
-      "token": "thrivemarket"
-    },
-    "tide": {
-      "provider": "greenhouse",
-      "token": "tide"
-    },
     "time-doctor": {
       "provider": "recruitee",
       "token": "timedoctor"
-    },
-    "toast": {
-      "provider": "greenhouse",
-      "token": "toast"
     },
     "tribe": {
       "provider": "ashby",
       "token": "tribe-xyz"
     },
-    "trussworks": {
-      "provider": "greenhouse",
-      "token": "trussworksinc"
-    },
     "turing": {
       "provider": "greenhouse",
       "token": "turing"
     },
-    "twilio": {
-      "provider": "greenhouse",
-      "token": "twilio"
-    },
-    "udacity": {
-      "provider": "greenhouse",
-      "token": "udacity"
-    },
-    "upwork-pro": {
-      "provider": "greenhouse",
-      "token": "upwork"
-    },
     "ushahidi": {
       "provider": "workable",
       "token": "ushahidi"
-    },
-    "valimail": {
-      "provider": "greenhouse",
-      "token": "valimail"
     },
     "vercel": {
       "provider": "greenhouse",
