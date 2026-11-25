@@ -2,11 +2,41 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getCompany, getCompanyIndex } from "./companies";
-import { forEachBoard, getBoard, getOpenRoles, getRoleDetail, type Role } from "./job-boards";
+import {
+  findRole,
+  forEachBoard,
+  getBoard,
+  getOpenRoles,
+  getRoleDetail,
+  mergedRoleIds,
+  roleLocations,
+  type Role,
+} from "./job-boards";
 import { toExploreCompany } from "@/lib/explore";
 import { isPlaceholderRole, jobCategory, type JobListing } from "@/lib/jobs";
 
 const byNewest = (a: JobListing, b: JobListing) => (b.postedAt ?? "").localeCompare(a.postedAt ?? "");
+
+/** A role as a list item: one listing, with every location and id folded into it. */
+export function roleListing(company: { slug: string; name: string; domain: string | null }, role: Role): JobListing {
+  const locations = roleLocations(role);
+  const mergedIds = mergedRoleIds(role);
+  return {
+    id: role.id,
+    company: company.slug,
+    companyName: company.name,
+    domain: company.domain,
+    title: role.title,
+    location: role.location,
+    team: role.team,
+    employmentType: role.employmentType,
+    salary: role.salary,
+    postedAt: role.postedAt,
+    category: jobCategory(role.title, role.team),
+    ...(locations.length > 1 && { locations }),
+    ...(mergedIds.length > 0 && { mergedIds }),
+  };
+}
 
 /** Every remote role at every company with a readable job board, newest first. */
 export async function getRemoteJobs(): Promise<JobListing[]> {
@@ -22,17 +52,7 @@ export async function getRemoteJobs(): Promise<JobListing[]> {
     for (const role of open.roles) {
       if (role.workplace !== "remote" || isPlaceholderRole(role.title)) continue;
       jobs.push({
-        id: role.id,
-        company: slug,
-        companyName: company.name,
-        domain: company.domain,
-        title: role.title,
-        location: role.location,
-        team: role.team,
-        employmentType: role.employmentType,
-        salary: role.salary,
-        postedAt: role.postedAt,
-        category: jobCategory(role.title, role.team),
+        ...roleListing(company, role),
         companyPolicy: company.remotePolicy || null,
         companyRegion: company.region || null,
         companySize: company.companySize,
@@ -64,7 +84,11 @@ const remoteRoles = (roles: Role[]) => roles.filter(isRealRemoteRole);
 
 /**
  * One role's page. "closed" when the board no longer lists it (or it stopped
- * being remote); "unavailable" when the board couldn't be reached just now.
+ * being remote); "unavailable" when the board couldn't be reached just now;
+ * "repost" when the id is a repost of another posting, whose page it goes to.
+ * A role posted for several locations has a page per location: each lists
+ * the others (`siblings`), and all point search engines at the main one
+ * (`canonicalId`).
  */
 export async function getJob(companySlug: string, id: string) {
   const company = await getCompany(companySlug);
@@ -74,19 +98,26 @@ export async function getJob(companySlug: string, id: string) {
   const open = await getOpenRoles(board);
   if (!open) return { status: "unavailable" as const, company };
 
-  const listed = open.roles.find((candidate) => candidate.id === id);
+  const found = findRole(open.roles, id);
   // A talent pool isn't a job: no page for it.
-  if (listed && isPlaceholderRole(listed.title)) return null;
-  const role = listed && isRealRemoteRole(listed) ? listed : undefined;
-  const others = remoteRoles(open.roles).filter((candidate) => candidate.id !== id);
-  if (!role) return { status: "closed" as const, company, others };
+  if (found && isPlaceholderRole(found.posting.title)) return null;
+  const role = found && isRealRemoteRole(found.posting) ? found.posting : undefined;
+  const others = remoteRoles(open.roles).filter((candidate) => candidate !== found?.primary);
+  if (!found || !role) return { status: "closed" as const, company, others };
+  if (found.repost) return { status: "repost" as const, company, role };
 
-  const detail = await getRoleDetail(board, id);
+  const { primary } = found;
+  const siblings = [primary, ...(primary.alternates ?? [])].filter((posting) => posting.id !== role.id);
+  const detail = await getRoleDetail(board, role.id);
   return {
     status: "open" as const,
     company,
     role,
     detail,
+    siblings,
+    canonicalId: primary.id,
+    /** Every location of the role, for search engines' markup on the main page. */
+    locations: roleLocations(primary),
     others,
     providerLabel: open.providerLabel,
     fetchedAt: open.fetchedAt,

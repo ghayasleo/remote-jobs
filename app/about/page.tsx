@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { UPSTREAM_REPO_URL } from "@/lib/data/companies";
 import { getExploreData } from "@/lib/data/explore-data";
 import { BOARD_COUNT } from "@/lib/data/job-boards";
+import { providerNames } from "@/lib/data/job-boards/providers";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { MAKER, makerJsonLd } from "@/lib/maker";
 import photo from "@/public/images/ghayas-ud-din.webp";
@@ -72,8 +73,8 @@ export default async function AboutPage() {
             day.
           </p>
           <p>
-            Open roles come straight from the job boards companies use (Greenhouse, Lever, Ashby, Workable and
-            Recruitee) and refresh every hour. We only connect a board to a company when it’s linked from the
+            Open roles come straight from the job boards companies use ({providerNames()}) and refresh every hour. A
+            role posted more than once, or once per country, shows once. We only connect a board to a company when it’s linked from the
             company’s own careers pages, or the board carries the company’s exact name, so roles are never guessed.
             Right now that covers {BOARD_COUNT} companies, {hiringNow} of them hiring.
           </p>

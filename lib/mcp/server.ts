@@ -3,6 +3,7 @@ import "server-only";
 import type { CallToolResult, McpServer, ServerContext } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import { findSlugByAlias, getCompany } from "@/lib/data/companies";
+import { providerNames } from "@/lib/data/job-boards/providers";
 import { getJob } from "@/lib/data/jobs";
 import { COMPANY_SIZES, REMOTE_POLICIES, TECHS } from "@/lib/data/labels";
 import { REGION_FILTER_KEYS, SORTS, type SortKey } from "@/lib/explore";
@@ -40,7 +41,7 @@ export const SERVER_INFO = {
   ],
 };
 
-export const SERVER_INSTRUCTIONS = `Remote Jobs (remotejobs.ghayasuddin.net) lists remote-friendly tech companies from the open-source remoteintech/remote-jobs list, and the remote roles open on their public job boards (Greenhouse, Lever, Ashby, Workable, Recruitee), refreshed hourly.
+export const SERVER_INSTRUCTIONS = `Remote Jobs (remotejobs.ghayasuddin.net) lists remote-friendly tech companies from the open-source remoteintech/remote-jobs list, and the remote roles open on their public job boards (${providerNames()}), refreshed hourly.
 Use search_jobs to find roles, search_companies to find employers, get_company and get_job for details, salary_insights for pay and market_overview for the overall picture.
 Every result has a url on remotejobs.ghayasuddin.net: share it with the user so they can read the full page and apply.`;
 
@@ -189,7 +190,9 @@ export function registerTools(server: McpServer) {
       guarded(async () => {
         const { origin, url } = context(ctx);
         const listed = findCompany((await loadExplore(origin)).companies, company_slug);
-        const job = listed ? await getJob(listed.slug, id) : null;
+        let job = listed ? await getJob(listed.slug, id) : null;
+        // A repost answers as the posting it repeats.
+        if (listed && job?.status === "repost") job = await getJob(listed.slug, job.role.id);
         if (!listed || !job) return failure(`No remote role ${id} at "${company_slug}". Use search_jobs to find current roles.`);
 
         const companyUrl = url(companyPath(job.company.slug));
@@ -209,6 +212,7 @@ export function registerTools(server: McpServer) {
             })),
           });
         }
+        if (job.status !== "open") return failure(`No remote role ${id} at "${company_slug}". Use search_jobs to find current roles.`);
         const { role, detail } = job;
         return answer({
           status: "open",
@@ -216,6 +220,13 @@ export function registerTools(server: McpServer) {
           company: job.company.name,
           company_url: companyUrl,
           location: role.location || null,
+          ...(job.siblings.length > 0 && {
+            also_open_in: job.siblings.map((sibling) => ({
+              location: sibling.location || null,
+              id: sibling.id,
+              url: url(jobPath({ company: job.company.slug, id: sibling.id, title: sibling.title })),
+            })),
+          }),
           team: role.team,
           employment_type: role.employmentType,
           salary: role.salary ?? detail?.payText ?? null,

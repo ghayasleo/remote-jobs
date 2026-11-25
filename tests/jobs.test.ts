@@ -141,6 +141,10 @@ describe("where I live", () => {
     expect(countryMatch({ location: "Remote" }, germany, "worldwide")).toBe("worldwide");
     expect(countryMatch({ location: "Remote" }, germany, "americas")).toBeNull();
     expect(countryMatch({ location: "Remote - US" }, germany)).toBeNull();
+    // A role posted once per location is open wherever any of them is; the closest match wins.
+    expect(countryMatch({ location: "Remote - US", locations: ["Remote - US", "Remote - Germany"] }, germany)).toBe("named");
+    expect(countryMatch({ location: "Remote - US", locations: ["Remote - US", "Anywhere"] }, germany)).toBe("worldwide");
+    expect(countryMatch({ location: "Remote - US", locations: ["Remote - US", "Remote - Canada"] }, germany)).toBeNull();
   });
 
   it("filters the feed to roles open to the country", () => {
@@ -185,16 +189,31 @@ describe("isPlaceholderRole", () => {
     "Growth Marketing Manager, Cloud Native (Talent Pool)",
     "Account Executive (SMB) - EMEA - Future opportunities",
     "Join Netguru - open application",
+    // Personio boards in German, and other languages
+    "Nichts passendes dabei? Initiativbewerbung!",
+    "Candidature spontanée",
+    // Test and demo postings, and "Contact us" stand-ins (seen on Personio and Breezy boards)
+    "Test",
+    "test job 2",
+    "Demo Posting",
+    "Contact Us",
+    "Do not apply - internal",
   ])("%s is a placeholder", (title) => {
     expect(isPlaceholderRole(title)).toBe(true);
   });
 
-  it.each(["Senior Backend Engineer", "Head of Talent", "Community Manager", "Talent Acquisition Partner"])(
-    "%s is a real role",
-    (title) => {
-      expect(isPlaceholderRole(title)).toBe(false);
-    },
-  );
+  it.each([
+    "Senior Backend Engineer",
+    "Head of Talent",
+    "Community Manager",
+    "Talent Acquisition Partner",
+    "QA Test Engineer",
+    "Test Automation Engineer",
+    "Demo Engineer",
+    "Sample Management Specialist",
+  ])("%s is a real role", (title) => {
+    expect(isPlaceholderRole(title)).toBe(false);
+  });
 });
 
 describe("Google Jobs helpers", () => {

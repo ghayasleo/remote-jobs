@@ -16,6 +16,8 @@ export type HistoryRole = {
   location: string;
   postedAt: string | null;
   salary: string | null;
+  /** Ids folded into this listing (reposts, the same role in other locations): still open, not closed. */
+  mergedIds?: string[];
 };
 
 export type HistoryState = { date: string; active: string[] };
@@ -59,7 +61,10 @@ export function recordDay({
   previous: HistoryState | null;
 }): { day: HistoryDay; state: HistoryState } {
   const unique = [...new Map(roles.map((role) => [roleKey(role), role])).values()];
-  const active = unique.map(roleKey).sort();
+  // Every id a listing stands for: a repost or another location's posting
+  // folded into it stays open until its board drops it.
+  const keysOf = (role: HistoryRole) => [roleKey(role), ...(role.mergedIds ?? []).map((id) => roleKey({ company: role.company, id }))];
+  const active = [...new Set(unique.flatMap(keysOf))].sort();
   const before = new Set(previous?.active ?? []);
   const now = new Set(active);
 
@@ -70,8 +75,9 @@ export function recordDay({
       baseline: previous === null,
       insights,
       hiring,
+      // A listing whose ids were already open isn't new (a repost that became the listed one).
       opened: unique
-        .filter((role) => !before.has(roleKey(role)))
+        .filter((role) => !keysOf(role).some((key) => before.has(key)))
         .map(pick)
         .sort((a, b) => roleKey(a).localeCompare(roleKey(b))),
       closed: (previous?.active ?? []).filter((key) => !now.has(key)),

@@ -7,14 +7,32 @@ import {
   payFrom,
   PROVIDERS,
   salaryRange,
+  workdayPostedAt,
+  workdayRemoteFacets,
   workplaceFromText,
+  xmlBlocks,
+  xmlText,
+  type Fetcher,
   type ProviderId,
 } from "@/lib/data/job-boards/providers";
 
-// Real API responses, trimmed to three jobs (tests/fixtures/boards).
-const fixture = (provider: ProviderId) =>
-  JSON.parse(readFileSync(`tests/fixtures/boards/${provider}.json`, "utf8"));
-const roles = (provider: ProviderId) => PROVIDERS[provider].normalize(fixture(provider));
+// Real API responses, trimmed to three jobs (tests/fixtures/boards). RSS and XML feeds are kept as text.
+const XML_FEEDS: ProviderId[] = ["personio", "teamtailor"];
+const fixture = (provider: ProviderId) => {
+  const path = `tests/fixtures/boards/${provider}.${XML_FEEDS.includes(provider) ? "xml" : "json"}`;
+  return XML_FEEDS.includes(provider) ? readFileSync(path, "utf8") : JSON.parse(readFileSync(path, "utf8"));
+};
+// The board token each fixture was fetched with.
+const TOKENS: Partial<Record<ProviderId, string>> = {
+  smartrecruiters: "smartrecruiters",
+  personio: "crate-io.jobs.personio.de",
+  teamtailor: "career",
+  breezy: "boldare",
+  bamboohr: "semaphore",
+  rippling: "argyle",
+  workday: "capitalone.wd12/Capital_One",
+};
+const roles = (provider: ProviderId) => PROVIDERS[provider].normalize(fixture(provider), TOKENS[provider] ?? "token");
 
 describe("normalizers", () => {
   it("greenhouse: infers remote from the location text", () => {
@@ -79,16 +97,156 @@ describe("normalizers", () => {
     });
   });
 
+  it("smartrecruiters: uses the remote flag, drops the repeated location part and builds the posting URL", () => {
+    expect(roles("smartrecruiters")[0]).toMatchObject({
+      id: "744000158320111",
+      title: "Senior / Lead Engineering Operations Manager",
+      location: "Poland, Remote",
+      workplace: "remote",
+      team: "Engineering",
+      url: "https://jobs.smartrecruiters.com/smartrecruiters/744000158320111",
+      postedAt: "2026-10-28T15:14:43.941Z",
+    });
+  });
+
+  it("personio: reads the XML feed and infers remote from the office", () => {
+    expect(roles("personio")[0]).toMatchObject({
+      id: "2521168",
+      title: "Senior Ecosystem Database Engineer (m/f/x)",
+      location: "Remote/Germany",
+      workplace: "remote",
+      team: "Engineering AT/DE",
+      employmentType: "Full-time",
+      url: "https://crate-io.jobs.personio.de/job/2521168",
+      postedAt: "2026-02-06T09:07:22.000Z",
+    });
+  });
+
+  it("teamtailor: reads the RSS feed and maps its remote status", () => {
+    const [first, second] = roles("teamtailor");
+    expect(first).toMatchObject({
+      id: "8746132",
+      title: "Customer Success Manager - Dutch Speaking",
+      location: "Stockholm",
+      workplace: "hybrid",
+      team: "Customer Success",
+      url: "https://career.teamtailor.com/jobs/8746132-customer-success-manager-dutch-speaking",
+      postedAt: "2026-11-16T09:25:07.000Z",
+    });
+    expect(second.workplace).toBe("onsite");
+    // "fully" is Teamtailor's word for remote; the fixture's board has none, so a minimal item checks it.
+    const item = `<rss><channel><title>Acme</title><item><title>Engineer</title><link>https://acme.teamtailor.com/jobs/1-engineer</link><remoteStatus>fully</remoteStatus></item></channel></rss>`;
+    expect(PROVIDERS.teamtailor.normalize(item, "acme")[0]).toMatchObject({ id: "1", workplace: "remote" });
+  });
+
+  it("breezy: uses the remote flag and reads 'no location restrictions' as anywhere", () => {
+    const [onsite, , anywhere] = roles("breezy");
+    expect(onsite).toMatchObject({ title: "Agile Project Lead", location: "Gliwice, PL", workplace: "onsite", employmentType: "Full-time" });
+    expect(anywhere).toMatchObject({ title: "Contact Us", location: "Anywhere", workplace: "remote" });
+  });
+
+  it("bamboohr: reads the location type and builds the posting URL", () => {
+    expect(roles("bamboohr")[0]).toMatchObject({
+      id: "44",
+      title: "Security Engineer",
+      location: "Serbia",
+      workplace: "remote",
+      team: "Engineering",
+      employmentType: "Full-time",
+      url: "https://semaphore.bamboohr.com/careers/44",
+      postedAt: null,
+    });
+  });
+
+  it("rippling: reads each location's workplace type", () => {
+    expect(roles("rippling")[0]).toMatchObject({
+      title: "Revenue Operations Analyst",
+      location: "US (Remote)",
+      workplace: "remote",
+      team: "Sales & Marketing",
+      url: "https://ats.rippling.com/argyle/jobs/b4e8e3c6-9e23-467c-b5eb-113e04f83185",
+    });
+  });
+
+  it("workday: names a multi-location job by its remote filter, and approximates the date", () => {
+    const { first } = fixture("workday");
+    const remote = workdayRemoteFacets(first.facets)!;
+    const [single, multi] = PROVIDERS.workday.normalize({ jobPostings: first.jobPostings, labels: remote.labels }, "capitalone.wd12/Capital_One");
+    expect(single).toMatchObject({
+      id: "Caf-Ambassador---Bellevue_R1003582-1",
+      location: "Bellevue, WA",
+      workplace: "remote",
+      employmentType: "Full-time",
+      url: "https://capitalone.wd12.myworkdayjobs.com/Capital_One/job/Bellevue-WA/Caf-Ambassador---Bellevue_R1003582-1",
+    });
+    expect(multi.location).toBe("Remote - National, US Remote");
+  });
+
+  it("workday: reads the board's filters, then asks only for its remote jobs", async () => {
+    const { first } = fixture("workday");
+    const calls: { url: string; body: unknown }[] = [];
+    const get: Fetcher = async (url, init) => {
+      calls.push({ url, body: init?.body });
+      return calls.length === 1 ? first : { jobPostings: first.jobPostings };
+    };
+    const data = await PROVIDERS.workday.load!("capitalone.wd12/Capital_One", get);
+    expect(calls[0].url).toBe("https://capitalone.wd12.myworkdayjobs.com/wday/cxs/capitalone/Capital_One/jobs");
+    expect(calls[1].body).toMatchObject({ appliedFacets: workdayRemoteFacets(first.facets)!.applied, limit: 20, offset: 0 });
+    expect(calls).toHaveLength(2); // a short page means there's no next one
+    expect(PROVIDERS.workday.normalize(data, "capitalone.wd12/Capital_One")).toHaveLength(2);
+  });
+
+  it("workday: a board without a remote filter has no remote jobs, and a failed first request reads as down", async () => {
+    expect(await PROVIDERS.workday.load!("acme.wd1/Careers", async () => ({ jobPostings: [], facets: [] }))).toEqual({
+      jobPostings: [],
+      labels: [],
+    });
+    expect(await PROVIDERS.workday.load!("acme.wd1/Careers", async () => null)).toBeNull();
+  });
+
   it("every provider tolerates an empty or malformed response", () => {
     for (const provider of Object.keys(PROVIDERS) as ProviderId[]) {
-      expect(PROVIDERS[provider].normalize(null)).toEqual([]);
-      expect(PROVIDERS[provider].normalize({ jobs: "nope", offers: 3 })).toEqual([]);
+      expect(PROVIDERS[provider].normalize(null, "token")).toEqual([]);
+      expect(PROVIDERS[provider].normalize({ jobs: "nope", offers: 3 }, "token")).toEqual([]);
     }
   });
 
   it("reads the board's company name where the API has one", () => {
     expect(PROVIDERS.workable.boardName!(fixture("workable"))).toBe("Hugging Face");
     expect(PROVIDERS.recruitee.boardName!(fixture("recruitee"))).toBe("madewithlove BV");
+    expect(PROVIDERS.smartrecruiters.boardName!(fixture("smartrecruiters"))).toBe("SmartRecruiters Inc");
+    expect(PROVIDERS.personio.boardName!(fixture("personio"))).toBe("Crate.io GmbH");
+    expect(PROVIDERS.teamtailor.boardName!(fixture("teamtailor"))).toBe("Teamtailor");
+    expect(PROVIDERS.breezy.boardName!(fixture("breezy"))).toBe("Boldare");
+  });
+});
+
+describe("feeds and Workday helpers", () => {
+  it("reads XML blocks and text, unwrapping CDATA and decoding entities", () => {
+    const xml = "<a><b>One &amp; two</b><b><![CDATA[<p>Three</p>]]></b><c/></a>";
+    expect(xmlBlocks(xml, "b")).toHaveLength(2);
+    expect(xmlText(xml, "b")).toBe("One & two");
+    expect(xmlText(xmlBlocks(xml, "b")[1].replace(/^/, "<x>").concat("</x>"), "x")).toBe("<p>Three</p>");
+    expect(xmlText(xml, "c")).toBeNull();
+    expect(xmlBlocks(null, "b")).toEqual([]);
+  });
+
+  it("turns Workday's 'Posted …' text into that day", () => {
+    const now = Date.parse("2026-11-25T15:00:00Z");
+    expect(workdayPostedAt("Posted Today", now)).toBe("2026-11-25T00:00:00.000Z");
+    expect(workdayPostedAt("Posted Yesterday", now)).toBe("2026-11-24T00:00:00.000Z");
+    expect(workdayPostedAt("Posted 5 Days Ago", now)).toBe("2026-11-20T00:00:00.000Z");
+    expect(workdayPostedAt("Posted 30+ Days Ago", now)).toBe("2026-10-26T00:00:00.000Z");
+    expect(workdayPostedAt("Soon", now)).toBeNull();
+  });
+
+  it("prefers a remote work-type filter to location names", () => {
+    const facets = [
+      { facetParameter: "remoteType", values: [{ descriptor: "Remote", id: "r" }, { descriptor: "Hybrid", id: "h" }] },
+      { facetParameter: "locationMainGroup", values: [{ facetParameter: "locations", values: [{ descriptor: "Remote - US", id: "l" }] }] },
+    ];
+    expect(workdayRemoteFacets(facets)).toEqual({ applied: { remoteType: ["r"] }, labels: ["Remote"] });
+    expect(workdayRemoteFacets([{ facetParameter: "locations", values: [{ descriptor: "Berlin", id: "b" }] }])).toBeNull();
   });
 });
 
@@ -112,6 +270,26 @@ describe("role details", () => {
     expect(detail.html).toMatch(/^<p/);
     expect(detail.payText).toBe("$170K – $210K • Offers Equity");
     expect(PROVIDERS.ashby.normalizeDetail(details.ashby, "missing")).toBeNull();
+  });
+
+  it("smartrecruiters: joins the job ad's sections, description first", () => {
+    const detail = PROVIDERS.smartrecruiters.normalizeDetail(details.smartrecruiters, "1")!;
+    expect(detail.html.startsWith("<h3>Job Description</h3>")).toBe(true);
+    expect(detail.html).toContain("<h3>Qualifications</h3>");
+  });
+
+  it("personio and teamtailor: find the posting's description in the feed", () => {
+    expect(PROVIDERS.personio.normalizeDetail(fixture("personio"), "2521168")!.html).toMatch(/^<h3>DAILY PLAYGROUND<\/h3>/);
+    expect(PROVIDERS.teamtailor.normalizeDetail(fixture("teamtailor"), "8746132")!.html).toContain("<h4>Let's build the future together!</h4>");
+    expect(PROVIDERS.personio.normalizeDetail(fixture("personio"), "missing")).toBeNull();
+  });
+
+  it("bamboohr and workday: read the posting's description", () => {
+    expect(PROVIDERS.bamboohr.normalizeDetail(details.bamboohr, "44")!.html.length).toBeGreaterThan(50);
+    expect(PROVIDERS.workday.normalizeDetail({ jobPostingInfo: { jobDescription: "<p>About the role</p>" } }, "x")).toEqual({
+      html: "<p>About the role</p>",
+      payText: null,
+    });
   });
 
   it("workable and recruitee: add a requirements section", () => {
@@ -143,6 +321,33 @@ describe("detectBoards", () => {
       { provider: "workable", token: "scaleworks" },
       { provider: "recruitee", token: "madewithlove" },
     ]);
+  });
+
+  it("finds the newer providers' boards", () => {
+    const html = `
+      <a href="https://careers.smartrecruiters.com/PayScale">Jobs</a>
+      <a href="https://crate-io.jobs.personio.de/job/1">Role</a>
+      <a href="https://thecasumolimited.teamtailor.com/jobs">Careers</a>
+      <a href="https://boldare.breezy.hr/p/abc">Role</a>
+      <a href="https://semaphore.bamboohr.com/careers">Careers</a>
+      <a href="https://ats.rippling.com/argyle/jobs">Jobs</a>
+      <a href="https://capitalone.wd12.myworkdayjobs.com/en-US/Capital_One/job/x">Role</a>`;
+    expect(detectBoards(html)).toEqual([
+      { provider: "smartrecruiters", token: "PayScale" },
+      { provider: "personio", token: "crate-io.jobs.personio.de" },
+      { provider: "teamtailor", token: "thecasumolimited" },
+      { provider: "breezy", token: "boldare" },
+      { provider: "bamboohr", token: "semaphore" },
+      { provider: "rippling", token: "argyle" },
+      { provider: "workday", token: "capitalone.wd12/Capital_One" },
+    ]);
+  });
+
+  it("skips Workday's API paths and a BambooHR login link", () => {
+    const html = `
+      <script src="https://acme.wd1.myworkdayjobs.com/wday/cxs/acme/Careers/jobs"></script>
+      <a href="https://acme.bamboohr.com/login">Employee login</a>`;
+    expect(detectBoards(html)).toEqual([]);
   });
 
   it("ignores asset hosts and job short links that aren't boards", () => {

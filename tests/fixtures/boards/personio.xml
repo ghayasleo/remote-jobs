@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workzag-jobs>
+<position>
+    <id>2521168</id>
+    <subcompany>Crate.io GmbH</subcompany>
+    <office>Remote/Germany</office>
+    <department>Engineering AT/DE</department>
+    <recruitingCategory>Employees</recruitingCategory>
+    <name>Senior Ecosystem Database Engineer (m/f/x)</name>
+    <jobDescriptions>
+        <jobDescription>
+            <name>DAILY PLAYGROUND</name>
+            <value>
+                <![CDATA[ABOUT THE ROLE<br><br>In this position we are looking for a jack-of-all-trades database driver and ecosystems engineer, who would love to work together with the FLOSS community and our core team to support it on drivers and adapters for CrateDB, a distributed time-series database. You will be workin…]]>
+            </value>
+        </jobDescription>
+        <jobDescription>
+            <name>YOUR SKILLS</name>
+            <value>
+                <![CDATA[<ul><li><div>Applying craftsmanship (mfx) to continuously improve and take over responsibility for existing code bases</div></li><li><div>Knowledge about standards and protocols, and what they are used for. Not limited to - but we use - HTTP, PG Wire Protocol, Python DB API, and JDBC</div></li><li><…]]>
+            </value>
+        </jobDescription>
+        <jobDescription>
+            <name>NICE TO HAVE</name>
+            <value>
+                <![CDATA[<ul><li><div>Existing Open Source contributions are valuable but not a requirement</div></li><li><div>Knowledge and/or experience with message bus systems like AMQP, Kafka, MQTT, or ZeroMQ, and their corresponding broker implementations</div></li><li><div>Knowledge and/or DevOps experience in contai…]]>
+            </value>
+        </jobDescription>
+        <jobDescription>
+            <name>WHAT WE OFFER</name>
+            <value>
+                <![CDATA[<ul><li>Remote workplace: We can offer you a direct position at one of our entities in Germany and Austria or through Remote.com in your home country</li><li>Competitive compensation</li><li>Flexible working hours</li><li>A variety of perks (flexible holidays, fitness, education)</li><li>Participati…]]>
+            </value>
+        </jobDescription>
+    </jobDescriptions>
+    <employmentType>permanent</employmentType>
+    <seniority>experienced</seniority>
+    <schedule>full-time</schedule>
+    <keywords>Database,Ecosystems,Engineer,Java Developer</keywords>
+    <occupation>database_development_and_administration</occupation>
+    <occupationCategory>it_software</occupationCategory>
+    <createdAt>2026-02-06T09:07:22+00:00</createdAt>
+</position>
+<position>
+    <id>2821263</id>
+    <subcompany>Crate.io GmbH</subcompany>
+    <office>Remote/Austria</office>
+    <department>Engineering AT/DE</department>
+    <recruitingCategory>Employees</recruitingCategory>
+    <name>Senior Ecosystem Database Engineer (m/f/x)</name>
+    <jobDescriptions>
+        <jobDescription>
+            <name>DAILY PLAYGROUND</name>
+            <value>
+                <![CDATA[ABOUT THE ROLE<br><br>In this position we are looking for a jack-of-all-trades database driver and ecosystems engineer, who would love to work together with the FLOSS community and our core team to support it on drivers and adapters for CrateDB, a distributed time-series database. You will be workin…]]>
+            </value>
+        </jobDescription>
+        <jobDescription>
+            <name>YOUR SKILLS</name>
+            <value>
+                <![CDATA[<ul><li><div>Applying craftsmanship (mfx) to continuously improve and take over responsibility for existing code bases</div></li><li><div>Knowledge about standards and protocols, and what they are used for. Not limited to - but we use - HTTP, PG Wire Protocol, Python DB API, and JDBC</div></li><li><…]]>
+            </value>
+        </jobDescription>
+        <jobDescription>
+            <name>NICE TO HAVE</name>
+            <value>
+                <![CDATA[<ul><li><div>Existing Open Source contributions are valuable but not a requirement</div></li><li><div>Knowledge and/or experience with message bus systems like AMQP, Kafka, MQTT, or ZeroMQ, and their corresponding broker implementations</div></li><li><div>Knowledge and/or DevOps experience in contai…]]>
+            </value>
+        </jobDescription>
+        <jobDescription>
+            <name>WHAT WE OFFER</name>
+            <value>
+                <![CDATA[<ul><li>Remote workplace: We can offer you a direct position at one of our entities in Germany and Austria or through Remote.com in your home country</li><li>Competitive compensation</li><li>Flexible working hours</li><li>A variety of perks (flexible holidays, fitness, education)</li><li>Participati…]]>
+            </value>
+        </jobDescription>
+    </jobDescriptions>
+    <employmentType>permanent</employmentType>
+    <seniority>experienced</seniority>
+    <schedule>full-time</schedule>
+    <keywords>Database,Ecosystems,Engineer,Java Developer</keywords>
+    <occupation>database_development_and_administration</occupation>
+    <occupationCategory>it_software</occupationCategory>
+    <createdAt>2026-09-30T12:46:38+00:00</createdAt>
+</position>
+<position>
+    <id>2463940</id>
+    <subcompany>Crate.io GmbH</subcompany>
+    <office>Remote/Germany</office>
+    <department>Engineering AT/DE</department>
+    <recruitingCategory>Talentpool</recruitingCategory>
+    <name>Speculative Application</name>
+    <jobDescriptions>
+        <jobDescription>
+            <name>WHAT WE OFFER</name>
+            <value>
+                <![CDATA[<span>If you are a professional, looking for new opportunites or a career starter, enthusiastic, ambitious, and think you'd enjoy working with us, get in touch at any time</span>]]>
+            </value>
+        </jobDescription>
+    </jobDescriptions>
+    <employmentType>permanent</employmentType>
+    <seniority>experienced</seniority>
+    <schedule>full-time</schedule>
+    <occupation>database_development_and_administration</occupation>
+    <occupationCategory>it_software</occupationCategory>
+    <createdAt>2025-12-16T16:52:04+00:00</createdAt>
+</position>
+</workzag-jobs>

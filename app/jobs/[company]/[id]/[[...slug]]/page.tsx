@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound, permanentRedirect, redirect } from "next/navigation";
 import { ArrowUpRightIcon, BriefcaseIcon } from "lucide-react";
 import { Tag } from "@/components/company/chips";
 import { CompanyLogo } from "@/components/company/company-logo";
@@ -14,8 +14,8 @@ import { BackButton } from "@/components/shell/navigation";
 import { Button } from "@/components/ui/button";
 import type { Role } from "@/lib/data/job-boards";
 import { postingText } from "@/lib/data/job-boards/sanitize";
-import { getJob, getRemoteJobs } from "@/lib/data/jobs";
-import { JOB_CATEGORIES, jobCategory, jobPath, jobSlug, type JobListing } from "@/lib/jobs";
+import { getJob, getRemoteJobs, roleListing } from "@/lib/data/jobs";
+import { JOB_CATEGORIES, jobCategory, jobPath, jobSlug } from "@/lib/jobs";
 import { clip, jobPostingJsonLd } from "@/lib/seo";
 import { DEFAULT_OG_IMAGE, OG_BASE, absoluteUrl, jsonLd } from "@/lib/site";
 
@@ -32,6 +32,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { company, id } = await params;
   const job = await getJob(company, decodeURIComponent(id));
   if (!job) return { title: "Role not found", robots: { index: false } };
+  // The page redirects to the posting this one repeats.
+  if (job.status === "repost") return { title: `${job.role.title} at ${job.company.name}`, robots: { index: false } };
   if (job.status !== "open") return { title: `Role closed · ${job.company.name}`, robots: { index: false } };
 
   const { role } = job;
@@ -41,7 +43,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `${job.company.name} is hiring a remote ${role.title}${where}. ${job.detail ? postingText(job.detail.html) : job.company.blurb}`,
   );
   const url = jobPath({ company, id: role.id, title: role.title });
-  return { title, description, alternates: { canonical: url }, openGraph: { ...OG_BASE, title, description, url, images: [DEFAULT_OG_IMAGE] } };
+  // The same role posted for another location points search engines at the main posting.
+  const canonical = jobPath({ company, id: job.canonicalId, title: role.title });
+  return { title, description, alternates: { canonical }, openGraph: { ...OG_BASE, title, description, url, images: [DEFAULT_OG_IMAGE] } };
 }
 
 export default function JobPage({ params }: Props) {
@@ -54,27 +58,15 @@ export default function JobPage({ params }: Props) {
 
 /** A company's other remote roles, as list items for this page. */
 const toListings = (company: { slug: string; name: string; domain: string | null }, roles: Role[]) =>
-  roles.slice(0, 5).map(
-    (role): JobListing => ({
-      id: role.id,
-      company: company.slug,
-      companyName: company.name,
-      domain: company.domain,
-      title: role.title,
-      location: role.location,
-      team: role.team,
-      employmentType: role.employmentType,
-      salary: role.salary,
-      postedAt: role.postedAt,
-      category: jobCategory(role.title, role.team),
-    }),
-  );
+  roles.slice(0, 5).map((role) => roleListing(company, role));
 
 async function JobView({ params }: Pick<Props, "params">) {
   const { company: companySlug, id: rawId, slug } = await params;
   const job = await getJob(companySlug, decodeURIComponent(rawId));
   if (!job) notFound();
   const { company } = job;
+  // A repost of a posting that's listed under another id: show that one.
+  if (job.status === "repost") redirect(jobPath({ company: company.slug, id: job.role.id, title: job.role.title }));
   const companyLink = (
     <Link href={`/company-profiles/${company.slug}`} className="font-semibold hover:underline">
       {company.name}
@@ -125,8 +117,12 @@ async function JobView({ params }: Pick<Props, "params">) {
   const facts = [role.location, role.team, role.employmentType].filter(Boolean);
   const pay = detail?.payText ?? role.salary;
   const others = toListings(company, job.others);
+  // Only the main posting carries Google Jobs markup, listing every location the role is open in.
+  const isMain = role.id === job.canonicalId;
   const posting =
-    detail && jobPostingJsonLd({ company, role, html: detail.html, url: absoluteUrl(path), fallbackDate: job.fetchedAt });
+    isMain &&
+    detail &&
+    jobPostingJsonLd({ company, role, html: detail.html, url: absoluteUrl(path), fallbackDate: job.fetchedAt, locations: job.locations });
 
   return (
     <article className="mx-auto max-w-3xl px-4 pt-3 pb-10 sm:px-6">
@@ -157,6 +153,22 @@ async function JobView({ params }: Pick<Props, "params">) {
                 Posted <RelativeTime iso={role.postedAt} />
               </span>
             )}
+          </p>
+        )}
+        {job.siblings.length > 0 && (
+          <p className="mt-3 text-sm">
+            <span className="text-muted-foreground">Also posted for </span>
+            {job.siblings.map((sibling, index) => (
+              <span key={sibling.id}>
+                {index > 0 && <span className="text-muted-foreground">, </span>}
+                <Link
+                  href={jobPath({ company: company.slug, id: sibling.id, title: sibling.title })}
+                  className="font-medium text-primary underline underline-offset-4"
+                >
+                  {sibling.location || "another location"}
+                </Link>
+              </span>
+            ))}
           </p>
         )}
         <div className="mt-5 hidden gap-2 md:flex">

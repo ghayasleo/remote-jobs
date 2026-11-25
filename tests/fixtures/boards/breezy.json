@@ -1,0 +1,409 @@
+[
+  {
+    "id": "48738efd30a001",
+    "friendly_id": "48738efd30a001-agile-project-lead",
+    "name": "Agile Project Lead",
+    "url": "https://boldare.breezy.hr/p/48738efd30a001-agile-project-lead",
+    "published_date": "2026-09-22T06:23:23.339Z",
+    "type": {
+      "id": "fullTime",
+      "name": "Full-Time"
+    },
+    "location": {
+      "country": {
+        "name": "Poland",
+        "id": "PL"
+      },
+      "city": "Gliwice",
+      "primary": true,
+      "streetAddress": {
+        "location": "Zwycięstwa 52, 44-100 Gliwice, Poland",
+        "components": [
+          {
+            "long_name": "52",
+            "short_name": "52",
+            "types": [
+              "street_number"
+            ]
+          },
+          {
+            "long_name": "Zwycięstwa",
+            "short_name": "Zwycięstwa",
+            "types": [
+              "route"
+            ]
+          },
+          {
+            "long_name": "Gliwice",
+            "short_name": "Gliwice",
+            "types": [
+              "locality",
+              "political"
+            ]
+          },
+          {
+            "long_name": "Powiat Gliwice",
+            "short_name": "Powiat Gliwice",
+            "types": [
+              "administrative_area_level_2",
+              "political"
+            ]
+          },
+          {
+            "long_name": "Województwo śląskie",
+            "short_name": "Województwo śląskie",
+            "types": [
+              "administrative_area_level_1",
+              "political"
+            ]
+          },
+          {
+            "long_name": "Poland",
+            "short_name": "PL",
+            "types": [
+              "country",
+              "political"
+            ]
+          },
+          {
+            "long_name": "44-100",
+            "short_name": "44-100",
+            "types": [
+              "postal_code"
+            ]
+          }
+        ]
+      },
+      "is_remote": false,
+      "name": "Gliwice, PL",
+      "id": "4eae9ae2789b"
+    },
+    "department": "Gulf",
+    "salary": "",
+    "company": {
+      "name": "Boldare",
+      "logo_url": null,
+      "friendly_id": "boldare",
+      "isMultipleLocationsEnabled": true
+    },
+    "locations": [
+      {
+        "country": {
+          "name": "Poland",
+          "id": "PL"
+        },
+        "city": "Gliwice",
+        "primary": true,
+        "streetAddress": {
+          "location": "Zwycięstwa 52, 44-100 Gliwice, Poland",
+          "components": [
+            {
+              "long_name": "52",
+              "short_name": "52",
+              "types": [
+                "street_number"
+              ]
+            },
+            {
+              "long_name": "Zwycięstwa",
+              "short_name": "Zwycięstwa",
+              "types": [
+                "route"
+              ]
+            },
+            {
+              "long_name": "Gliwice",
+              "short_name": "Gliwice",
+              "types": [
+                "locality",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Powiat Gliwice",
+              "short_name": "Powiat Gliwice",
+              "types": [
+                "administrative_area_level_2",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Województwo śląskie",
+              "short_name": "Województwo śląskie",
+              "types": [
+                "administrative_area_level_1",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Poland",
+              "short_name": "PL",
+              "types": [
+                "country",
+                "political"
+              ]
+            },
+            {
+              "long_name": "44-100",
+              "short_name": "44-100",
+              "types": [
+                "postal_code"
+              ]
+            }
+          ]
+        },
+        "is_remote": false,
+        "name": "Gliwice, PL",
+        "id": "4eae9ae2789b"
+      }
+    ]
+  },
+  {
+    "id": "15112a4d46a801",
+    "friendly_id": "15112a4d46a801-business-analyst-project-manager-track",
+    "name": "Business Analyst (Project Manager track)",
+    "url": "https://boldare.breezy.hr/p/15112a4d46a801-business-analyst-project-manager-track",
+    "published_date": "2026-11-24T10:26:27.047Z",
+    "type": {
+      "id": "fullTime",
+      "name": "Full-Time"
+    },
+    "location": {
+      "id": "26b6654461b7",
+      "country": {
+        "id": "PL",
+        "name": "Poland"
+      },
+      "state": {
+        "id": "Województwo śląskie",
+        "name": "Województwo śląskie"
+      },
+      "city": "Gliwice",
+      "primary": true,
+      "is_remote": false,
+      "streetAddress": {
+        "location": "Zwycięstwa 52, 44-100 Gliwice, Poland",
+        "components": [
+          {
+            "long_name": "52",
+            "short_name": "52",
+            "types": [
+              "street_number"
+            ]
+          },
+          {
+            "long_name": "Zwycięstwa",
+            "short_name": "Zwycięstwa",
+            "types": [
+              "route"
+            ]
+          },
+          {
+            "long_name": "Gliwice",
+            "short_name": "Gliwice",
+            "types": [
+              "locality",
+              "political"
+            ]
+          },
+          {
+            "long_name": "Powiat Gliwice",
+            "short_name": "Powiat Gliwice",
+            "types": [
+              "administrative_area_level_2",
+              "political"
+            ]
+          },
+          {
+            "long_name": "Województwo śląskie",
+            "short_name": "Województwo śląskie",
+            "types": [
+              "administrative_area_level_1",
+              "political"
+            ]
+          },
+          {
+            "long_name": "Poland",
+            "short_name": "PL",
+            "types": [
+              "country",
+              "political"
+            ]
+          },
+          {
+            "long_name": "44-100",
+            "short_name": "44-100",
+            "types": [
+              "postal_code"
+            ]
+          }
+        ]
+      },
+      "name": "Gliwice, Województwo śląskie"
+    },
+    "department": "",
+    "salary": "",
+    "company": {
+      "name": "Boldare",
+      "logo_url": null,
+      "friendly_id": "boldare",
+      "isMultipleLocationsEnabled": true
+    },
+    "locations": [
+      {
+        "id": "26b6654461b7",
+        "country": {
+          "id": "PL",
+          "name": "Poland"
+        },
+        "state": {
+          "id": "Województwo śląskie",
+          "name": "Województwo śląskie"
+        },
+        "city": "Gliwice",
+        "primary": true,
+        "is_remote": false,
+        "streetAddress": {
+          "location": "Zwycięstwa 52, 44-100 Gliwice, Poland",
+          "components": [
+            {
+              "long_name": "52",
+              "short_name": "52",
+              "types": [
+                "street_number"
+              ]
+            },
+            {
+              "long_name": "Zwycięstwa",
+              "short_name": "Zwycięstwa",
+              "types": [
+                "route"
+              ]
+            },
+            {
+              "long_name": "Gliwice",
+              "short_name": "Gliwice",
+              "types": [
+                "locality",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Powiat Gliwice",
+              "short_name": "Powiat Gliwice",
+              "types": [
+                "administrative_area_level_2",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Województwo śląskie",
+              "short_name": "Województwo śląskie",
+              "types": [
+                "administrative_area_level_1",
+                "political"
+              ]
+            },
+            {
+              "long_name": "Poland",
+              "short_name": "PL",
+              "types": [
+                "country",
+                "political"
+              ]
+            },
+            {
+              "long_name": "44-100",
+              "short_name": "44-100",
+              "types": [
+                "postal_code"
+              ]
+            }
+          ]
+        },
+        "name": "Gliwice, Województwo śląskie"
+      },
+      {
+        "id": "c3a96817b27d",
+        "country": {
+          "name": "Poland",
+          "id": "PL"
+        },
+        "city": "Warsaw",
+        "primary": false,
+        "is_remote": false,
+        "name": "Warsaw, PL"
+      },
+      {
+        "id": "8f0cba7be759",
+        "country": {
+          "name": "Poland",
+          "id": "PL"
+        },
+        "city": "Krakow",
+        "primary": false,
+        "is_remote": false,
+        "name": "Krakow, PL"
+      },
+      {
+        "id": "193b12f14381",
+        "country": {
+          "name": "Poland",
+          "id": "PL"
+        },
+        "city": "Wroclaw",
+        "primary": false,
+        "is_remote": false,
+        "name": "Wroclaw, PL"
+      }
+    ]
+  },
+  {
+    "id": "a691cfa5814101",
+    "friendly_id": "a691cfa5814101-contact-us",
+    "name": "Contact Us",
+    "url": "https://boldare.breezy.hr/p/a691cfa5814101-contact-us",
+    "published_date": "2025-02-05T14:54:55.510Z",
+    "type": {
+      "id": "other",
+      "name": "Other"
+    },
+    "location": {
+      "country": {
+        "name": "Poland",
+        "id": "PL"
+      },
+      "is_remote": true,
+      "name": "Poland",
+      "primary": true,
+      "remote_details": {
+        "value": "remote",
+        "label": "Fully remote, no location restrictions"
+      }
+    },
+    "department": null,
+    "salary": "",
+    "company": {
+      "name": "Boldare",
+      "logo_url": null,
+      "friendly_id": "boldare",
+      "isMultipleLocationsEnabled": true
+    },
+    "locations": [
+      {
+        "country": {
+          "name": "Poland",
+          "id": "PL"
+        },
+        "is_remote": true,
+        "name": "Poland",
+        "primary": true,
+        "remote_details": {
+          "value": "remote",
+          "label": "Fully remote, no location restrictions"
+        },
+        "id": "52a8321c12ad"
+      }
+    ]
+  }
+]

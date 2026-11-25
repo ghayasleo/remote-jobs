@@ -2,7 +2,9 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { gunzipSync } from "node:zlib";
+import { getBoard } from "./job-boards";
 import { parseCompanyFile, toListItem, type CompanyListItem, type CompanyProfile } from "./parse";
+import { mergeDuplicateCompanies } from "./same-company";
 import { readTar } from "./tar";
 
 // All company data comes from remoteintech/remote-jobs. The whole repo is
@@ -54,6 +56,8 @@ async function downloadArchive(): Promise<Archive> {
     if (company) companies.set(slug, company);
   });
   if (companies.size === 0) throw new Error(`No company files found in ${TARBALL_URL}`);
+  // The list sometimes has one company twice (O'Reilly Media and O'Reilly Online Learning): show it once.
+  mergeDuplicateCompanies(companies, (slug) => getBoard(slug) !== null);
   return companies;
 }
 

@@ -7,6 +7,7 @@ import { getInsights } from "@/lib/data/insights";
 import { getWeeklyReports } from "@/lib/data/weekly";
 import { insightsFaqs } from "@/lib/insights";
 import { regionLabels, remotePolicyLabels, techLabels, type Tech } from "@/lib/data/labels";
+import { providerNames } from "@/lib/data/job-boards/providers";
 import { formatDate } from "@/lib/format";
 import { JOB_CATEGORIES } from "@/lib/jobs";
 import { insightsDatasetJsonLd } from "@/lib/seo";
@@ -193,8 +194,9 @@ export default async function InsightsPage() {
           <h2 className="text-base font-bold">How we count</h2>
           <p className="mt-2 max-w-[36rem] text-foreground/85">
             Companies come from the community-run remoteintech/remote-jobs list. Open roles are read hourly from the public
-            job boards of the companies that use Greenhouse, Lever, Ashby, Workable or Recruitee; a role counts as remote
-            when the board says so or its location does. Talent pools and general applications are left out.
+            job boards of the companies that use {providerNames("or")}; a role counts as remote when the board says so or
+            its location does. Talent pools, general applications and test postings are left out, and a role posted more
+            than once, or once per country, counts once.
           </p>
           <p className="mt-3 max-w-[36rem] text-foreground/85">
             You’re welcome to quote these numbers. Please link to{" "}

@@ -6,6 +6,7 @@ import { ArrowUpRightIcon, ChevronRightIcon } from "lucide-react";
 import { FilterChip } from "@/components/explore/filters";
 import { RelativeTime } from "@/components/relative-time";
 import { Button } from "@/components/ui/button";
+import { locationSummary } from "@/components/jobs/job-row";
 import type { OpenRoles, Role, Workplace } from "@/lib/data/job-boards";
 import { isPlaceholderRole, jobPath } from "@/lib/jobs";
 import { cn } from "@/lib/utils";
@@ -25,7 +26,8 @@ const rowIcon =
 
 function RoleRow({ role, company }: { role: Role; company: string }) {
   const workplace = role.workplace ? WORKPLACE[role.workplace] : null;
-  const details = [role.location, role.team, role.employmentType].filter(Boolean);
+  const where = locationSummary([role.location, ...(role.alternates ?? []).map((alternate) => alternate.location)]);
+  const details = [where, role.team, role.employmentType].filter(Boolean);
   return (
     <li className="relative px-4 py-3.5 transition-colors duration-150 hover:bg-muted/60 has-[a:focus-visible]:bg-muted/60 sm:px-5">
       {/* Remote roles have their own page here; others go straight to the board. */}

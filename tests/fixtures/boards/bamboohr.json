@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "totalCount": 2
+  },
+  "result": [
+    {
+      "id": "44",
+      "jobOpeningName": "Security Engineer",
+      "departmentId": "18572",
+      "departmentLabel": "Engineering",
+      "employmentStatusLabel": "Full-Time",
+      "employmentType": null,
+      "location": {
+        "city": null,
+        "state": null
+      },
+      "atsLocation": {
+        "country": "Serbia",
+        "state": null,
+        "province": null,
+        "city": null
+      },
+      "isRemote": null,
+      "locationType": "1"
+    },
+    {
+      "id": "45",
+      "jobOpeningName": "Senior Product Engineer",
+      "departmentId": "18572",
+      "departmentLabel": "Engineering",
+      "employmentStatusLabel": "Full-Time",
+      "employmentType": null,
+      "location": {
+        "city": null,
+        "state": null
+      },
+      "atsLocation": {
+        "country": null,
+        "state": null,
+        "province": null,
+        "city": null
+      },
+      "isRemote": null,
+      "locationType": "1"
+    }
+  ]
+}

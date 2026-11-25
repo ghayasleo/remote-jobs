@@ -1,4 +1,4 @@
-import type { Role } from "@/lib/data/job-boards/providers";
+import { providerNames, type Role } from "@/lib/data/job-boards/providers";
 import { label, remotePolicyLabels } from "@/lib/data/labels";
 import type { CompanyProfile } from "@/lib/data/parse";
 import type { Insights } from "@/lib/insights";
@@ -94,14 +94,17 @@ export function jobPostingJsonLd({
   html,
   url,
   fallbackDate,
+  locations = [role.location],
 }: {
   company: CompanyProfile;
   role: Role;
   html: string;
   url: string;
   fallbackDate: string;
+  /** Every location the role is open in, when it was posted once per location. */
+  locations?: string[];
 }) {
-  const countries = applicantCountries(role.location);
+  const countries = [...new Set(locations.flatMap(applicantCountries))];
   // Google requires at least one country for a remote job; without one the
   // posting would be invalid, so the page goes without job markup.
   if (countries.length === 0) return null;
@@ -147,7 +150,7 @@ export function insightsDatasetJsonLd(insights: Pick<Insights, "companies">, upd
     "@context": "https://schema.org",
     "@type": "Dataset",
     name: "State of remote tech hiring",
-    description: `Live numbers on remote tech hiring from the ${insights.companies} remote-friendly companies on the community-run remoteintech list and the public job boards of those that hire through Greenhouse, Lever, Ashby, Workable or Recruitee: open remote roles, who is hiring most, what kind of work is remote, where companies hire, how remote they are, which stacks they use and how often listings show pay. Recounted every hour.`,
+    description: `Live numbers on remote tech hiring from the ${insights.companies} remote-friendly companies on the community-run remoteintech list and the public job boards of those that hire through ${providerNames("or")}: open remote roles, who is hiring most, what kind of work is remote, where companies hire, how remote they are, which stacks they use and how often listings show pay. Recounted every hour.`,
     url: absoluteUrl("/insights"),
     dateModified: updatedAt,
     temporalCoverage: updatedAt.slice(0, 10),

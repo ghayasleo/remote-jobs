@@ -1,12 +1,19 @@
 {
-  "generatedAt": "2026-11-23T18:06:12.255Z",
+  "generatedAt": "2026-11-25T06:19:44.306Z",
   "source": "https://codeload.github.com/remoteintech/remote-jobs/tar.gz/main",
   "counts": {
-    "greenhouse": 76,
-    "lever": 13,
+    "greenhouse": 90,
+    "lever": 15,
     "ashby": 41,
     "workable": 17,
-    "recruitee": 5
+    "recruitee": 5,
+    "smartrecruiters": 4,
+    "personio": 2,
+    "teamtailor": 5,
+    "breezy": 2,
+    "bamboohr": 4,
+    "rippling": 1,
+    "workday": 0
   },
   "boards": {
     "1password": {
@@ -53,6 +60,14 @@
       "provider": "greenhouse",
       "token": "appinio"
     },
+    "applaudo": {
+      "provider": "smartrecruiters",
+      "token": "ApplaudoStudios"
+    },
+    "argyle": {
+      "provider": "rippling",
+      "token": "argyle"
+    },
     "asana": {
       "provider": "greenhouse",
       "token": "asana"
@@ -89,6 +104,10 @@
       "provider": "lever",
       "token": "bluecatnetworks"
     },
+    "boldare": {
+      "provider": "breezy",
+      "token": "boldare"
+    },
     "brave": {
       "provider": "greenhouse",
       "token": "brave"
@@ -105,9 +124,17 @@
       "provider": "greenhouse",
       "token": "canonical"
     },
+    "capmo": {
+      "provider": "personio",
+      "token": "capmo.jobs.personio.de"
+    },
     "caremessage": {
       "provider": "ashby",
       "token": "caremessage"
+    },
+    "casumo": {
+      "provider": "teamtailor",
+      "token": "thecasumolimited"
     },
     "chainguard": {
       "provider": "greenhouse",
@@ -120,6 +147,10 @@
     "civicactions": {
       "provider": "greenhouse",
       "token": "civicactions"
+    },
+    "civo": {
+      "provider": "teamtailor",
+      "token": "careers.civo.com"
     },
     "close": {
       "provider": "ashby",
@@ -177,6 +208,10 @@
       "provider": "greenhouse",
       "token": "doximity"
     },
+    "dribbble": {
+      "provider": "bamboohr",
+      "token": "dribbble"
+    },
     "dropbox": {
       "provider": "greenhouse",
       "token": "dropbox"
@@ -188,6 +223,14 @@
     "elastic": {
       "provider": "greenhouse",
       "token": "elastic"
+    },
+    "elsewhen": {
+      "provider": "teamtailor",
+      "token": "careers.elsewhen.com"
+    },
+    "embraer": {
+      "provider": "breezy",
+      "token": "embraer"
     },
     "envato": {
       "provider": "lever",
@@ -224,6 +267,10 @@
     "fleetio": {
       "provider": "greenhouse",
       "token": "fleetio"
+    },
+    "four-kitchens": {
+      "provider": "bamboohr",
+      "token": "fourkitchens"
     },
     "general-assembly": {
       "provider": "greenhouse",
@@ -341,6 +388,10 @@
       "provider": "ashby",
       "token": "Mapbox"
     },
+    "marco-polo": {
+      "provider": "lever",
+      "token": "marcopolo"
+    },
     "mariadb": {
       "provider": "greenhouse",
       "token": "mariadbplc"
@@ -429,6 +480,10 @@
       "provider": "greenhouse",
       "token": "okta"
     },
+    "ollie": {
+      "provider": "lever",
+      "token": "myollie"
+    },
     "openrouter": {
       "provider": "ashby",
       "token": "openrouter"
@@ -445,13 +500,25 @@
       "provider": "greenhouse",
       "token": "pagerduty"
     },
+    "palantir-net": {
+      "provider": "bamboohr",
+      "token": "palantir"
+    },
     "paypay": {
       "provider": "greenhouse",
       "token": "paypay"
     },
+    "payscale": {
+      "provider": "smartrecruiters",
+      "token": "PayScale"
+    },
     "percona": {
       "provider": "ashby",
       "token": "percona"
+    },
+    "phantombuster": {
+      "provider": "teamtailor",
+      "token": "careers.phantombuster.com"
     },
     "pleo": {
       "provider": "ashby",
@@ -485,6 +552,10 @@
       "provider": "workable",
       "token": "remotebase"
     },
+    "renaissance": {
+      "provider": "smartrecruiters",
+      "token": "Renaissance"
+    },
     "render": {
       "provider": "ashby",
       "token": "render"
@@ -505,6 +576,10 @@
       "provider": "ashby",
       "token": "ScribdInc"
     },
+    "seaplane": {
+      "provider": "smartrecruiters",
+      "token": "SeaplaneIOInc"
+    },
     "searchapi": {
       "provider": "ashby",
       "token": "SearchApi"
@@ -520,6 +595,10 @@
     "seeq": {
       "provider": "workable",
       "token": "seeq"
+    },
+    "semaphore": {
+      "provider": "bamboohr",
+      "token": "semaphore"
     },
     "shippabo": {
       "provider": "workable",
@@ -545,6 +624,18 @@
       "provider": "ashby",
       "token": "stickermule"
     },
+    "stitch-fix": {
+      "provider": "greenhouse",
+      "token": "stitchfix"
+    },
+    "streamnative": {
+      "provider": "greenhouse",
+      "token": "streamnative"
+    },
+    "stripe": {
+      "provider": "greenhouse",
+      "token": "stripe"
+    },
     "supabase": {
       "provider": "ashby",
       "token": "supabase"
@@ -553,29 +644,77 @@
       "provider": "ashby",
       "token": "Svix"
     },
+    "tailscale": {
+      "provider": "greenhouse",
+      "token": "tailscale"
+    },
     "teamsnap": {
       "provider": "lever",
       "token": "teamsnap"
+    },
+    "tenable": {
+      "provider": "greenhouse",
+      "token": "tenableinc"
     },
     "testgorilla": {
       "provider": "ashby",
       "token": "testgorilla"
     },
+    "thorn": {
+      "provider": "greenhouse",
+      "token": "thorn"
+    },
+    "thrive-market": {
+      "provider": "greenhouse",
+      "token": "thrivemarket"
+    },
+    "tide": {
+      "provider": "greenhouse",
+      "token": "tide"
+    },
     "time-doctor": {
       "provider": "recruitee",
       "token": "timedoctor"
+    },
+    "toast": {
+      "provider": "greenhouse",
+      "token": "toast"
     },
     "tribe": {
       "provider": "ashby",
       "token": "tribe-xyz"
     },
+    "trussworks": {
+      "provider": "greenhouse",
+      "token": "trussworksinc"
+    },
     "turing": {
       "provider": "greenhouse",
       "token": "turing"
     },
+    "twilio": {
+      "provider": "greenhouse",
+      "token": "twilio"
+    },
+    "udacity": {
+      "provider": "greenhouse",
+      "token": "udacity"
+    },
+    "upwork-pro": {
+      "provider": "greenhouse",
+      "token": "upwork"
+    },
     "ushahidi": {
       "provider": "workable",
       "token": "ushahidi"
+    },
+    "valimail": {
+      "provider": "greenhouse",
+      "token": "valimail"
+    },
+    "varnish-software": {
+      "provider": "teamtailor",
+      "token": "varnish-software"
     },
     "vercel": {
       "provider": "greenhouse",
@@ -584,6 +723,10 @@
     "virta-health": {
       "provider": "ashby",
       "token": "virtahealth"
+    },
+    "voiio": {
+      "provider": "personio",
+      "token": "voiio.jobs.personio.de"
     },
     "vox-media": {
       "provider": "greenhouse",
