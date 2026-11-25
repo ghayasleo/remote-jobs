@@ -59,5 +59,60 @@
         }
       }
     ]
+  },
+  "smartrecruiters": {
+    "id": "744000158320111",
+    "name": "Senior / Lead Engineering Operations Manager",
+    "company": {
+      "name": "SmartRecruiters Inc",
+      "identifier": "smartrecruiters"
+    },
+    "postingUrl": "https://jobs.smartrecruiters.com/smartrecruiters/744000158320111-senior-lead-engineering-operations-manager",
+    "jobAd": {
+      "sections": {
+        "companyDescription": {
+          "title": "Company Description",
+          "text": "<p>SmartRecruiters is the Recruiting AI Company that transforms hiring for the world’s leading enterprises. Built for global scale, SmartRecruiters, an SAP company, delivers an AI-powered hiring platform that automates and optimizes the entire talent acquisition process, ensuring faster and smarter …"
+        },
+        "jobDescription": {
+          "title": "Job Description",
+          "text": "<p>Our Product and Engineering (R&amp;D) org consists of 500+ professionals, organized in Groups and Squads, coming from two different companies and using different ways of working. We are seeking Engineering Operations Managers to join a dedicated team supporting our organization, processes, and to…"
+        },
+        "qualifications": {
+          "title": "Qualifications",
+          "text": "<ul><li>Significant experience from similar role(s) in software product organizations (e.g. technical program management, product leadership, engineering management, engineering operations, release management, organizational coaching)</li><li>In-depth understanding of modern development patterns, pr…"
+        },
+        "additionalInformation": {
+          "title": "Additional Information",
+          "text": "<p>SmartRecruiters is proud to be an Equal Employment Opportunity employer. We do not discriminate based upon race, religion, color, national origin, gender (including pregnancy, childbirth, or related medical conditions), sexual orientation, gender identity, gender expression, age, status as a prot…"
+        }
+      }
+    }
+  },
+  "bamboohr": {
+    "result": {
+      "jobOpening": {
+        "jobOpeningShareUrl": "https://semaphore.bamboohr.com/careers/44",
+        "jobOpeningName": "Security Engineer",
+        "departmentLabel": "Engineering",
+        "employmentStatusLabel": "Full-Time",
+        "location": {
+          "city": null,
+          "state": null,
+          "postalCode": null,
+          "addressCountry": null
+        },
+        "atsLocation": {
+          "country": "Serbia",
+          "countryId": "184",
+          "state": null,
+          "city": null
+        },
+        "description": "<p><span style=\"font-family: Arial, sans-serif; font-size: 14pt; font-weight: bold\">Location: </span><span style=\"font-family: Arial, sans-serif; font-size: 14pt\">Serbia, remote with optional office work in Novi Sad</span></p>\n<p><br></p>\n<p><br></p>\n<p><span style=\"font-family: Arial, sans-serif; f…",
+        "compensation": null,
+        "datePosted": "2026-08-10",
+        "locationType": "1"
+      }
+    }
   }
 }

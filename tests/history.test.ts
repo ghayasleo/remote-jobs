@@ -41,4 +41,29 @@ describe("recordDay", () => {
     expect(day.closed).toEqual(["a/1"]);
     expect(state.active).toEqual(["a/2", "b/9"]);
   });
+
+  it("keeps ids folded into a listing open, and doesn't call a folded repost new", () => {
+    // Yesterday a/1, a/2 and a/3 were separate listings of one role; today a/3 (a newer repost) stands for all three.
+    const { day, state } = recordDay({
+      date: "2026-11-26",
+      insights: {},
+      hiring: {},
+      roles: [{ ...role("a", "3"), mergedIds: ["1", "2"] }],
+      previous: { date: "2026-11-25", active: ["a/1", "a/2", "a/3"] },
+    });
+    expect(day.closed).toEqual([]);
+    expect(day.opened).toEqual([]);
+    expect(state.active).toEqual(["a/1", "a/2", "a/3"]);
+
+    // A newer repost that becomes the listed one isn't an opening either.
+    const next = recordDay({
+      date: "2026-11-27",
+      insights: {},
+      hiring: {},
+      roles: [{ ...role("a", "4"), mergedIds: ["3"] }],
+      previous: state,
+    });
+    expect(next.day.opened).toEqual([]);
+    expect(next.day.closed).toEqual(["a/1", "a/2"]);
+  });
 });

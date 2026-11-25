@@ -2,7 +2,13 @@ import Link from "next/link";
 import { Tag } from "@/components/company/chips";
 import { CompanyLogo } from "@/components/company/company-logo";
 import { RelativeTime } from "@/components/relative-time";
-import { JOB_CATEGORIES, jobPath, type JobListing } from "@/lib/jobs";
+import { JOB_CATEGORIES, jobLocations, jobPath, type JobListing } from "@/lib/jobs";
+
+/** "Remote Canada +2 more" for a role posted once per location. */
+export function locationSummary(locations: string[]) {
+  const [first = "", ...rest] = locations.filter(Boolean);
+  return rest.length ? `${first} +${rest.length} more` : first;
+}
 
 export function RemoteBadge() {
   return (
@@ -14,7 +20,7 @@ export function RemoteBadge() {
 
 /** One remote role in a list. The whole row opens its page. */
 export function JobRow({ job, showCompany = true }: { job: JobListing; showCompany?: boolean }) {
-  const meta = [showCompany ? job.companyName : null, job.location].filter(Boolean).join(" · ");
+  const meta = [showCompany ? job.companyName : null, locationSummary(jobLocations(job))].filter(Boolean).join(" · ");
   return (
     <li className="relative flex gap-3.5 px-4 py-4 transition-colors duration-150 hover:bg-muted/60 has-[a:focus-visible]:bg-muted/60 sm:px-5">
       {showCompany && <CompanyLogo name={job.companyName} domain={job.domain} className="mt-0.5" />}

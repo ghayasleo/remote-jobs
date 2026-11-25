@@ -1,0 +1,108 @@
+{
+  "first": {
+    "total": 2062,
+    "jobPostings": [
+      {
+        "title": "Café Ambassador - Bellevue",
+        "externalPath": "/job/Bellevue-WA/Caf-Ambassador---Bellevue_R1003582-1",
+        "timeType": "Full time",
+        "locationsText": "Bellevue, WA",
+        "postedOn": "Posted Today",
+        "bulletFields": [
+          "R1003582"
+        ]
+      },
+      {
+        "title": "Senior Manager, Senior Counsel - Employee Benefits and Rewards",
+        "externalPath": "/job/Richmond-VA/Senior-Manager--Senior-Counsel---Employee-Benefits-and-Rewards_R1005732",
+        "timeType": "Full time",
+        "locationsText": "3 Locations",
+        "postedOn": "Posted Today",
+        "bulletFields": [
+          "R1005732"
+        ]
+      }
+    ],
+    "facets": [
+      {
+        "facetParameter": "timeType",
+        "descriptor": "Full/Part-time",
+        "values": [
+          {
+            "descriptor": "Full time",
+            "id": "2ed180e199081055c65d9d6853aa022d",
+            "count": 2018
+          },
+          {
+            "descriptor": "Part time",
+            "id": "2ed180e199081055c65d9d6618d9022c",
+            "count": 44
+          }
+        ]
+      },
+      {
+        "facetParameter": "workerSubType",
+        "descriptor": "Job Type",
+        "values": [
+          {
+            "descriptor": "Defined Term Contractor (Fixed Term)",
+            "id": "a12c70bf789e10572aab95b63d0419b2",
+            "count": 2
+          },
+          {
+            "descriptor": "Intern",
+            "id": "a12c70bf789e10572aab83c4780919ad",
+            "count": 5
+          }
+        ]
+      },
+      {
+        "facetParameter": "jobFamilyGroup",
+        "descriptor": "Job Category",
+        "values": [
+          {
+            "descriptor": "AI & ML Engineering and Sciences",
+            "id": "797094e02d441000c3f4fece96e10000",
+            "count": 140
+          },
+          {
+            "descriptor": "Analysis",
+            "id": "a12c70bf789e105802e9caf800542991",
+            "count": 303
+          }
+        ]
+      },
+      {
+        "facetParameter": "locationMainGroup",
+        "values": [
+          {
+            "facetParameter": "locations",
+            "descriptor": "Locations",
+            "values": [
+              {
+                "descriptor": "Alabang, Muntinlupa City",
+                "id": "5303cb0ddb47102d5fab580903990962",
+                "count": 20
+              },
+              {
+                "descriptor": "Alexandria, LA",
+                "id": "5303cb0ddb47102d5fa921537093073f",
+                "count": 1
+              },
+              {
+                "descriptor": "Remote - National",
+                "id": "e1c37850645e101ce070e09523230000",
+                "count": 3
+              },
+              {
+                "descriptor": "US Remote",
+                "id": "af51744fb4fc010ca9b81af56b6b0000",
+                "count": 53
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

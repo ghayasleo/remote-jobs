@@ -17,6 +17,10 @@ export type JobListing = {
   salary: string | null;
   postedAt: string | null;
   category: JobCategory;
+  /** Every location the role is open in, when the company posted it once per location; `location` is the first. */
+  locations?: string[];
+  /** The other ids folded into this listing (reposts and other locations), so they still count as open. */
+  mergedIds?: string[];
   // From the company's profile, for the company filters. Optional: a copy of
   // the list cached before these existed simply doesn't match them.
   companyPolicy?: string | null;
@@ -60,10 +64,20 @@ export function jobCategory(title: string, team: string | null): JobCategory {
 }
 
 // Talent pools and "general application" postings aren't jobs: no page, no Google Jobs markup.
+// Includes the German, French, Spanish and Dutch names some boards (Personio) use.
 const PLACEHOLDER =
-  /talent (community|pool|network|pipeline)|general application|open application|spontaneous application|don['’]?t see|future (opportunit|opening|role)|expression of interest|not seeing (a|the) role/i;
+  /talent (community|pool|network|pipeline)|general application|open application|spontaneous application|don['’]?t see|future (opportunit|opening|role)|expression of interest|not seeing (a|the) role|initiativbewerbung|blindbewerbung|candidature spontan[ée]e|candidatura espont[aá]nea|candidatura spontanea|open sollicitatie/i;
+// Boards also carry test and demo postings ("Test", "Demo job") and "Contact us" stand-ins.
+// Anchored, so "QA Test Engineer" and "Demo Engineer" stay jobs.
+const NOT_A_JOB = /^\s*(test|testing|demo|dummy|sample|contact us)(\s+(job|posting|position|role|opening|vacancy|ad))?\s*\d*\s*$/i;
+const DO_NOT_APPLY = /\b(do not apply|don['’]t apply|this is a test|test (job|posting|position|vacancy))\b/i;
 
-export const isPlaceholderRole = (title: string) => PLACEHOLDER.test(title);
+export const isPlaceholderRole = (title: string) =>
+  PLACEHOLDER.test(title) || NOT_A_JOB.test(title) || DO_NOT_APPLY.test(title);
+
+/** Every location a listing is open in. */
+export const jobLocations = (job: Pick<JobListing, "location" | "locations">) =>
+  job.locations?.length ? job.locations : [job.location];
 
 const SLUG_MAX = 80;
 
@@ -197,7 +211,8 @@ const regionCache = new WeakMap<JobListing, JobRegion[]>();
 function regionsOf(job: JobListing) {
   let regions = regionCache.get(job);
   if (!regions) {
-    regions = jobRegions(job.location);
+    const named = new Set(jobLocations(job).flatMap(jobRegions));
+    regions = JOB_REGION_KEYS.filter((region) => named.has(region));
     regionCache.set(job, regions);
   }
   return regions;
@@ -301,7 +316,7 @@ const haystacks = new WeakMap<JobListing, string>();
 const haystack = (job: JobListing) => {
   let text = haystacks.get(job);
   if (text === undefined) {
-    text = [job.title, job.companyName, job.location, job.team ?? "", JOB_CATEGORIES[job.category]].join(" ").toLowerCase();
+    text = [job.title, job.companyName, ...jobLocations(job), job.team ?? "", JOB_CATEGORIES[job.category]].join(" ").toLowerCase();
     haystacks.set(job, text);
   }
   return text;
@@ -449,13 +464,23 @@ export const countryFromSlug = (slug: string) => COUNTRY_SLUGS.get(slug) ?? null
  * worldwide). null when it isn't open to them, e.g. it names other countries.
  */
 export function countryMatch(
-  job: Pick<JobListing, "location">,
+  job: Pick<JobListing, "location" | "locations">,
   country: { name: string; region: Exclude<JobRegion, "anywhere"> },
   companyRegion?: string | null,
 ): "named" | "regional" | "worldwide" | null {
-  const names = locationCountries(job.location);
+  // A role posted for several locations is open wherever any of them is; the closest match wins.
+  const matches = jobLocations(job).map((location) => locationMatch(location, country, companyRegion));
+  return (["named", "regional", "worldwide"] as const).find((match) => matches.includes(match)) ?? null;
+}
+
+function locationMatch(
+  location: string,
+  country: { name: string; region: Exclude<JobRegion, "anywhere"> },
+  companyRegion?: string | null,
+): "named" | "regional" | "worldwide" | null {
+  const names = locationCountries(location);
   if (names.length > 0) return names.includes(country.name) ? "named" : null;
-  const regions = jobRegions(job.location);
+  const regions = jobRegions(location);
   if (regions.includes(country.region)) return "regional";
   if (regions.includes("anywhere") || (regions.length === 0 && companyRegion === "worldwide")) return "worldwide";
   return null;

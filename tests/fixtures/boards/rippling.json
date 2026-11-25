@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "id": "b4e8e3c6-9e23-467c-b5eb-113e04f83185",
+      "name": "Revenue Operations Analyst",
+      "url": "https://ats.rippling.com/argyle/jobs/b4e8e3c6-9e23-467c-b5eb-113e04f83185",
+      "department": {
+        "name": "Sales & Marketing",
+        "displayName": "Sales & Marketing"
+      },
+      "locations": [
+        {
+          "name": "US (Remote)",
+          "country": "United States",
+          "countryCode": "US",
+          "state": null,
+          "stateCode": null,
+          "city": null,
+          "workplaceType": "REMOTE"
+        }
+      ],
+      "language": "en-US"
+    }
+  ],
+  "page": 0,
+  "pageSize": 20,
+  "totalItems": 1,
+  "totalPages": 1
+}

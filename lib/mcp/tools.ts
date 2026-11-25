@@ -185,6 +185,8 @@ export function jobSummary(job: JobListing, url: (path: string) => string) {
     company_slug: job.company,
     id: job.id,
     location: job.location || null,
+    // A role posted once per location lists them all; any of them can apply.
+    ...(job.locations && job.locations.length > 1 && { also_open_in: job.locations.slice(1) }),
     team: job.team,
     kind: JOB_CATEGORIES[job.category],
     employment_type: job.employmentType,

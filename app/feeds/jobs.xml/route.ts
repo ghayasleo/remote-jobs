@@ -1,6 +1,6 @@
 import { getRemoteJobs } from "@/lib/data/jobs";
 import { techLabels } from "@/lib/data/labels";
-import { JOB_CATEGORIES, JOB_REGIONS, countryFromSlug, filterJobs, jobPath, parseJobParams, serializeJobParams } from "@/lib/jobs";
+import { JOB_CATEGORIES, JOB_REGIONS, countryFromSlug, filterJobs, jobLocations, jobPath, parseJobParams, serializeJobParams } from "@/lib/jobs";
 import { RSS_CACHE_CONTROL, rssFeed, rssResponse } from "@/lib/rss";
 import { SITE_BRAND, absoluteUrl } from "@/lib/site";
 
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
       items: items.map((job) => ({
         title: `${job.title} at ${job.companyName}`,
         url: absoluteUrl(jobPath(job)),
-        description: [job.location || "Remote", job.employmentType, job.salary].filter(Boolean).join(" · "),
+        description: [jobLocations(job).filter(Boolean).join(" / ") || "Remote", job.employmentType, job.salary].filter(Boolean).join(" · "),
         date: job.postedAt,
         categories: [JOB_CATEGORIES[job.category]],
       })),
