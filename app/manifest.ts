@@ -20,7 +20,7 @@ export default function manifest(): MetadataRoute.Manifest {
     ],
     shortcuts: [
       { name: "Hiring now", url: "/companies?hiring=true", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
-      { name: "Saved companies", url: "/saved", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "Dashboard", url: "/dashboard", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
     ],
   };
 }

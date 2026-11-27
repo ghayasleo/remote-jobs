@@ -16,8 +16,8 @@ export default function PrivacyPage() {
     <LegalPage title="Privacy policy" updated="27 November 2026">
       <LegalSection title="The short version">
         <p>
-          RemoteJobs is free to browse without an account. If you sign in, we keep only what&apos;s needed to sync your
-          saved jobs, tracker and alerts across devices. We don&apos;t sell your data or show ads. Your CV never leaves
+          RemoteJobs is free to browse without an account. Saving jobs and companies, the application tracker and job
+          alerts need you to sign in with Google, and we keep only what those features need. We don&apos;t sell your data or show ads. Your CV never leaves
           your device when you use the CV check.
         </p>
       </LegalSection>
@@ -32,8 +32,8 @@ export default function PrivacyPage() {
       <LegalSection title="When you browse without signing in">
         <ul>
           <li>
-            What you save (companies, jobs, your application tracker) and your filter choices are stored in your browser,
-            on your device. We can&apos;t see them.
+            Your filter choices are kept in your browser, on your device. If you tick &ldquo;Remember it on this
+            device&rdquo; in the CV check, your CV&apos;s text is kept there too. We can&apos;t see either.
           </li>
           <li>
             Vercel Web Analytics and Speed Insights count page views and measure loading speed without cookies and without
@@ -47,9 +47,9 @@ export default function PrivacyPage() {
       </LegalSection>
 
       <LegalSection title="When you sign in with Google">
-        <p>Google tells us your name, email address, profile photo and a Google account ID. We store them to:</p>
+        <p>Google tells us your name, email address, profile photo and a Google account ID. We store them, with what you save, to:</p>
         <ul>
-          <li>keep your saved jobs, application tracker and alerts in sync across your devices;</li>
+          <li>keep your saved jobs and companies, your application tracker and your alerts on your dashboard, on every device;</li>
           <li>send you the job alerts you set up;</li>
           <li>keep any CV tools you use available when you come back.</li>
         </ul>

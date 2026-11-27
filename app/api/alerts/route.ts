@@ -33,6 +33,7 @@ export async function POST(request: Request) {
   const sql = db();
 
   if (body.action === "create") {
+    if (!(await currentUser())) return Response.json({ error: "Sign in to get alerts." }, { status: 401 });
     const subscription = cleanSubscription(body.subscription);
     if (!subscription) return Response.json({ error: "Your browser didn't give us a way to notify you." }, { status: 400 });
     const query = canonicalQuery(typeof body.query === "string" ? body.query : "");

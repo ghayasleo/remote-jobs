@@ -17,6 +17,7 @@ import { openConsent } from "@/lib/consent";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { useSavedSlugs } from "@/lib/saved";
 import { useTrackedJobs } from "@/lib/tracker";
+import { useProfile } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { MAIN_ITEMS, MORE_ITEMS, isActive, isMoreActive, type NavItem } from "./nav-items";
 
@@ -25,7 +26,10 @@ const hasActionBar = (pathname: string) =>
   /^\/(company-profiles\/[^/]+|jobs\/[^/]+\/[^/]+(\/[^/]+)?)\/?$/.test(pathname);
 
 function SavedCount({ className }: { className?: string }) {
-  const count = useSavedSlugs().length + useTrackedJobs().length;
+  const signedIn = useProfile() !== null;
+  const saved = useSavedSlugs().length + useTrackedJobs().length;
+  // Saved items belong to an account; signed out there's nothing to count.
+  const count = signedIn ? saved : 0;
   if (count === 0) return null;
   return (
     <span
@@ -64,7 +68,7 @@ export function DesktopNav() {
         return (
           <Link key={href} href={href} aria-current={active ? "page" : undefined} className={desktopLink(active)}>
             {label}
-            {href === "/saved" && <SavedCount />}
+            {href === "/dashboard" && <SavedCount />}
           </Link>
         );
       })}
@@ -127,7 +131,7 @@ export function BottomNav() {
                   active={active}
                   icon={icon}
                   label={label}
-                  badge={href === "/saved" && <SavedCount className="absolute -top-1 right-1" />}
+                  badge={href === "/dashboard" && <SavedCount className="absolute -top-1 right-1" />}
                 />
               </Link>
             </li>

@@ -36,8 +36,9 @@ export default function TermsPage() {
 
       <LegalSection title="Your account">
         <p>
-          Signing in with Google is optional. Keep your Google account secure; you&apos;re responsible for what happens
-          under your account. You can delete it any time on the <Link href="/account">account page</Link>.
+          Browsing doesn&apos;t need an account. Saving jobs and companies, the application tracker and job alerts need
+          you to sign in with Google. Keep your Google account secure; you&apos;re responsible for what happens under your
+          account. You can delete it any time on the <Link href="/account">account page</Link>.
         </p>
       </LegalSection>
 

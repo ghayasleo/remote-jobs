@@ -19,7 +19,7 @@ export default function OfflinePage() {
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button asChild size="lg" className="h-11 rounded-full px-5">
-          <Link href="/saved">
+          <Link href="/dashboard">
             <BookmarkIcon aria-hidden /> Saved companies
           </Link>
         </Button>

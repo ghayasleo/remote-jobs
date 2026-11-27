@@ -31,6 +31,8 @@ const nextConfig: NextConfig = {
         destination: "/companies",
         permanent: true,
       })),
+      // Saved became the dashboard.
+      { source: "/saved", destination: "/dashboard", permanent: true },
       // Links from the first version of this site ended in ".md".
       {
         source: "/company-profiles/:slug([a-zA-Z0-9-]+)\\.md",
