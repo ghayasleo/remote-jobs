@@ -19,55 +19,14 @@ import {
 } from "@/lib/tracker-model";
 import { cn } from "@/lib/utils";
 
-function NoteEditor({ job }: { job: TrackedJob }) {
-  const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState(job.note);
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => {
-          setDraft(job.note);
-          setOpen(true);
-        }}
-        className="relative z-10 mt-2 flex w-full items-start gap-2 rounded-lg px-1 py-1 text-left text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-      >
-        <StickyNoteIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
-        <span className="line-clamp-3 whitespace-pre-line">{job.note || "Add a note"}</span>
-      </button>
-    );
-  }
-  const save = () => {
-    if (draft !== job.note) setNote(job.key, draft);
-    setOpen(false);
-  };
-  return (
-    <textarea
-      autoFocus
-      value={draft}
-      onChange={(event) => setDraft(event.target.value)}
-      onBlur={save}
-      onKeyDown={(event) => {
-        if (event.key === "Escape") setOpen(false);
-        if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) save();
-      }}
-      maxLength={2000}
-      rows={3}
-      placeholder="Who you talked to, next steps, salary they mentioned…"
-      aria-label={`Note for ${job.title}`}
-      className="relative z-10 mt-2 w-full resize-y rounded-xl border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
-    />
-  );
-}
-
 function StatusSelect({ job }: { job: TrackedJob }) {
   return (
-    <label className="relative z-10 inline-flex">
+    <label className="relative inline-flex">
       <span className="sr-only">Status of {job.title}</span>
       <select
         value={job.status}
         onChange={(event) => setStatus(job.key, event.target.value as TrackStatus)}
-        className="h-8 appearance-none rounded-full border bg-background pr-7 pl-3 text-xs font-semibold outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:h-10"
+        className="h-9 appearance-none rounded-full border bg-background pr-8 pl-3.5 text-sm font-medium outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:h-10"
       >
         {TRACK_STATUS_KEYS.map((status) => (
           <option key={status} value={status}>
@@ -77,57 +36,100 @@ function StatusSelect({ job }: { job: TrackedJob }) {
       </select>
       <ChevronDownIcon
         aria-hidden
-        className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-muted-foreground"
       />
     </label>
   );
 }
 
-function TrackedCard({ job, compact = false }: { job: TrackedJob; compact?: boolean }) {
+/** One saved job: title and company, then its status, date, note and remove. */
+function TrackedRow({ job }: { job: TrackedJob }) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(job.note);
   const remove = () => {
     removeJob(job.key);
     toast(`Removed “${job.title}”`, { action: { label: "Undo", onClick: () => restoreJob(job) } });
   };
+  const save = () => {
+    if (draft !== job.note) setNote(job.key, draft);
+    setEditing(false);
+  };
+  const when = job.appliedAt ? (
+    <>
+      Applied <RelativeTime iso={job.appliedAt} />
+    </>
+  ) : (
+    <>
+      Saved <RelativeTime iso={job.savedAt} />
+    </>
+  );
+  const actions = (
+    <>
+      <StatusSelect job={job} />
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={job.note ? `Edit the note for ${job.title}` : `Add a note to ${job.title}`}
+        aria-expanded={editing}
+        onClick={() => {
+          setDraft(job.note);
+          setEditing((open) => !open);
+        }}
+        className={cn("size-9 rounded-full", job.note ? "text-foreground" : "text-muted-foreground")}
+      >
+        <StickyNoteIcon className="size-4" aria-hidden />
+      </Button>
+      <Button variant="ghost" size="icon" onClick={remove} aria-label={`Remove ${job.title}`} className="size-9 rounded-full text-muted-foreground">
+        <Trash2Icon className="size-4" aria-hidden />
+      </Button>
+    </>
+  );
+
   return (
-    <li className="relative min-w-0 rounded-2xl border bg-card p-4 transition-colors duration-150 has-[a:focus-visible]:border-ring">
-      <div className="flex items-start gap-3">
-        {!compact && <CompanyLogo name={job.companyName} domain={job.domain} />}
+    <li className="relative px-4 py-3.5 transition-colors duration-150 hover:bg-muted/50 has-[a:focus-visible]:bg-muted/50 sm:px-5">
+      <div className="flex items-center gap-3.5">
+        <CompanyLogo name={job.companyName} domain={job.domain} />
         <div className="min-w-0 flex-1">
-          <h3 className="leading-snug font-semibold">
+          <h3 className="truncate font-semibold">
             <Link
               href={jobPath({ company: job.company, id: job.id, title: job.title })}
-              className="outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] hover:underline"
+              className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
             >
               {job.title}
             </Link>
           </h3>
           <p className="truncate text-sm text-muted-foreground">
             {[job.companyName, job.location].filter(Boolean).join(" · ")}
+            <span className="sm:hidden"> · {when}</span>
           </p>
+          {job.note && !editing && (
+            <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-foreground/80">
+              <StickyNoteIcon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
+              <span className="truncate">{job.note}</span>
+            </p>
+          )}
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={remove}
-          aria-label={`Remove ${job.title}`}
-          className="relative z-10 -mt-1 -mr-1 size-9 shrink-0 rounded-full text-muted-foreground"
-        >
-          <Trash2Icon className="size-4" aria-hidden />
-        </Button>
+        <span className="hidden w-32 shrink-0 text-right text-sm text-muted-foreground sm:block">{when}</span>
+        <div className="relative z-10 hidden shrink-0 items-center gap-1 sm:flex">{actions}</div>
       </div>
-      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-        <StatusSelect job={job} />
-        {job.appliedAt ? (
-          <span>
-            Applied <RelativeTime iso={job.appliedAt} />
-          </span>
-        ) : (
-          <span>
-            Saved <RelativeTime iso={job.savedAt} />
-          </span>
-        )}
-      </div>
-      <NoteEditor job={job} />
+      <div className="relative z-10 mt-2.5 flex items-center gap-1 pl-[3.625rem] sm:hidden">{actions}</div>
+      {editing && (
+        <textarea
+          autoFocus
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onBlur={save}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") setEditing(false);
+            if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) save();
+          }}
+          maxLength={2000}
+          rows={3}
+          placeholder="Who you talked to, next steps, salary they mentioned…"
+          aria-label={`Note for ${job.title}`}
+          className="relative z-10 mt-3 w-full resize-y rounded-xl border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 sm:ml-[3.625rem] sm:w-[calc(100%-3.625rem)]"
+        />
+      )}
     </li>
   );
 }
@@ -195,7 +197,7 @@ function EmptyTracker() {
   );
 }
 
-/** Saved jobs and where each application stands: a board on wide screens, a filtered list on phones. */
+/** Saved jobs and where each application stands, grouped by status. */
 export function TrackerView() {
   const jobs = useTrackedJobs();
   const [filter, setFilter] = useState<TrackStatus | "all">("all");
@@ -203,11 +205,11 @@ export function TrackerView() {
 
   if (jobs.length === 0) return <EmptyTracker />;
 
-  const shown = filter === "all" ? jobs : jobs.filter((job) => job.status === filter);
+  const groups = TRACK_STATUS_KEYS.filter((status) => (filter === "all" || filter === status) && counts[status] > 0);
   return (
-    <div>
+    <div className="min-w-0 max-w-4xl">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <ul className="-my-1 flex gap-2 overflow-x-auto py-1 [scrollbar-width:none] lg:hidden" aria-label="Show applications by status">
+        <ul className="-my-1 flex gap-2 overflow-x-auto py-1 [scrollbar-width:none]" aria-label="Show applications by status">
           {(["all", ...TRACK_STATUS_KEYS] as const).map((status) => {
             const count = status === "all" ? jobs.length : counts[status];
             if (status !== "all" && count === 0) return null;
@@ -218,7 +220,7 @@ export function TrackerView() {
                   aria-pressed={filter === status}
                   onClick={() => setFilter(status)}
                   className={cn(
-                    "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                    "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:h-10",
                     filter === status ? "border-primary bg-primary text-primary-foreground" : "hover:bg-muted",
                   )}
                 >
@@ -229,8 +231,8 @@ export function TrackerView() {
             );
           })}
         </ul>
-        <div className="ml-auto flex gap-1">
-          <Button variant="ghost" className="h-10 rounded-full px-3 text-muted-foreground" onClick={() => exportJson(jobs)}>
+        <div className="flex gap-1">
+          <Button variant="ghost" className="h-9 rounded-full px-3 text-muted-foreground" onClick={() => exportJson(jobs)}>
             <DownloadIcon aria-hidden />
             Export
           </Button>
@@ -238,26 +240,18 @@ export function TrackerView() {
         </div>
       </div>
 
-      {/* Phones and tablets: one list, filtered by status. */}
-      <ul className="mt-4 grid grid-cols-1 gap-3 lg:hidden">
-        {shown.map((job) => (
-          <TrackedCard key={job.key} job={job} />
-        ))}
-      </ul>
-
-      {/* Wide screens: the board. Each card's status menu moves it between columns. */}
-      <div className="mt-4 hidden gap-3 lg:grid lg:grid-cols-5 lg:items-start">
-        {TRACK_STATUS_KEYS.map((status) => (
-          <section key={status} aria-labelledby={`column-${status}`} className="min-w-0 rounded-2xl bg-muted/60 p-2">
-            <h2 id={`column-${status}`} className="flex items-baseline justify-between px-2 pt-1 pb-2 text-sm font-bold">
+      <div className="mt-6 grid grid-cols-1 gap-6">
+        {groups.map((status) => (
+          <section key={status} aria-labelledby={`status-${status}`}>
+            <h2 id={`status-${status}`} className="mb-2 flex items-baseline gap-2 px-1 text-sm font-bold">
               {TRACK_STATUSES[status]}
-              <span className="text-xs font-medium text-muted-foreground tabular-nums">{counts[status]}</span>
+              <span className="font-medium text-muted-foreground tabular-nums">{counts[status]}</span>
             </h2>
-            <ul className="grid grid-cols-1 gap-2">
+            <ul className="divide-y overflow-hidden rounded-2xl border">
               {jobs
                 .filter((job) => job.status === status)
                 .map((job) => (
-                  <TrackedCard key={job.key} job={job} compact />
+                  <TrackedRow key={job.key} job={job} />
                 ))}
             </ul>
           </section>
