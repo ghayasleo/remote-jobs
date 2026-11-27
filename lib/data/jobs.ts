@@ -2,9 +2,10 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 import { getCompany, getCompanyIndex } from "./companies";
+import { readSnapshot, type Snapshot } from "./snapshot";
 import {
   findRole,
-  forEachBoard,
+  forEachBoardIn,
   getBoard,
   getOpenRoles,
   getRoleDetail,
@@ -44,9 +45,14 @@ export async function getRemoteJobs(): Promise<JobListing[]> {
   cacheLife("hours");
   cacheTag("roles", "companies");
 
-  const companies = new Map((await getCompanyIndex()).map((company) => [company.slug, company]));
+  return remoteJobsFrom(await readSnapshot());
+}
+
+/** The remote roles in a snapshot, newest first. */
+export function remoteJobsFrom(snapshot: Snapshot): JobListing[] {
+  const companies = new Map(snapshot.companies.map((company) => [company.slug, company]));
   const jobs: JobListing[] = [];
-  await forEachBoard((slug, open) => {
+  forEachBoardIn(snapshot, (slug, open) => {
     const company = companies.get(slug);
     if (!company) return;
     for (const role of open.roles) {

@@ -3,6 +3,7 @@
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpDownIcon, BotIcon, CalendarIcon, SearchXIcon } from "lucide-react";
+import { AlertButton } from "@/components/alerts/alert-button";
 import { ChoiceMenu } from "@/components/choice-menu";
 import { CopyFeedButton } from "@/components/copy-feed-button";
 import { CountrySelect } from "@/components/jobs/country-select";
@@ -94,6 +95,10 @@ export function JobsFeed({ preview, total, companies }: { preview: JobListing[];
             >
               {isDefaultView ? "Follow new roles by RSS" : "Follow this search by RSS"}
             </CopyFeedButton>
+            <AlertButton
+              query={serializeJobParams({ ...params, sort: "newest" })}
+              label={filters.map((filter) => filter.label).join(" · ")}
+            />
             <Button asChild variant="outline" className="h-9 rounded-full px-3.5 text-sm">
               <Link href="/ai">
                 <BotIcon aria-hidden />

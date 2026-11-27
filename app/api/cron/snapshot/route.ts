@@ -1,5 +1,7 @@
 import { revalidateTag } from "next/cache";
-import { refreshSnapshot } from "@/lib/data/snapshot";
+import { sendAlerts } from "@/lib/alerts";
+import { remoteJobsFrom } from "@/lib/data/jobs";
+import { readSnapshot, refreshSnapshot } from "@/lib/data/snapshot";
 
 // Reading every job board takes a minute or two.
 export const maxDuration = 300;
@@ -18,5 +20,7 @@ export async function GET(request: Request) {
   revalidateTag("roles", "max");
   // Company profiles change a few times a week; their pages keep their cache otherwise.
   if (stats.companiesChanged) revalidateTag("companies", "max");
-  return Response.json(stats);
+  // Job alerts: new roles from the snapshot just built.
+  const alerts = await sendAlerts(remoteJobsFrom(await readSnapshot())).catch((error: Error) => ({ error: error.message }));
+  return Response.json({ ...stats, alerts });
 }
