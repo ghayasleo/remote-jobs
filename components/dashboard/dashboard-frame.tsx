@@ -116,7 +116,7 @@ function DashboardTabs() {
     >
       <ul
         ref={list}
-        className="relative z-10 flex scroll-px-3 overflow-x-auto [scrollbar-width:none] sm:-mx-3 [&::-webkit-scrollbar]:hidden"
+        className="relative z-10 flex scroll-px-3 overflow-x-auto overscroll-x-contain [scrollbar-width:none] sm:-mx-3 [&::-webkit-scrollbar]:hidden"
       >
         {TABS.map(({ href, label, icon: Icon }) => {
           const active = href === "/dashboard" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
