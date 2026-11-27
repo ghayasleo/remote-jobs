@@ -97,9 +97,16 @@ function DashboardTabs() {
     };
   }, [pathname]);
 
-  // On a phone the tabs scroll sideways; keep the current one in view.
+  // On a phone the tabs scroll sideways; keep the current one in view. Only
+  // the strip scrolls (scrollIntoView could move the page too).
   useEffect(() => {
-    list.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const tabs = list.current;
+    const current = tabs?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!tabs || !current) return;
+    const left = current.offsetLeft - 12;
+    const right = current.offsetLeft + current.offsetWidth + 12 - tabs.clientWidth;
+    if (tabs.scrollLeft > left) tabs.scrollTo({ left, behavior: "smooth" });
+    else if (tabs.scrollLeft < right) tabs.scrollTo({ left: right, behavior: "smooth" });
   }, [pathname]);
 
   return (
@@ -118,6 +125,8 @@ function DashboardTabs() {
             <li key={href} className="shrink-0">
               <Link
                 href={href}
+                // Switching tabs keeps your place on the page.
+                scroll={false}
                 aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative flex h-12 items-center gap-2 rounded-lg px-3 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors duration-200 outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
@@ -160,7 +169,9 @@ export function DashboardFrame({ children }: { children: React.ReactNode }) {
   return (
     <>
       <DashboardTabs />
-      <div className="pt-8">{children}</div>
+      {/* At least a screen tall, so the page keeps its scrollbar and the footer
+          stays put whichever tab is open: switching tabs never shifts the layout. */}
+      <div className="min-h-[calc(100dvh-7.5rem)] pt-8">{children}</div>
     </>
   );
 }
