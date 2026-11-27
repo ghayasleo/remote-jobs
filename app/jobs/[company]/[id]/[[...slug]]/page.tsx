@@ -7,6 +7,7 @@ import { Tag } from "@/components/company/chips";
 import { CompanyLogo } from "@/components/company/company-logo";
 import { CompanySkeleton } from "@/components/company/company-skeleton";
 import { ShareButton } from "@/components/company/share-button";
+import { SaveJobButton } from "@/components/jobs/save-job-button";
 import { JobActionBar } from "@/components/jobs/job-action-bar";
 import { JobRow, RemoteBadge } from "@/components/jobs/job-row";
 import { RelativeTime } from "@/components/relative-time";
@@ -115,6 +116,7 @@ async function JobView({ params }: Pick<Props, "params">) {
   // Links without the title, or with an old one, go to the current address.
   if (companySlug !== company.slug || slug?.length !== 1 || slug[0] !== jobSlug(role.title)) permanentRedirect(path);
   const facts = [role.location, role.team, role.employmentType].filter(Boolean);
+  const savable = { company: company.slug, companyName: company.name, domain: company.domain, id: role.id, title: role.title, location: role.location };
   const pay = detail?.payText ?? role.salary;
   const others = toListings(company, job.others);
   // Only the main posting carries Google Jobs markup, listing every location the role is open in.
@@ -179,6 +181,7 @@ async function JobView({ params }: Pick<Props, "params">) {
               <span className="sr-only">(opens in a new tab)</span>
             </a>
           </Button>
+          <SaveJobButton job={savable} withLabel />
           <ShareButton name={`${role.title} at ${company.name}`} withLabel />
         </div>
       </header>
@@ -226,7 +229,7 @@ async function JobView({ params }: Pick<Props, "params">) {
         apply on their site.
       </p>
 
-      <JobActionBar company={company.slug} companyName={company.name} applyUrl={role.url} />
+      <JobActionBar job={savable} applyUrl={role.url} />
     </article>
   );
 }

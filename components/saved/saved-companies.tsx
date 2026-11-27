@@ -12,7 +12,7 @@ import { replaceSaved, useSavedSlugs } from "@/lib/saved";
 import { retryExploreData, useExploreData, useExploreDataFailed } from "@/lib/use-explore-data";
 import { useHydrated } from "@/lib/use-hydrated";
 
-export function SavedCompanies() {
+export function SavedCompanies({ embedded = false }: { embedded?: boolean }) {
   const hydrated = useHydrated();
   const slugs = useSavedSlugs();
   const data = useExploreData();
@@ -38,11 +38,11 @@ export function SavedCompanies() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl pb-10">
-      <header className="flex items-end justify-between gap-4 px-4 pt-6 pb-4 sm:px-6">
+    <div className={embedded ? "pb-4" : "mx-auto max-w-3xl pb-10"}>
+      <header className={embedded ? "flex items-end justify-between gap-4 px-4 pb-4 sm:px-6" : "flex items-end justify-between gap-4 px-4 pt-6 pb-4 sm:px-6"}>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Saved companies</h1>
-          <p className="mt-1.5 text-muted-foreground">
+          {!embedded && <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Saved companies</h1>}
+          <p className={embedded ? "text-muted-foreground" : "mt-1.5 text-muted-foreground"}>
             {!ready ? (
               "Loading your list…"
             ) : saved.length > 0 ? (

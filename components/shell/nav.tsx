@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { openConsent } from "@/lib/consent";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { useSavedSlugs } from "@/lib/saved";
+import { useTrackedJobs } from "@/lib/tracker";
 import { cn } from "@/lib/utils";
 import { MAIN_ITEMS, MORE_ITEMS, isActive, isMoreActive, type NavItem } from "./nav-items";
 
@@ -24,7 +25,7 @@ const hasActionBar = (pathname: string) =>
   /^\/(company-profiles\/[^/]+|jobs\/[^/]+\/[^/]+(\/[^/]+)?)\/?$/.test(pathname);
 
 function SavedCount({ className }: { className?: string }) {
-  const count = useSavedSlugs().length;
+  const count = useSavedSlugs().length + useTrackedJobs().length;
   if (count === 0) return null;
   return (
     <span

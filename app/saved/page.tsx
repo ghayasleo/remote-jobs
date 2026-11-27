@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { SavedCompanies } from "@/components/saved/saved-companies";
+import { SavedView } from "@/components/saved/saved-view";
 
 export const metadata: Metadata = {
-  title: "Saved companies",
-  description: "Your shortlist of remote-friendly tech companies, kept on this device.",
+  title: "Saved jobs and companies",
+  description: "Your saved remote jobs, where each application stands, and your shortlist of companies.",
   robots: { index: false },
 };
 
 export default function SavedPage() {
-  return <SavedCompanies />;
+  return <SavedView />;
 }
