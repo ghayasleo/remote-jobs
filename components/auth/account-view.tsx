@@ -74,8 +74,9 @@ export function AccountView() {
         <Avatar profile={profile} className="size-16 text-xl" />
         <div className="min-w-0 flex-1">
           <p className="truncate text-xl font-bold tracking-tight">{profile.name ?? "Signed in"}</p>
-          <p className="truncate text-muted-foreground">{email ?? "Signed in with Google"}</p>
-          {email && <p className="mt-0.5 text-sm text-muted-foreground">Signed in with Google</p>}
+          {/* The line is there before the email arrives, so nothing moves when it does. */}
+          <p className="truncate text-muted-foreground">{email ?? "\u00a0"}</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">Signed in with Google</p>
         </div>
         <Button variant="outline" className="h-11 w-full rounded-full px-5 sm:w-auto" disabled={busy} onClick={signOut}>
           <LogOutIcon aria-hidden />

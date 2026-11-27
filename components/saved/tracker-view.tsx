@@ -119,7 +119,7 @@ function CardBody({ job, lifted = false }: { job: TrackedJob; lifted?: boolean }
             setDraft(job.note);
             setEditing((open) => !open);
           }}
-          className={cn("size-7 shrink-0 rounded-full pointer-coarse:size-9", job.note ? "text-foreground" : "text-muted-foreground")}
+          className={cn("size-8 shrink-0 rounded-full pointer-coarse:size-9", job.note ? "text-foreground" : "text-muted-foreground")}
         >
           <StickyNoteIcon className="size-4" aria-hidden />
         </Button>
@@ -128,7 +128,7 @@ function CardBody({ job, lifted = false }: { job: TrackedJob; lifted?: boolean }
           size="icon"
           onClick={remove}
           aria-label={`Remove ${job.title}`}
-          className="size-7 shrink-0 rounded-full text-muted-foreground pointer-coarse:size-9"
+          className="size-8 shrink-0 rounded-full text-muted-foreground pointer-coarse:size-9"
         >
           <Trash2Icon className="size-4" aria-hidden />
         </Button>
@@ -260,8 +260,8 @@ const collisions: CollisionDetection = (args) => {
 };
 
 /**
- * The saved jobs board: one column per status, as tall as the screen allows,
- * each scrolling on its own. Cards move between columns by dragging them, or
+ * The saved jobs board: one column per status, at least 300px wide and 700px
+ * tall (on phones, as tall as fits above the tab bar), each scrolling on its own. Cards move between columns by dragging them, or
  * with their status menu. When the columns don't all fit, the board scrolls
  * sideways on its own; the page never does.
  */
@@ -326,7 +326,7 @@ export function TrackerView() {
         role="region"
         aria-label="Saved jobs by status"
         tabIndex={0}
-        className="-mx-4 grid h-[max(24rem,calc(100dvh-24.5rem))] auto-cols-[min(17.5rem,82vw)] grid-flow-col grid-rows-[minmax(0,1fr)] snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto overflow-y-hidden px-4 pb-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:-mx-6 sm:scroll-px-6 sm:px-6 md:h-[max(28rem,calc(100dvh-17.5rem))] lg:auto-cols-[minmax(12.5rem,1fr)] lg:snap-none [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
+        className="-mx-4 grid h-[max(24rem,calc(100dvh-24.5rem))] auto-cols-[minmax(18.75rem,1fr)] grid-flow-col grid-rows-[minmax(0,1fr)] snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto overflow-y-hidden px-4 pb-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:-mx-6 sm:scroll-px-6 sm:px-6 md:h-[43.75rem] lg:snap-none [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
       >
         {TRACK_STATUS_KEYS.map((status) => (
           <Column key={status} status={status} jobs={jobs.filter((job) => job.status === status)} dragging={active !== undefined} />

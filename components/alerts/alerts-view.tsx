@@ -28,7 +28,15 @@ export function AlertsView() {
       });
   }, []);
 
-  if (alerts === null) return <p className="text-muted-foreground">Loading your alerts…</p>;
+  // About as tall as what replaces it, so the screen doesn't jump when alerts load.
+  if (alerts === null) {
+    return (
+      <div aria-busy="true" className="h-[21rem] rounded-2xl border border-dashed pt-14">
+        <span className="sr-only">Loading your alerts…</span>
+        <span aria-hidden className="mx-auto block size-14 animate-pulse rounded-full bg-muted" />
+      </div>
+    );
+  }
 
   if (alerts.length === 0) {
     return (
