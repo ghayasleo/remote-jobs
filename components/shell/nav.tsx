@@ -1,8 +1,9 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDownIcon, ChevronRightIcon, EllipsisIcon } from "lucide-react";
+import { ArrowRightIcon, ChevronDownIcon, ChevronRightIcon, EllipsisIcon, FileCheckIcon, LayoutDashboardIcon } from "lucide-react";
 import {
   Drawer,
   DrawerClose,
@@ -12,14 +13,13 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { openConsent } from "@/lib/consent";
 import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { useSavedSlugs } from "@/lib/saved";
 import { useTrackedJobs } from "@/lib/tracker";
 import { useProfile } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
-import { MAIN_ITEMS, MORE_ITEMS, isActive, isMoreActive, type NavItem } from "./nav-items";
+import { CV_CHECK, MAIN_ITEMS, MORE_GROUPS, MORE_ITEMS, isActive, isMoreActive, type NavItem } from "./nav-items";
 
 // Detail screens (a company, a role) show their own action bar instead.
 const hasActionBar = (pathname: string) =>
@@ -58,40 +58,175 @@ function ItemIcon({ icon: Icon }: Pick<NavItem, "icon">) {
   );
 }
 
-/** Links in the top bar, from tablet width up. */
+function MegaItem({ item, active, onNavigate }: { item: NavItem; active: boolean; onNavigate: () => void }) {
+  const { href, label, icon: Icon, description } = item;
+  return (
+    <li>
+      <Link
+        href={href}
+        onClick={onNavigate}
+        aria-current={active ? "page" : undefined}
+        className="flex gap-3 rounded-xl p-2.5 transition-colors duration-150 outline-none hover:bg-muted focus-visible:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 aria-[current=page]:bg-muted"
+      >
+        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-secondary-foreground">
+          <Icon className="size-[1.125rem]" aria-hidden />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">{label}</span>
+          <span className="mt-0.5 block text-xs leading-snug text-muted-foreground">{description}</span>
+        </span>
+      </Link>
+    </li>
+  );
+}
+
+/**
+ * "More" as a mega menu: every other page, in groups, in a panel as wide as
+ * the header's content. Opens on hover (after a moment, so passing over it
+ * doesn't) or on click; Escape, a click outside or picking a page closes it.
+ */
+function MoreMenu() {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const later = (next: boolean, delay: number) => {
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setOpen(next), delay);
+  };
+  const close = () => {
+    clearTimeout(timer.current);
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const onPointer = (event: PointerEvent) => {
+      if (!root.current?.contains(event.target as Node)) close();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      close();
+      trigger.current?.focus();
+    };
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const hover = {
+    onPointerEnter: (event: React.PointerEvent) => event.pointerType === "mouse" && later(true, 90),
+    onPointerLeave: (event: React.PointerEvent) => event.pointerType === "mouse" && later(false, 180),
+  };
+
+  return (
+    <div
+      ref={root}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
+      }}
+    >
+      <button
+        ref={trigger}
+        type="button"
+        aria-expanded={open}
+        aria-controls="more-menu"
+        onClick={() => {
+          clearTimeout(timer.current);
+          setOpen((value) => !value);
+        }}
+        {...hover}
+        className={cn(desktopLink(open || isMoreActive(pathname)), "pr-3")}
+      >
+        More
+        <ChevronDownIcon className={cn("size-4 transition-transform duration-200 ease-out-quart", open && "rotate-180")} aria-hidden />
+      </button>
+      {/* Positioned against the header's container, so it spans exactly its width. */}
+      <div
+        id="more-menu"
+        inert={!open}
+        {...hover}
+        className={cn(
+          "absolute inset-x-4 top-full z-(--z-nav) pt-2 transition-[opacity,translate] duration-200 ease-out-quart sm:inset-x-6 motion-reduce:transition-none",
+          open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0",
+        )}
+      >
+        <div className="grid grid-cols-[repeat(3,minmax(0,1fr))_minmax(15rem,17rem)] gap-6 rounded-2xl border bg-popover p-5 text-popover-foreground shadow-xl">
+          {MORE_GROUPS.map((group) => (
+            <section key={group.title} aria-labelledby={`more-${group.title}`} className="min-w-0">
+              <p id={`more-${group.title}`} className="px-2.5 pb-2 text-xs font-semibold text-muted-foreground">
+                {group.title}
+              </p>
+              <ul className="grid gap-0.5">
+                {group.items.map((item) => (
+                  <MegaItem key={item.href} item={item} active={isActive(item.href, pathname)} onNavigate={close} />
+                ))}
+              </ul>
+            </section>
+          ))}
+          <Link
+            href={CV_CHECK.href}
+            onClick={close}
+            className="group flex flex-col rounded-xl bg-secondary p-5 text-secondary-foreground outline-none transition-colors duration-150 hover:bg-secondary/80 focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
+            <span className="grid size-10 place-items-center rounded-lg bg-background/70 text-foreground">
+              <FileCheckIcon className="size-5" aria-hidden />
+            </span>
+            <span className="mt-4 font-bold">{CV_CHECK.label}</span>
+            <span className="mt-1 flex-1 text-sm text-secondary-foreground/80">
+              See how hiring systems read your CV for any role here. It&apos;s checked on your device and never uploaded.
+            </span>
+            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
+              Check your CV
+              <ArrowRightIcon className="size-4 transition-transform duration-200 ease-out-quart group-hover:translate-x-0.5" aria-hidden />
+            </span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Links in the top bar, from tablet width up. The dashboard sits with the account, on the right. */
 export function DesktopNav() {
   const pathname = usePathname();
   return (
     <nav aria-label="Main" className="hidden items-center gap-1 md:flex">
-      {MAIN_ITEMS.map(({ href, label }) => {
+      {MAIN_ITEMS.filter(({ href }) => href !== "/dashboard").map(({ href, label }) => {
         const active = isActive(href, pathname);
         return (
           <Link key={href} href={href} aria-current={active ? "page" : undefined} className={desktopLink(active)}>
             {label}
-            {href === "/dashboard" && <SavedCount />}
           </Link>
         );
       })}
-      <DropdownMenu>
-        <DropdownMenuTrigger className={cn(desktopLink(isMoreActive(pathname)), "pr-3")}>
-          More
-          <ChevronDownIcon className="size-4" aria-hidden />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-76 rounded-2xl p-1.5">
-          {MORE_ITEMS.map(({ href, label, icon, description }) => (
-            <DropdownMenuItem key={href} asChild className="gap-3 rounded-xl px-2 py-2">
-              <Link href={href} aria-current={isActive(href, pathname) ? "page" : undefined}>
-                <ItemIcon icon={icon} />
-                <span className="min-w-0">
-                  <span className="block font-semibold">{label}</span>
-                  <span className="block text-xs text-muted-foreground">{description}</span>
-                </span>
-              </Link>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <MoreMenu />
     </nav>
+  );
+}
+
+/** The signed-in person's dashboard, next to their account menu (from tablet width up; phones have it in the tab bar). */
+export function DashboardLink() {
+  const pathname = usePathname();
+  const profile = useProfile();
+  if (!profile) return null;
+  const active = isActive("/dashboard", pathname);
+  return (
+    <Link
+      href="/dashboard"
+      aria-current={active ? "page" : undefined}
+      className={cn(desktopLink(active), "hidden px-3.5 md:flex")}
+    >
+      <LayoutDashboardIcon className="size-4" aria-hidden />
+      Dashboard
+      <SavedCount />
+    </Link>
   );
 }
 
