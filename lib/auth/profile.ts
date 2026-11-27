@@ -10,8 +10,9 @@ export const SESSION_MAX_AGE = 180 * 24 * 60 * 60;
 
 export type Profile = { name: string | null; picture: string | null };
 
+/** The cookie value. Plain JSON: Next.js URL-encodes cookie values itself when it sets them. */
 export function encodeProfile(profile: Profile) {
-  return encodeURIComponent(JSON.stringify(profile));
+  return JSON.stringify(profile);
 }
 
 /** The profile from a cookie header (document.cookie or a request's), or null when signed out. */
@@ -22,7 +23,10 @@ export function readProfile(cookieHeader: string): Profile | null {
     ?.slice(PROFILE_COOKIE.length + 1);
   if (!raw) return null;
   try {
-    const value = JSON.parse(decodeURIComponent(raw)) as Partial<Profile>;
+    let text = decodeURIComponent(raw);
+    // Cookies set before 2026-11-28 were encoded twice; decode the second layer too.
+    if (text.startsWith("%")) text = decodeURIComponent(text);
+    const value = JSON.parse(text) as Partial<Profile>;
     return {
       name: typeof value.name === "string" ? value.name : null,
       picture: typeof value.picture === "string" ? value.picture : null,
