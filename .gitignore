@@ -7,3 +7,6 @@ next-env.d.ts
 /coverage
 .env*
 !.env.example
+
+# Copied from node_modules at build time (scripts/copy-pdf-worker.mjs)
+/public/vendor/

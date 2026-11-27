@@ -5,6 +5,7 @@ import {
   BotIcon,
   BriefcaseIcon,
   Building2Icon,
+  FileCheckIcon,
   CompassIcon,
   GlobeIcon,
   InfoIcon,
@@ -24,6 +25,7 @@ export const MAIN_ITEMS: NavItem[] = [
 
 /** Everything else, behind "More" (and in the footer). */
 export const MORE_ITEMS: NavItem[] = [
+  { href: "/cv-check", label: "Free CV check", icon: FileCheckIcon, description: "How hiring systems read your CV, role by role" },
   { href: "/market", label: "Hiring market", icon: TrendingUpIcon, description: "Who’s hiring more, who’s slowing, and the news" },
   { href: "/new", label: "New this week", icon: SparklesIcon, description: "The freshest remote roles" },
   { href: "/remote/in", label: "Jobs by country", icon: GlobeIcon, description: "Roles open to people where you live" },
