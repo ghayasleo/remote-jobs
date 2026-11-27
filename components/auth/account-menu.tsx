@@ -32,12 +32,12 @@ export function AccountMenu({ className }: { className?: string }) {
         type="button"
         onClick={() => openSignIn()}
         className={cn(
-          "flex h-10 items-center gap-2 rounded-full px-4 text-sm font-medium text-muted-foreground transition-colors duration-150 outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50",
+          "flex h-10 w-10 items-center justify-center gap-2 rounded-full text-sm font-medium text-muted-foreground transition-colors duration-150 outline-none hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 sm:w-auto sm:px-4",
           className,
         )}
       >
-        <UserRoundIcon className="size-4" aria-hidden />
-        Sign in
+        <UserRoundIcon className="size-5 sm:size-4" aria-hidden />
+        <span className="sr-only sm:not-sr-only">Sign in</span>
       </button>
     );
   }

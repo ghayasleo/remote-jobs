@@ -63,7 +63,7 @@ export default async function InsightsPage() {
   const policyRows: BarRow[] = policies.map(({ key, count }) => ({
     label: remotePolicyLabels[key],
     value: count,
-    href: `/?policy=${key}`,
+    href: `/companies?policy=${key}`,
     detail: `${share(count, insights.companies)} of companies`,
   }));
   const stackRows: BarRow[] = stacks.map(({ key, count }) => ({

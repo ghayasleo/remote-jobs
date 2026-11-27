@@ -55,10 +55,10 @@ export default async function AboutPage() {
       </p>
       <div className="mt-5 flex flex-wrap gap-3">
         <Button asChild className="h-11 rounded-full px-5">
-          <Link href="/?hiring=true">See who’s hiring</Link>
+          <Link href="/companies?hiring=true">See who’s hiring</Link>
         </Button>
         <Button asChild variant="outline" className="h-11 rounded-full px-5">
-          <Link href="/">Explore all {companies.length}</Link>
+          <Link href="/companies">Explore all {companies.length}</Link>
         </Button>
         <Button asChild variant="ghost" className="h-11 rounded-full px-5">
           <Link href="/remote">Browse by stack and region</Link>

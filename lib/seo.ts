@@ -79,7 +79,7 @@ export function companyJsonLd(company: CompanyProfile) {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Companies", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 1, name: "Companies", item: absoluteUrl("/companies") },
           { "@type": "ListItem", position: 2, name: company.name, item: absoluteUrl(path) },
         ],
       },

@@ -13,7 +13,7 @@ export default function NotFound() {
         The company may have been renamed or removed from the list. Searching for it usually finds where it went.
       </p>
       <Button asChild size="lg" className="mt-8 h-11 rounded-full px-5">
-        <Link href="/">Search all companies</Link>
+        <Link href="/companies">Search all companies</Link>
       </Button>
     </div>
   );
