@@ -28,6 +28,7 @@ export function SiteFooter() {
       links: [
         ...MAIN_ITEMS.map(({ href, label }) => ({ href, label: href === "/jobs" ? "Remote jobs" : label })),
         { href: "/new", label: "New this week" },
+        { href: "/suggest", label: "Suggest a company" },
       ],
     },
     {
