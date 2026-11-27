@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRightIcon, ArrowUpRightIcon, SearchIcon } from "lucide-react";
+import { AlertTriangleIcon, ArrowRightIcon, ArrowUpRightIcon, CheckCircle2Icon, SearchIcon } from "lucide-react";
 import { Sun } from "@/components/brand/logo";
 import { CompanyLogo } from "@/components/company/company-logo";
 import { locationSummary } from "@/components/jobs/job-row";
@@ -334,6 +334,79 @@ function WithAi() {
   );
 }
 
+const EXAMPLE_CHECKS = [
+  { ok: true, text: "The text can be read" },
+  { ok: false, text: "Two columns: some systems mix them up" },
+  { ok: true, text: "Dates on every role" },
+];
+
+function CvCheckTile() {
+  return (
+    <div className={cn(tile, "lg:col-span-3")}>
+      <h3 className={tileTitle}>Check your CV before you apply</h3>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        See how hiring systems read it, and which of a role&apos;s skills it mentions. Free, and your CV never leaves your
+        device.
+      </p>
+      <div className="mt-5 rounded-xl border p-3" aria-label="An example result">
+        <ul className="grid gap-2 text-sm">
+          {EXAMPLE_CHECKS.map(({ ok, text }) => (
+            <li key={text} className="flex items-center gap-2">
+              {ok ? (
+                <CheckCircle2Icon className="size-4 shrink-0" aria-hidden />
+              ) : (
+                <AlertTriangleIcon className="size-4 shrink-0 text-hiring-foreground" aria-hidden />
+              )}
+              {text}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-3 text-xs text-muted-foreground">Example result</p>
+      </div>
+      <Link href="/cv-check" className={tileLink}>
+        Check my CV
+        <ArrowRightIcon className="size-4" aria-hidden />
+      </Link>
+    </div>
+  );
+}
+
+const EXAMPLE_BOARD = [
+  { status: "Saved", count: 6 },
+  { status: "Applied", count: 3 },
+  { status: "Interviewing", count: 1 },
+];
+
+function TrackerTile() {
+  return (
+    <div className={cn(tile, "lg:col-span-3")}>
+      <h3 className={tileTitle}>Keep track of every application</h3>
+      <p className="mt-1.5 text-sm text-muted-foreground">
+        Save roles, move them from Applied to Offer, and keep notes. No account needed; sign in to sync across devices.
+      </p>
+      <div className="mt-5 grid grid-cols-3 gap-2" aria-label="An example board">
+        {EXAMPLE_BOARD.map(({ status, count }) => (
+          <div key={status} className="rounded-xl bg-muted/70 p-2.5">
+            <p className="flex items-baseline justify-between text-xs font-bold">
+              {status}
+              <span className="font-medium text-muted-foreground tabular-nums">{count}</span>
+            </p>
+            <div className="mt-2 grid gap-1.5" aria-hidden>
+              {Array.from({ length: Math.min(count, 2) }, (_, index) => (
+                <span key={index} className="block h-6 rounded-md border bg-card" />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <Link href="/saved" className={tileLink}>
+        Open your tracker
+        <ArrowRightIcon className="size-4" aria-hidden />
+      </Link>
+    </div>
+  );
+}
+
 function FindTheFit({ data }: { data: HomeData }) {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-24">
@@ -346,6 +419,8 @@ function FindTheFit({ data }: { data: HomeData }) {
         <Momentum data={data} />
         <Stacks data={data} />
         <WithAi />
+        <CvCheckTile />
+        <TrackerTile />
       </div>
     </section>
   );
@@ -399,8 +474,8 @@ const PROMISES = [
     text: "Each role comes from the employer's own job board and links to it. Placeholders and duplicates are filtered out.",
   },
   {
-    title: "Your account is optional",
-    text: "Sign in only to sync what you save across devices. We never sell or share your data.",
+    title: "Private by default",
+    text: "Your CV is checked on your device and never uploaded. Signing in is optional, and we never sell your data.",
   },
 ];
 
