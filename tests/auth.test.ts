@@ -3,8 +3,14 @@ import { PROFILE_COOKIE, encodeProfile, initials, readProfile } from "@/lib/auth
 
 describe("profile cookie", () => {
   it("round-trips a name and photo through a cookie header", () => {
-    const header = `theme=dark; ${PROFILE_COOKIE}=${encodeProfile({ name: "Ada Lovelace", picture: "https://x.test/a.png" })}; other=1`;
+    // Next.js URL-encodes the value once when it sets the cookie.
+    const header = `theme=dark; ${PROFILE_COOKIE}=${encodeURIComponent(encodeProfile({ name: "Ada Lovelace", picture: "https://x.test/a.png" }))}; other=1`;
     expect(readProfile(header)).toEqual({ name: "Ada Lovelace", picture: "https://x.test/a.png" });
+  });
+
+  it("still reads cookies that were encoded twice", () => {
+    const twice = encodeURIComponent(encodeURIComponent(JSON.stringify({ name: "Ada", picture: null })));
+    expect(readProfile(`${PROFILE_COOKIE}=${twice}`)).toEqual({ name: "Ada", picture: null });
   });
 
   it("is null when signed out or when the cookie is garbled", () => {
