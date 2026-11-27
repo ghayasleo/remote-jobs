@@ -4,6 +4,7 @@ import { BookmarkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { openSignIn, useProfile } from "@/lib/auth/client";
+import { confirmAction } from "@/lib/confirm";
 import { toggleSaved, useIsSaved } from "@/lib/saved";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +23,20 @@ export function SaveButton({
   // Saved companies belong to an account: signed out, nothing shows as saved.
   const saved = useIsSaved(slug) && profile !== null;
 
-  const onClick = () => {
+  const onClick = async () => {
     if (!profile) {
       openSignIn("Sign in to save companies and follow who's hiring. It's free.");
+      return;
+    }
+    if (
+      saved &&
+      !(await confirmAction({
+        title: `Remove ${name} from saved companies?`,
+        description: "You can save it again any time.",
+        confirmLabel: "Remove",
+        destructive: true,
+      }))
+    ) {
       return;
     }
     const nowSaved = toggleSaved(slug);

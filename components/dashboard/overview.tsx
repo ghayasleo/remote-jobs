@@ -215,7 +215,7 @@ function AccountTile() {
 function RecentlyUpdated({ jobs }: { jobs: TrackedJob[] }) {
   if (jobs.length === 0) return null;
   return (
-    <section className="min-w-0 max-w-4xl">
+    <section className="min-w-0">
       <div className="mb-3 flex items-end justify-between gap-4">
         <h2 className="text-xl font-bold tracking-tight">Recently updated</h2>
         <Link
@@ -261,9 +261,9 @@ export function DashboardOverview() {
   const firstName = profile?.name?.split(/\s+/)[0];
 
   return (
-    <div className="grid gap-10">
+    <div className="grid grid-cols-1 gap-10">
       <ScreenHeading title={firstName ? `Hi, ${firstName}` : "Your dashboard"} detail={<SyncStatus />} className="mb-0" />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <JobsTile jobs={jobs} />
         <CompaniesTile slugs={slugs} />
         <AlertsTile />

@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTags } from "@/components/analytics/google-tags";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 import { AccountSync } from "@/lib/sync";
 import { OfflineNotice, ServiceWorker } from "@/components/shell/connectivity";
 import { BottomNav } from "@/components/shell/nav";
@@ -87,6 +88,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             />
             <GoogleTags />
             <SignInDialog />
+            <ConfirmDialog />
             <AccountSync />
           </TooltipProvider>
         </ThemeProvider>
