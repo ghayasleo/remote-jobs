@@ -31,7 +31,22 @@ export type TrackedJob = {
   updatedAt: string;
   /** A removal, kept so it syncs to other devices. */
   deleted?: boolean;
+  /** Where it sits in its board column: lower is higher up. Unset means by when it was saved, newest first. */
+  order?: number;
 };
+
+/** A job's place in its column, smallest first. Without a set order, newer saves come first. */
+export function boardOrder(job: TrackedJob) {
+  return job.order ?? -Date.parse(job.savedAt);
+}
+
+/** The order for a job dropped between two others (either may be missing at the ends of a column). */
+export function orderBetween(before: TrackedJob | undefined, after: TrackedJob | undefined) {
+  if (before && after) return (boardOrder(before) + boardOrder(after)) / 2;
+  if (before) return boardOrder(before) + 1000;
+  if (after) return boardOrder(after) - 1000;
+  return -Date.now();
+}
 
 export const trackKey = (job: { company: string; id: string }) => `${job.company}/${job.id}`;
 
@@ -63,6 +78,7 @@ export function cleanTrackedJob(value: unknown): TrackedJob | null {
     appliedAt,
     updatedAt,
     ...(v.deleted === true && { deleted: true }),
+    ...(typeof v.order === "number" && Number.isFinite(v.order) && { order: v.order }),
   };
 }
 
