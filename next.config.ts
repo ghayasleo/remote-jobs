@@ -23,6 +23,14 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      // The company list moved from / to /companies when / became the home
+      // page. Links with its filters (e.g. /?hiring=true) still land on it.
+      ...["q", "region", "policy", "stack", "size", "hiring", "recent", "sort"].map((key) => ({
+        source: "/",
+        has: [{ type: "query" as const, key }],
+        destination: "/companies",
+        permanent: true,
+      })),
       // Links from the first version of this site ended in ".md".
       {
         source: "/company-profiles/:slug([a-zA-Z0-9-]+)\\.md",

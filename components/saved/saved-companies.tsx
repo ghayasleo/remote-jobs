@@ -137,10 +137,10 @@ function EmptySaved() {
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button asChild className="h-11 rounded-full px-5">
-          <Link href="/">Explore companies</Link>
+          <Link href="/companies">Explore companies</Link>
         </Button>
         <Button asChild variant="outline" className="h-11 rounded-full px-5">
-          <Link href="/?hiring=true">
+          <Link href="/companies?hiring=true">
             <SparklesIcon aria-hidden /> Who’s hiring now
           </Link>
         </Button>

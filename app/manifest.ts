@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Remote Jobs",
     short_name: "Remote Jobs",
     description: "Remote-friendly tech companies, by region and stack, with live open roles.",
-    start_url: "/",
+    start_url: "/jobs",
     scope: "/",
     display: "standalone",
     background_color: BRAND.white,
@@ -19,7 +19,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
     shortcuts: [
-      { name: "Hiring now", url: "/?hiring=true", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
+      { name: "Hiring now", url: "/companies?hiring=true", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
       { name: "Saved companies", url: "/saved", icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] },
     ],
   };

@@ -17,8 +17,8 @@ export type NavItem = { href: string; label: string; icon: LucideIcon; descripti
 
 /** The tabs: always one tap away. */
 export const MAIN_ITEMS: NavItem[] = [
-  { href: "/", label: "Companies", icon: Building2Icon },
   { href: "/jobs", label: "Jobs", icon: BriefcaseIcon },
+  { href: "/companies", label: "Companies", icon: Building2Icon },
   { href: "/saved", label: "Saved", icon: BookmarkIcon },
 ];
 
@@ -38,9 +38,9 @@ const isCountryPage = (pathname: string) => pathname === "/remote/in" || pathnam
 
 /** Which tab a page belongs to. Topic pages list companies; country pages list jobs. */
 export function isActive(href: string, pathname: string) {
-  if (href === "/") {
+  if (href === "/companies") {
     return (
-      pathname === "/" ||
+      pathname === "/companies" ||
       pathname.startsWith("/company-profiles") ||
       (pathname.startsWith("/remote") && !isCountryPage(pathname))
     );

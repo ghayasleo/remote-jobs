@@ -53,7 +53,7 @@ describe("parseTopic", () => {
 describe("paths and copy", () => {
   it("builds page and Explore links", () => {
     expect(topicPath({ region: "europe", stack: "python" })).toBe("/remote/europe/python");
-    expect(exploreHref({ region: "europe", stack: "python" })).toBe("/?region=europe&stack=python");
+    expect(exploreHref({ region: "europe", stack: "python" })).toBe("/companies?region=europe&stack=python");
   });
 
   it("writes titles people search for", () => {

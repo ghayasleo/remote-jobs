@@ -19,7 +19,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
           <RotateCwIcon aria-hidden /> Try again
         </Button>
         <Button asChild variant="outline" size="lg" className="h-11 rounded-full px-5">
-          <Link href="/">Back to Explore</Link>
+          <Link href="/companies">Back to companies</Link>
         </Button>
       </div>
     </div>

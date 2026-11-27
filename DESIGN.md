@@ -166,6 +166,7 @@ Six soft washes with strong same-hue text, always paired with a label and a glob
 
 ### Hierarchy
 - **Headline** (700, 1.5rem on phones and 1.875rem from 640px, tracking -0.025em): page titles ("Find your next remote team", company names).
+- **Display** (800, fluid 2.5rem→4.5rem, tracking -0.04em, line-height 1.02): the home page only. The hero headline, which may carry two or three real company logos inline at letter height; section headings on the home page use the same weight at 1.875rem→2.75rem.
 - **Title** (700, 1.125rem, tracking -0.025em): section headings on company and About pages.
 - **Row title** (600, 1rem, line-height 1.5): company names in lists, role titles.
 - **Body** (400, 1rem, line-height 1.6–1.75): profile prose, capped at 36rem (about 75 characters in Figtree).
@@ -223,6 +224,13 @@ Two shapes, used consistently. Anything you tap is a pill (fully rounded): butto
 - **Phone tab bar:** three tabs (Explore, Saved with a count badge, About). The active tab gets a lavender pill behind the icon and ink-coloured label text.
 - **Desktop:** the same three links in the top bar, the active one in a lavender pill.
 - **Back:** a ghost "← All companies" button that returns to the previous screen with its state intact.
+
+### Home page (/)
+The one page in Persuade mode; everything else is the app. It proves rather than claims, using only live data:
+- **The first viewport:** the live-roles badge (hiring wash), the Display headline with real hiring logos inline, a search pill that goes straight to /jobs, quick-search chips, and the "Newest remote roles" board (real rows with "via Greenhouse" provenance). The board's rows arrive once, staggered (420ms ease-out, blur-in), and never move again; reduced motion shows them still.
+- **Then:** a mist band of the hiring systems we read, a flat bento of tiles (countries, pay ranges, who's hiring more, stacks, AI), the companies hiring now, three plain-text promises, and one ink closing band with the sun rising from its lower edge.
+- **Never on the home page:** shadows, gradient text, eyebrow labels or invented numbers.
+- **The company directory lives at /companies.** The installed app (standalone display mode) never shows the home page: the logo and "/" go to /jobs.
 
 ### Signature: Filter sheet
 On phones every filter lives in a bottom sheet (88dvh max) with grouped chip sections and a pinned footer: "Clear all" and a primary "Show N companies" that updates live as you tap.

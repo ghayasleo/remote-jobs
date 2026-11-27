@@ -112,7 +112,7 @@ export function LandingView({
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Companies", item: absoluteUrl("/") },
+          { "@type": "ListItem", position: 1, name: "Companies", item: absoluteUrl("/companies") },
           { "@type": "ListItem", position: 2, name: "Browse", item: absoluteUrl("/remote") },
           { "@type": "ListItem", position: 3, name: heading, item: absoluteUrl(path) },
         ],

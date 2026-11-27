@@ -44,7 +44,7 @@ export function topicPath({ region, stack }: Topic) {
 }
 
 export function exploreHref({ region, stack }: Topic) {
-  return `/${serializeParams({ ...DEFAULT_PARAMS, region: region ? [region] : [], stack: stack ? [stack] : [] })}`;
+  return `/companies${serializeParams({ ...DEFAULT_PARAMS, region: region ? [region] : [], stack: stack ? [stack] : [] })}`;
 }
 
 export function topicCompanies<T extends ExploreCompany>(

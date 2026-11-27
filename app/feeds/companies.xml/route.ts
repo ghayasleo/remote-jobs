@@ -13,7 +13,7 @@ export async function GET() {
     rssFeed({
       title: "Remote Jobs: newly added companies",
       description: "Remote-friendly tech companies, newest additions first.",
-      siteUrl: absoluteUrl("/"),
+      siteUrl: absoluteUrl("/companies"),
       feedUrl: absoluteUrl("/feeds/companies.xml"),
       items: companies.map((company) => ({
         title: company.name,

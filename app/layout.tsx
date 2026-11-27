@@ -7,6 +7,7 @@ import { GoogleTags } from "@/components/analytics/google-tags";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
 import { OfflineNotice, ServiceWorker } from "@/components/shell/connectivity";
 import { BottomNav } from "@/components/shell/nav";
+import { StandaloneHomeRedirect } from "@/components/shell/home-link";
 import { NavigationTracker } from "@/components/shell/navigation";
 import { SiteFooter } from "@/components/shell/site-footer";
 import { SiteHeader } from "@/components/shell/site-header";
@@ -14,6 +15,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BRAND } from "@/lib/brand-mark";
 import { OG_BASE, SITE_BRAND, SITE_NAME, SITE_URL } from "@/lib/site";
+import { STANDALONE_REDIRECT_SCRIPT } from "@/lib/app-home";
 import "./globals.css";
 
 const figtree = Figtree({ subsets: ["latin"], display: "swap" });
@@ -53,6 +55,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={figtree.className} suppressHydrationWarning>
       <body className="min-h-dvh antialiased">
+        {/* The installed app opens on Jobs: leave "/" before anything paints. */}
+        <script dangerouslySetInnerHTML={{ __html: STANDALONE_REDIRECT_SCRIPT }} />
         {/* Feed discovery. Rendered here (React hoists it into <head>) rather than in
             metadata, because pages that set their own alternates would drop it. */}
         <link rel="alternate" type="application/rss+xml" title="New remote roles" href="/feeds/jobs.xml" />
@@ -74,6 +78,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <SiteFooter />
             <BottomNav />
             <NavigationTracker />
+            <StandaloneHomeRedirect />
             <Toaster
               position="bottom-center"
               duration={5000}

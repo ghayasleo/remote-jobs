@@ -245,3 +245,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Home page: the newest roles arrive one by one, like a feed being read. */
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
