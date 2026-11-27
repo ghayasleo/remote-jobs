@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
-import { BOARDS, readSnapshot } from "../snapshot";
+import { BOARDS, readSnapshot, type Snapshot } from "../snapshot";
 import { fetchBoard } from "./fetcher";
 import { boardKey, type OpenRoles } from "./open-roles";
 import { PROVIDERS, type Board, type RoleDetail } from "./providers";
@@ -28,7 +28,11 @@ export async function getOpenRoles(board: Board): Promise<OpenRoles | null> {
 
 /** Runs `visit` with each company's open roles. One board belongs to one company; none is visited twice. */
 export async function forEachBoard(visit: (slug: string, roles: OpenRoles) => void) {
-  const { boards } = await readSnapshot();
+  forEachBoardIn(await readSnapshot(), visit);
+}
+
+/** The same, over a given snapshot (the cron uses the one it just built). */
+export function forEachBoardIn({ boards }: Snapshot, visit: (slug: string, roles: OpenRoles) => void) {
   const seen = new Set<string>();
   for (const [slug, board] of Object.entries(BOARDS)) {
     const key = boardKey(board);
