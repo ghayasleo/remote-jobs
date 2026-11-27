@@ -127,8 +127,17 @@ export function restoreJob(job: TrackedJob) {
   write([...others, { ...job, deleted: undefined, updatedAt: now() }]);
 }
 
+/** Moves a job to another status, at the top of that column. */
 export function setStatus(key: string, status: TrackStatus) {
-  update(key, (job) => withStatus(job, status, now()));
+  update(key, (job) => ({ ...withStatus(job, status, now()), order: -Date.now() }));
+}
+
+/** Puts a job at a given place on the board (after a drag), in the same or another column. */
+export function moveJob(key: string, status: TrackStatus, order: number) {
+  update(key, (job) => {
+    const time = now();
+    return { ...(job.status === status ? { ...job, updatedAt: time } : withStatus(job, status, time)), order };
+  });
 }
 
 export function setNote(key: string, note: string) {

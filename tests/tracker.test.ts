@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cleanTrackedJob, mergeTracked, trackKey, withStatus, type TrackedJob } from "@/lib/tracker-model";
+import { boardOrder, cleanTrackedJob, mergeTracked, orderBetween, trackKey, withStatus, type TrackedJob } from "@/lib/tracker-model";
 
 const job = (overrides: Partial<TrackedJob> = {}): TrackedJob => ({
   key: "acme/1",
@@ -61,5 +61,28 @@ describe("withStatus", () => {
     const interviewing = withStatus(applied, "interviewing", "2026-11-09T00:00:00.000Z");
     expect(interviewing.appliedAt).toBe("2026-11-05T00:00:00.000Z");
     expect(withStatus(interviewing, "saved", "2026-11-10T00:00:00.000Z").appliedAt).toBeNull();
+  });
+});
+
+describe("board order", () => {
+  it("keeps a set order through cleaning, and drops nonsense", () => {
+    expect(cleanTrackedJob({ ...job(), order: -12.5 })?.order).toBe(-12.5);
+    expect(cleanTrackedJob({ ...job(), order: "first" })?.order).toBeUndefined();
+    expect(cleanTrackedJob({ ...job(), order: Number.NaN })?.order).toBeUndefined();
+  });
+
+  it("puts newer saves first when no order is set", () => {
+    const older = { ...job(), savedAt: "2026-11-01T00:00:00.000Z" };
+    const newer = { ...job(), savedAt: "2026-11-20T00:00:00.000Z" };
+    expect(boardOrder(newer)).toBeLessThan(boardOrder(older));
+  });
+
+  it("places a dropped job between its neighbours, or past the end", () => {
+    const a = { ...job(), order: 10 };
+    const b = { ...job(), order: 20 };
+    expect(orderBetween(a, b)).toBe(15);
+    expect(orderBetween(b, undefined)).toBeGreaterThan(20);
+    expect(orderBetween(undefined, a)).toBeLessThan(10);
+    expect(orderBetween(undefined, undefined)).toBeLessThan(0);
   });
 });
