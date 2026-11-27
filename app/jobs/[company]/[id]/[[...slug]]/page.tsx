@@ -18,6 +18,7 @@ import { postingText } from "@/lib/data/job-boards/sanitize";
 import { getJob, getRemoteJobs, roleListing } from "@/lib/data/jobs";
 import { JOB_CATEGORIES, jobCategory, jobPath, jobSlug } from "@/lib/jobs";
 import { clip, jobPostingJsonLd } from "@/lib/seo";
+import { similarRoles } from "@/lib/similar";
 import { DEFAULT_OG_IMAGE, OG_BASE, absoluteUrl, jsonLd } from "@/lib/site";
 
 type Props = PageProps<"/jobs/[company]/[id]/[[...slug]]">;
@@ -119,6 +120,10 @@ async function JobView({ params }: Pick<Props, "params">) {
   const savable = { company: company.slug, companyName: company.name, domain: company.domain, id: role.id, title: role.title, location: role.location };
   const pay = detail?.payText ?? role.salary;
   const others = toListings(company, job.others);
+  const similar = similarRoles(
+    { company: company.slug, id: role.id, title: role.title, category: jobCategory(role.title, role.team), postedAt: role.postedAt },
+    await getRemoteJobs(),
+  );
   // Only the main posting carries Google Jobs markup, listing every location the role is open in.
   const isMain = role.id === job.canonicalId;
   const posting =
@@ -219,6 +224,17 @@ async function JobView({ params }: Pick<Props, "params">) {
           <ul className="divide-y rounded-2xl border">
             {others.map((other) => (
               <JobRow key={other.id} job={other} showCompany={false} />
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {similar.length > 0 && (
+        <section className="mt-10">
+          <h2 className="mb-3 text-lg font-bold tracking-tight">Similar roles at other companies</h2>
+          <ul className="divide-y rounded-2xl border">
+            {similar.map((other) => (
+              <JobRow key={`${other.company}:${other.id}`} job={other} />
             ))}
           </ul>
         </section>
