@@ -1,14 +1,19 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { CvCheck } from "@/components/cv/cv-check";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 
 export const metadata: Metadata = {
   title: "Free CV check for remote jobs",
   description:
     "Check how hiring systems read your CV and how it lines up with a remote role: the skills it mentions, what's missing, and the requirements to check. Free, and your CV never leaves your device.",
   alternates: { canonical: "/cv-check" },
+  ...(!CV_CHECK_ENABLED && { robots: { index: false } }),
 };
 
 export default function CvCheckPage() {
+  // Development only for now (see lib/features.ts).
+  if (!CV_CHECK_ENABLED) notFound();
   return (
     <div className="mx-auto max-w-5xl px-4 pt-8 pb-12 sm:px-6">
       <h1 className="max-w-[40rem] text-[clamp(1.875rem,4vw,2.75rem)] leading-[1.08] font-extrabold tracking-[-0.035em] text-balance">

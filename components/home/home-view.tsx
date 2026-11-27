@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 import { AlertTriangleIcon, ArrowRightIcon, ArrowUpRightIcon, CheckCircle2Icon, SearchIcon } from "lucide-react";
 import { Sun } from "@/components/brand/logo";
 import { CompanyLogo } from "@/components/company/company-logo";
@@ -296,7 +297,8 @@ function Momentum({ data }: { data: HomeData }) {
 
 function Stacks({ data }: { data: HomeData }) {
   return (
-    <div className="rounded-2xl border bg-card p-5 sm:p-6 lg:col-span-3">
+    // Full width when the CV check is hidden, so the tiles below still pair up.
+    <div className={cn("rounded-2xl border bg-card p-5 sm:p-6", CV_CHECK_ENABLED ? "lg:col-span-3" : "lg:col-span-6")}>
       <h3 className={tileTitle}>Filter by what you build with</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">Open remote roles at companies using each.</p>
       <ul className="mt-5 flex flex-wrap gap-2">
@@ -419,7 +421,7 @@ function FindTheFit({ data }: { data: HomeData }) {
         <Momentum data={data} />
         <Stacks data={data} />
         <WithAi />
-        <CvCheckTile />
+        {CV_CHECK_ENABLED && <CvCheckTile />}
         <TrackerTile />
       </div>
     </section>
@@ -475,7 +477,9 @@ const PROMISES = [
   },
   {
     title: "Private by default",
-    text: "Browsing never needs an account. Your CV is checked on your device and never uploaded, and we never sell your data.",
+    text: CV_CHECK_ENABLED
+      ? "Browsing never needs an account. Your CV is checked on your device and never uploaded, and we never sell your data."
+      : "Browsing never needs an account, and we never sell your data.",
   },
 ];
 

@@ -1,4 +1,5 @@
 import { getJob } from "@/lib/data/jobs";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 import { postingText } from "@/lib/data/job-boards/sanitize";
 
 /**
@@ -7,6 +8,8 @@ import { postingText } from "@/lib/data/job-boards/sanitize";
  * keeps each answer for a day.
  */
 export async function GET(request: Request) {
+  // Only the CV check uses this, and it's development only for now (see lib/features.ts).
+  if (!CV_CHECK_ENABLED) return Response.json({ error: "Not found" }, { status: 404 });
   const role = new URL(request.url).searchParams.get("role") ?? "";
   const [company, ...rest] = role.split("/");
   const id = rest.join("/");

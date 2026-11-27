@@ -7,13 +7,15 @@ import { BellIcon, BookmarkCheckIcon, FileTextIcon, ShieldCheckIcon } from "luci
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { loadGoogleIdentity, onOpenSignIn, signInWithCredential } from "@/lib/auth/client";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
 const PERKS = [
   { icon: BookmarkCheckIcon, text: "Save jobs and companies, and track every application on your dashboard" },
   { icon: BellIcon, text: "Alerts when new roles match what you're looking for" },
-  { icon: FileTextIcon, text: "Your CV tools, saved and ready when you come back" },
+  // The CV tools are development only for now (see lib/features.ts).
+  ...(CV_CHECK_ENABLED ? [{ icon: FileTextIcon, text: "Your CV tools, saved and ready when you come back" }] : []),
 ];
 
 /** Google's own button, rendered into a box once its script has loaded. */

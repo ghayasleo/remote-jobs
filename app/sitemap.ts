@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 import { countryPath } from "@/lib/countries";
 import { getCompanyIndex } from "@/lib/data/companies";
 import { getCountryIndex } from "@/lib/data/countries";
@@ -58,7 +59,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     { url: absoluteUrl("/ai"), changeFrequency: "monthly", priority: 0.5 },
     { url: absoluteUrl("/about"), changeFrequency: "monthly", priority: 0.3 },
-    { url: absoluteUrl("/cv-check"), changeFrequency: "monthly", priority: 0.7 },
+    ...(CV_CHECK_ENABLED ? [{ url: absoluteUrl("/cv-check"), changeFrequency: "monthly" as const, priority: 0.7 }] : []),
     { url: absoluteUrl("/suggest"), changeFrequency: "yearly", priority: 0.3 },
     { url: absoluteUrl("/privacy"), changeFrequency: "yearly", priority: 0.2 },
     { url: absoluteUrl("/terms"), changeFrequency: "yearly", priority: 0.2 },

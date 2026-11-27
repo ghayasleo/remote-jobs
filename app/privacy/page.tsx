@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 import Link from "next/link";
 import { LegalPage, LegalSection } from "@/components/legal-page";
 import { MAKER } from "@/lib/maker";
@@ -17,8 +18,8 @@ export default function PrivacyPage() {
       <LegalSection title="The short version">
         <p>
           RemoteJobs is free to browse without an account. Saving jobs and companies, the application tracker and job
-          alerts need you to sign in with Google, and we keep only what those features need. We don&apos;t sell your data or show ads. Your CV never leaves
-          your device when you use the CV check.
+          alerts need you to sign in with Google, and we keep only what those features need. We don&apos;t sell your data or show ads.
+          {CV_CHECK_ENABLED && " Your CV never leaves your device when you use the CV check."}
         </p>
       </LegalSection>
 
@@ -32,8 +33,16 @@ export default function PrivacyPage() {
       <LegalSection title="When you browse without signing in">
         <ul>
           <li>
-            Your filter choices are kept in your browser, on your device. If you tick &ldquo;Remember it on this
-            device&rdquo; in the CV check, your CV&apos;s text is kept there too. We can&apos;t see either.
+            Your filter choices are kept in your browser, on your device.
+            {CV_CHECK_ENABLED ? (
+              <>
+                {" "}
+                If you tick &ldquo;Remember it on this device&rdquo; in the CV check, your CV&apos;s text is kept there
+                too. We can&apos;t see either.
+              </>
+            ) : (
+              " We can't see them."
+            )}
           </li>
           <li>
             Vercel Web Analytics and Speed Insights count page views and measure loading speed without cookies and without
@@ -50,8 +59,8 @@ export default function PrivacyPage() {
         <p>Google tells us your name, email address, profile photo and a Google account ID. We store them, with what you save, to:</p>
         <ul>
           <li>keep your saved jobs and companies, your application tracker and your alerts on your dashboard, on every device;</li>
-          <li>send you the job alerts you set up;</li>
-          <li>keep any CV tools you use available when you come back.</li>
+          <li>send you the job alerts you set up{CV_CHECK_ENABLED ? ";" : "."}</li>
+          {CV_CHECK_ENABLED && <li>keep any CV tools you use available when you come back.</li>}
         </ul>
         <p>
           We don&apos;t get your Google password, contacts or anything else in your Google account, and we never post
@@ -66,12 +75,14 @@ export default function PrivacyPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="The CV check">
-        <p>
-          The CV check runs entirely in your browser. Your CV file is read on your device to compare it with a job
-          description; it isn&apos;t uploaded to us or anyone else.
-        </p>
-      </LegalSection>
+      {CV_CHECK_ENABLED && (
+        <LegalSection title="The CV check">
+          <p>
+            The CV check runs entirely in your browser. Your CV file is read on your device to compare it with a job
+            description; it isn&apos;t uploaded to us or anyone else.
+          </p>
+        </LegalSection>
+      )}
 
       <LegalSection title="Cookies">
         <ul>
