@@ -17,6 +17,8 @@ export type ProviderId =
   | "breezy"
   | "bamboohr"
   | "rippling"
+  | "gem"
+  | "pinpoint"
   | "workday";
 
 export type Board = { provider: ProviderId; token: string };
@@ -787,6 +789,87 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
         .filter((role) => role.id && role.url),
     // No public endpoint for one posting's description: the page links to the posting instead.
     normalizeDetail: () => null,
+  },
+
+  gem: {
+    label: "Gem",
+    apiUrl: (token) => `https://api.gem.com/job_board/v0/${encodeURIComponent(token)}/job_posts/`,
+    boardUrl: (token) => `https://jobs.gem.com/${encodeURIComponent(token)}`,
+    patterns: [/jobs\.gem\.com\/([a-z0-9-]+)/gi],
+    ignoreTokens: ["api", "static", "assets", "embed"],
+    normalize: (data) =>
+      list(data)
+        .map((post) => {
+          const p = obj(post);
+          const location = str(obj(p.location).name) ?? joinLocation(...list(p.offices).map((office) => obj(office).name));
+          const type = str(p.location_type);
+          return {
+            id: str(p.id) ?? "",
+            title: str(p.title) ?? "Untitled role",
+            location,
+            workplace:
+              type === "remote" ? "remote" : type === "hybrid" ? "hybrid" : type === "in_office" ? "onsite" : workplaceFromText(location),
+            team: str(obj(list(p.departments)[0]).name),
+            employmentType: employmentType(p.employment_type),
+            salary: null,
+            pay: null,
+            url: str(p.absolute_url) ?? "",
+            postedAt: isoDate(p.first_published_at ?? p.created_at),
+          } satisfies Role;
+        })
+        .filter((role) => role.id && role.url),
+    // The list carries each post's full description.
+    detailFromList: true,
+    normalizeDetail: (data, id) => {
+      const html = str(obj(list(data).find((post) => str(obj(post).id) === id)).content);
+      return html ? { html, payText: null } : null;
+    },
+  },
+
+  pinpoint: {
+    label: "Pinpoint",
+    apiUrl: (token) => `https://${encodeURIComponent(token)}.pinpointhq.com/postings.json`,
+    boardUrl: (token) => `https://${encodeURIComponent(token)}.pinpointhq.com/`,
+    patterns: [/\b([a-z0-9-]+)\.pinpointhq\.com/gi],
+    ignoreTokens: ["www", "app", "api", "help", "developers", "support", "status", "cdn"],
+    normalize: (data) =>
+      list(obj(data).data)
+        .map((posting) => {
+          const p = obj(posting);
+          const where = obj(p.location);
+          const location = str(where.name) ?? joinLocation(where.city, where.province);
+          const type = str(p.workplace_type);
+          const showPay = p.compensation_visible === true;
+          return {
+            id: str(p.id) ?? "",
+            title: str(p.title) ?? "Untitled role",
+            location,
+            workplace: type === "remote" ? "remote" : type === "hybrid" ? "hybrid" : type === "onsite" ? "onsite" : workplaceFromText(location),
+            team: str(obj(obj(p.job).department).name),
+            employmentType: employmentType(p.employment_type_text ?? p.employment_type),
+            salary: showPay
+              ? salaryRange(p.compensation_minimum, p.compensation_maximum, p.compensation_currency, p.compensation_frequency)
+              : null,
+            pay: showPay
+              ? payFrom(p.compensation_minimum, p.compensation_maximum, p.compensation_currency, p.compensation_frequency)
+              : null,
+            url: str(p.url) ?? "",
+            // Pinpoint's public feed has no posting date.
+            postedAt: null,
+          } satisfies Role;
+        })
+        .filter((role) => role.id && role.url),
+    detailFromList: true,
+    normalizeDetail: (data, id) => {
+      const p = obj(list(obj(data).data).find((posting) => str(obj(posting).id) === id));
+      const html = [
+        str(p.description) ?? "",
+        section(str(p.key_responsibilities_header) ?? "What you'll do", p.key_responsibilities),
+        section(str(p.skills_knowledge_expertise_header) ?? "What you'll bring", p.skills_knowledge_expertise),
+        section(str(p.benefits_header) ?? "Benefits", p.benefits),
+      ].join("");
+      return html ? { html, payText: null } : null;
+    },
   },
 
   workday: {

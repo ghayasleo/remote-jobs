@@ -7,7 +7,7 @@ Live at [remotejobs.ghayasuddin.net](https://remotejobs.ghayasuddin.net).
 ## Where the data comes from
 
 - **Company profiles** come from [remoteintech/remote-jobs](https://github.com/remoteintech/remote-jobs), a community-maintained list. The whole repo is downloaded as one tarball and every `src/companies/*.md` file (YAML frontmatter plus Markdown sections) is parsed on the server. Pages refresh daily.
-- **Open roles** come from the public APIs of the job boards companies use: Greenhouse, Lever, Ashby, Workable, Recruitee, SmartRecruiters, Personio, Teamtailor, Breezy HR, BambooHR, Rippling and Workday. They refresh hourly, and a role posted more than once (or once per country) shows once. Which board belongs to which company lives in [`data/job-boards.json`](data/job-boards.json), produced by `npm run boards:scan` (see below).
+- **Open roles** come from the public APIs of the job boards companies use: Greenhouse, Lever, Ashby, Workable, Recruitee, SmartRecruiters, Personio, Teamtailor, Breezy HR, BambooHR, Rippling, Gem, Pinpoint and Workday. They refresh hourly, and a role posted more than once (or once per country) shows once. Which board belongs to which company lives in [`data/job-boards.json`](data/job-boards.json), produced by `npm run boards:scan` (see below).
 - **Logos** are company favicons, fetched through `/logo/[domain]` so visitors' browsers never contact Google.
 
 ## Stack
@@ -75,4 +75,4 @@ Company profiles are the work of the contributors to [remoteintech/remote-jobs](
 >
 > THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-Open roles are read from each company's public job board (Greenhouse, Lever, Ashby, Workable, Recruitee, SmartRecruiters, Personio, Teamtailor, Breezy HR, BambooHR, Rippling or Workday) and link back to it for applying. Company logos are fetched from Google's favicon service and belong to their companies.
+Open roles are read from each company's public job board (Greenhouse, Lever, Ashby, Workable, Recruitee, SmartRecruiters, Personio, Teamtailor, Breezy HR, BambooHR, Rippling, Gem, Pinpoint or Workday) and link back to it for applying. Company logos are fetched from Google's favicon service and belong to their companies.

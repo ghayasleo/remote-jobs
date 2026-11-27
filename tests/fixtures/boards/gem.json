@@ -1,0 +1,116 @@
+[
+ {
+  "absolute_url": "https://jobs.gem.com/ocient-inc-/am9icG9zdDrjs1cXAvxZfz7oqTg028nU",
+  "content": "<div><strong>About Ocient:</strong></div><div>Ocient is building OcientAIQ™ – a complete ecosystem for delivering trusted agentic AI solutions at petabyte scale, for the organizations that can't afford to get AI wrong. Our customers protect networks, secure nations, and power the global economy. The problems we solve are genuinely hard, and the work matters.</div><div>&nbsp;</div><div>Founded in 2</div>",
+  "content_plain": "About Ocient:\nOcient is building OcientAIQ™ – a complete ecosystem for delivering trusted agentic AI solutions at petabyte scale, for the organizations that can't afford to get AI wrong. Our customers",
+  "created_at": "2026-08-07T19:26:12.975Z",
+  "departments": [
+   {
+    "child_ids": [],
+    "id": "ZGVwdDr5dXAliJfvSGFx5Zl5uRNE",
+    "name": "Development - Query Processing and Integrations",
+    "parent_id": "ZGVwdDqGXx2gr9jyf4J-CkKTDF9j"
+   }
+  ],
+  "employment_type": "full_time",
+  "first_published_at": "2026-08-07T19:44:18.349Z",
+  "id": "am9icG9zdDrjs1cXAvxZfz7oqTg028nU",
+  "internal_job_id": "am9iOtZ12XRj5zasJNi3KoNxIYY",
+  "location": {
+   "name": "United States - Remote"
+  },
+  "location_type": "remote",
+  "offices": [
+   {
+    "child_ids": [],
+    "child_office_external_ids": [],
+    "id": "bG9jOsqDhCuKxFIAq5DyWacGDYA",
+    "location": {
+     "name": "United States - Remote"
+    },
+    "name": "Remote, USA",
+    "parent_id": null,
+    "parent_office_external_id": null
+   }
+  ],
+  "requisition_id": "DEV11a",
+  "title": "Senior Software Engineer - Machine Learning ",
+  "updated_at": "2026-08-07T19:44:18.349Z"
+ },
+ {
+  "absolute_url": "https://jobs.gem.com/ocient-inc-/am9icG9zdDp9BrHlqr7myFyRPR_fw9UL",
+  "content": "<div><strong>About Ocient:</strong></div><div>Ocient is building OcientAIQ™ – a complete ecosystem for delivering trusted agentic AI solutions at petabyte scale, for the organizations that can't afford to get AI wrong. Our customers protect networks, secure nations, and power the global economy. The problems we solve are genuinely hard, and the work matters.</div><div>&nbsp;</div><div>Founded in 2</div>",
+  "content_plain": "About Ocient:\nOcient is building OcientAIQ™ – a complete ecosystem for delivering trusted agentic AI solutions at petabyte scale, for the organizations that can't afford to get AI wrong. Our customers",
+  "created_at": "2026-08-07T19:44:46.577Z",
+  "departments": [
+   {
+    "child_ids": [],
+    "id": "ZGVwdDr5dXAliJfvSGFx5Zl5uRNE",
+    "name": "Development - Query Processing and Integrations",
+    "parent_id": "ZGVwdDqGXx2gr9jyf4J-CkKTDF9j"
+   }
+  ],
+  "employment_type": "full_time",
+  "first_published_at": "2026-08-07T19:57:29.871Z",
+  "id": "am9icG9zdDp9BrHlqr7myFyRPR_fw9UL",
+  "internal_job_id": "am9iOmDHGgcau8xX1Nw38zwNO3M",
+  "location": {
+   "name": "United States - Remote"
+  },
+  "location_type": "remote",
+  "offices": [
+   {
+    "child_ids": [],
+    "child_office_external_ids": [],
+    "id": "bG9jOsqDhCuKxFIAq5DyWacGDYA",
+    "location": {
+     "name": "United States - Remote"
+    },
+    "name": "Remote, USA",
+    "parent_id": null,
+    "parent_office_external_id": null
+   }
+  ],
+  "requisition_id": "DEV11b",
+  "title": "Senior Software Engineer - Geospatial",
+  "updated_at": "2026-08-07T19:57:29.871Z"
+ },
+ {
+  "absolute_url": "https://jobs.gem.com/ocient-inc-/am9icG9zdDr1ivF4Z83dxwMxjYehfXDd",
+  "content": "<div><strong>About Ocient:</strong></div><div>Ocient is building OcientAIQ™ – a complete ecosystem for delivering trusted agentic AI solutions at petabyte scale, for the organizations that can't afford to get AI wrong. Our customers protect networks, secure nations, and power the global economy. The problems we solve are genuinely hard, and the work matters.</div><div>&nbsp;</div><div>Founded in 2</div>",
+  "content_plain": "About Ocient:\nOcient is building OcientAIQ™ – a complete ecosystem for delivering trusted agentic AI solutions at petabyte scale, for the organizations that can't afford to get AI wrong. Our customers",
+  "created_at": "2026-09-23T15:12:31.574Z",
+  "departments": [
+   {
+    "child_ids": [],
+    "id": "ZGVwdDp_zm0VL3ubD7DgG6NNuiyq",
+    "name": "Tools",
+    "parent_id": "ZGVwdDoXecK7HSPpiT-rN7eqF91I"
+   }
+  ],
+  "employment_type": "full_time",
+  "first_published_at": "2026-09-23T15:15:13.422Z",
+  "id": "am9icG9zdDr1ivF4Z83dxwMxjYehfXDd",
+  "internal_job_id": "am9iOin-mc8pfOhxVYNKVXf_8kU",
+  "location": {
+   "name": "United States - Remote"
+  },
+  "location_type": "remote",
+  "offices": [
+   {
+    "child_ids": [],
+    "child_office_external_ids": [],
+    "id": "bG9jOsqDhCuKxFIAq5DyWacGDYA",
+    "location": {
+     "name": "United States - Remote"
+    },
+    "name": "Remote, USA",
+    "parent_id": null,
+    "parent_office_external_id": null
+   }
+  ],
+  "requisition_id": "TOPS10",
+  "title": "Senior Software Engineer (Tools)",
+  "updated_at": "2026-10-19T21:07:53.416Z"
+ }
+]

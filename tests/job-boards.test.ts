@@ -391,3 +391,45 @@ describe("helpers", () => {
     expect(employmentType("")).toBeNull();
   });
 });
+
+describe("gem and pinpoint", () => {
+  it("gem: reads remote posts with their team, type and first publish date", () => {
+    const [first] = roles("gem");
+    expect(first).toMatchObject({
+      title: "Senior Software Engineer - Machine Learning",
+      location: "United States - Remote",
+      workplace: "remote",
+      team: "Development - Query Processing and Integrations",
+      employmentType: "Full-time",
+      postedAt: "2026-08-07T19:44:18.349Z",
+    });
+    expect(first.url).toMatch(/^https:\/\/jobs\.gem\.com\/ocient-inc-\//);
+    expect(PROVIDERS.gem.normalizeDetail(fixture("gem"), first.id)!.html).toContain("About Ocient");
+  });
+
+  it("pinpoint: reads the workplace type and builds the description from its sections", () => {
+    const list = roles("pinpoint");
+    expect(list).toHaveLength(3);
+    expect(list[1]).toMatchObject({
+      title: "Evergreen Posting: Software Engineer",
+      location: "Remote (select US states)",
+      workplace: "remote",
+      team: "Engineering",
+      employmentType: "Full-time",
+      salary: null,
+      postedAt: null,
+    });
+    const html = PROVIDERS.pinpoint.normalizeDetail(fixture("pinpoint"), list[1].id)!.html;
+    expect(html).toContain("<h3>What You'll Do (Key Responsibilities)</h3>");
+  });
+
+  it("detects Gem and Pinpoint boards on careers pages", () => {
+    const html = `<a href="https://jobs.gem.com/retool">Jobs</a> <a href="https://coforma.pinpointhq.com/en/postings/1">Role</a>`;
+    expect(detectBoards(html)).toEqual(
+      expect.arrayContaining([
+        { provider: "gem", token: "retool" },
+        { provider: "pinpoint", token: "coforma" },
+      ]),
+    );
+  });
+});

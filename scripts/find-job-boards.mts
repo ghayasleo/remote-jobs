@@ -39,6 +39,29 @@ const EXCLUDE: Record<string, string> = {
   flip: "greenhouse/flip is a US company; this Flip is flip.id",
   honeycomb: "greenhouse/honeycomb is honeycomb.io; this Honeycomb is honeycomb.tv",
   ramp: "greenhouse/ramp only has a stale copied posting",
+  // Acquired companies whose careers pages now lead to the parent's board.
+  "wombat-security": "its careers page is Proofpoint's Workday board",
+  hotjar: "its careers page is Contentsquare's board",
+  puppet: "its careers page is Perforce's board",
+  "the-wirecutter": "its careers page is The New York Times' board",
+  "jackson-river": "its careers page is Togetherwork's board",
+  formidable: "its careers page is Nearform's board",
+};
+
+/**
+ * Boards checked by hand that the scan can't confirm by name: renamed or
+ * rebranded companies, and boards their pages only load with JavaScript.
+ * Each is still used only while its API answers. Checked 2026-11-27.
+ */
+const KNOWN_BOARDS: Record<string, { board: Board; note: string }> = {
+  intercom: { board: { provider: "greenhouse", token: "intercom" }, note: "Intercom's board is named after its product, Fin" },
+  "launch-potato": { board: { provider: "greenhouse", token: "launchpotato" }, note: "board named \"LP Careers Page\"" },
+  formstack: { board: { provider: "ashby", token: "intellistack" }, note: "Formstack is now Intellistack" },
+  cratedb: { board: { provider: "personio", token: "crate-io.jobs.personio.com" }, note: "board of Crate.io GmbH" },
+  retool: { board: { provider: "gem", token: "retool" }, note: "Gem board linked from retool.com/careers" },
+  ocient: { board: { provider: "gem", token: "ocient-inc-" }, note: "Gem board linked from ocient.com/careers" },
+  coforma: { board: { provider: "pinpoint", token: "coforma" }, note: "Pinpoint board" },
+  cartodb: { board: { provider: "pinpoint", token: "carto" }, note: "Pinpoint board for CARTO" },
 };
 type Candidate = Board & { direct: boolean };
 
@@ -254,6 +277,20 @@ function previousBoards(): Record<string, Board> {
   }
 }
 
+/** A hand-checked board (KNOWN_BOARDS): used when its API answers, without the name check. */
+async function knownBoard(slug: string): Promise<Match | null> {
+  const known = KNOWN_BOARDS[slug];
+  if (!known || !PROVIDERS[known.board.provider]) return null;
+  const data = await readBoard(known.board);
+  if (!data) return null;
+  try {
+    PROVIDERS[known.board.provider].normalize(data, known.board.token);
+  } catch {
+    return null;
+  }
+  return { board: known.board, note: `checked by hand: ${known.note}`, strength: STRENGTH.sameName };
+}
+
 /** A board from the last scan that this scan didn't find: kept only while its API still answers for this company. */
 async function keepPrevious(company: CompanySource, board: Board | undefined): Promise<Match | null> {
   if (!board || !PROVIDERS[board.provider]) return null;
@@ -274,7 +311,11 @@ async function main() {
     for (let company = queue.shift(); company; company = queue.shift()) {
       const { rejected, ...result } = await scan(company);
       // Careers pages time out and rate-limit now and then; a board that still answers stays.
-      let match = result.match ?? (await guessGreenhouse(company)) ?? (await keepPrevious(company, previous[company.slug]));
+      let match =
+        (await knownBoard(company.slug)) ??
+        result.match ??
+        (await guessGreenhouse(company)) ??
+        (await keepPrevious(company, previous[company.slug]));
       if (match && EXCLUDE[company.slug]) {
         rejected.push(`${match.board.provider}:${match.board.token} (excluded: ${EXCLUDE[company.slug]})`);
         match = null;
