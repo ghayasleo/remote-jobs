@@ -175,7 +175,7 @@ export function TrackerView() {
         <span className="mx-auto grid size-12 place-items-center rounded-full bg-secondary text-secondary-foreground">
           <BriefcaseIcon className="size-5" aria-hidden />
         </span>
-        <h3 className="mt-4 font-semibold">No applications yet</h3>
+        <h2 className="mt-4 font-semibold">No saved jobs yet</h2>
         <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">
           Save any role with its bookmark, then move it from Saved to Applied, Interviewing and Offer as things happen.
         </p>
@@ -204,10 +204,10 @@ export function TrackerView() {
             aria-labelledby={`column-${status}`}
             className="flex min-w-0 snap-start flex-col rounded-2xl bg-muted/60 p-2"
           >
-            <h3 id={`column-${status}`} className="flex items-baseline justify-between px-2 pt-1 pb-2 text-sm font-bold">
+            <h2 id={`column-${status}`} className="flex items-baseline justify-between px-2 pt-1 pb-2 text-sm font-bold">
               {TRACK_STATUSES[status]}
               <span className="text-xs font-medium text-muted-foreground tabular-nums">{column.length}</span>
-            </h3>
+            </h2>
             {column.length > 0 ? (
               <ul className="grid grid-cols-1 gap-2">
                 {column.map((job) => (

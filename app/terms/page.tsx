@@ -38,7 +38,7 @@ export default function TermsPage() {
         <p>
           Browsing doesn&apos;t need an account. Saving jobs and companies, the application tracker and job alerts need
           you to sign in with Google. Keep your Google account secure; you&apos;re responsible for what happens under your
-          account. You can delete it any time on the <Link href="/account">account page</Link>.
+          account. You can delete it any time on the <Link href="/dashboard/account">account page</Link>.
         </p>
       </LegalSection>
 

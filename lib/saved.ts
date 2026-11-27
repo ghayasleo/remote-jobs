@@ -105,6 +105,17 @@ export function replaceSaved(slugs: string[]) {
   writeSaved(slugs, changed);
 }
 
+/** Drops this browser's copy without recording removals: on sign-out, the account keeps it. */
+export function forgetSaved() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(META_KEY);
+  } catch {
+    return;
+  }
+  window.dispatchEvent(new Event(CHANGE_EVENT));
+}
+
 /** Takes the account's merged list after a sync: saved ones newest first, with their change times. */
 export function applySyncedCompanies(changes: SavedChange[]) {
   const next = changes

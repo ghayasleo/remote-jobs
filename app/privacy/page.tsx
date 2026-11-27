@@ -103,7 +103,7 @@ export default function PrivacyPage() {
       <LegalSection title="Keeping and deleting your data">
         <p>
           Your account and what&apos;s stored with it stay until you delete them. Delete your account on the{" "}
-          <Link href="/account">account page</Link> and it&apos;s removed right away, along with everything stored for it.
+          <Link href="/dashboard/account">account page</Link> and it&apos;s removed right away, along with everything stored for it.
           Anything saved only in your browser stays there until you clear it.
         </p>
         <p>

@@ -32,7 +32,9 @@ const nextConfig: NextConfig = {
         permanent: true,
       })),
       // Saved became the dashboard.
-      { source: "/saved", destination: "/dashboard", permanent: true },
+      { source: "/saved", destination: "/dashboard/jobs", permanent: true },
+      { source: "/account", destination: "/dashboard/account", permanent: true },
+      { source: "/alerts", destination: "/dashboard/alerts", permanent: true },
       // Links from the first version of this site ended in ".md".
       {
         source: "/company-profiles/:slug([a-zA-Z0-9-]+)\\.md",
