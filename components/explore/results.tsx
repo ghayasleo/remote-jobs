@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ArrowUpDownIcon, SearchXIcon } from "lucide-react";
 import { CompanyRow } from "@/components/company/company-row";
 import { Button } from "@/components/ui/button";
@@ -108,6 +109,12 @@ function EmptyResults({ filters, onClearAll }: { filters: ActiveFilter[]; onClea
           Clear everything
         </Button>
       </div>
+      <p className="mt-6 text-sm text-muted-foreground">
+        Looking for a company that isn&apos;t here?{" "}
+        <Link href="/suggest" className="font-medium text-primary underline underline-offset-4">
+          Suggest it
+        </Link>
+      </p>
     </div>
   );
 }

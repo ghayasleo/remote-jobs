@@ -87,7 +87,11 @@ export default async function AboutPage() {
           <p>
             The list lives on GitHub and anyone can improve it. If a company is missing or a profile is out of date,{" "}
             <External href={`${UPSTREAM_REPO_URL}/blob/main/CONTRIBUTING.md`}>add or edit it there</External>, and it
-            shows up here within a day of being merged.
+            shows up here within a day of being merged. No GitHub account?{" "}
+            <Link href="/suggest" className="font-medium text-primary underline underline-offset-4">
+              Suggest a company here
+            </Link>{" "}
+            instead.
           </p>
         </Section>
 
