@@ -13,6 +13,7 @@ import {
   TrendingUpIcon,
   type LucideIcon,
 } from "lucide-react";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 
 export type NavItem = { href: string; label: string; icon: LucideIcon; description?: string };
 
@@ -50,7 +51,7 @@ export const MORE_GROUPS: { title: string; items: NavItem[] }[] = [
   },
 ];
 
-/** The free CV check, given its own spot in the More menu. */
+/** The free CV check, given its own spot in the More menu (development only for now). */
 export const CV_CHECK: NavItem = {
   href: "/cv-check",
   label: "Free CV check",
@@ -58,7 +59,7 @@ export const CV_CHECK: NavItem = {
   description: "How hiring systems read your CV, role by role",
 };
 
-export const MORE_ITEMS: NavItem[] = [CV_CHECK, ...MORE_GROUPS.flatMap((group) => group.items)];
+export const MORE_ITEMS: NavItem[] = [...(CV_CHECK_ENABLED ? [CV_CHECK] : []), ...MORE_GROUPS.flatMap((group) => group.items)];
 
 const isCountryPage = (pathname: string) => pathname === "/remote/in" || pathname.startsWith("/remote/in/");
 

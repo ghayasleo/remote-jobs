@@ -18,6 +18,7 @@ import { ANALYTICS_ENABLED } from "@/lib/google-tags";
 import { useSavedSlugs } from "@/lib/saved";
 import { useTrackedJobs } from "@/lib/tracker";
 import { useProfile } from "@/lib/auth/client";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 import { cn } from "@/lib/utils";
 import { CV_CHECK, MAIN_ITEMS, MORE_GROUPS, MORE_ITEMS, isActive, isMoreActive, type NavItem } from "./nav-items";
 
@@ -157,7 +158,12 @@ function MoreMenu() {
           open ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0",
         )}
       >
-        <div className="grid grid-cols-[repeat(3,minmax(0,1fr))_minmax(15rem,17rem)] gap-6 rounded-2xl border bg-popover p-5 text-popover-foreground shadow-xl">
+        <div
+          className={cn(
+            "grid gap-6 rounded-2xl border bg-popover p-5 text-popover-foreground shadow-xl",
+            CV_CHECK_ENABLED ? "grid-cols-[repeat(3,minmax(0,1fr))_minmax(15rem,17rem)]" : "grid-cols-3",
+          )}
+        >
           {MORE_GROUPS.map((group) => (
             <section key={group.title} aria-labelledby={`more-${group.title}`} className="min-w-0">
               <p id={`more-${group.title}`} className="px-2.5 pb-2 text-xs font-semibold text-muted-foreground">
@@ -170,23 +176,25 @@ function MoreMenu() {
               </ul>
             </section>
           ))}
-          <Link
-            href={CV_CHECK.href}
-            onClick={close}
-            className="group flex flex-col rounded-xl bg-secondary p-5 text-secondary-foreground outline-none transition-colors duration-150 hover:bg-secondary/80 focus-visible:ring-3 focus-visible:ring-ring/50"
-          >
-            <span className="grid size-10 place-items-center rounded-lg bg-background/70 text-foreground">
-              <FileCheckIcon className="size-5" aria-hidden />
-            </span>
-            <span className="mt-4 font-bold">{CV_CHECK.label}</span>
-            <span className="mt-1 flex-1 text-sm text-secondary-foreground/80">
-              See how hiring systems read your CV for any role here. It&apos;s checked on your device and never uploaded.
-            </span>
-            <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
-              Check your CV
-              <ArrowRightIcon className="size-4 transition-transform duration-200 ease-out-quart group-hover:translate-x-0.5" aria-hidden />
-            </span>
-          </Link>
+          {CV_CHECK_ENABLED && (
+            <Link
+              href={CV_CHECK.href}
+              onClick={close}
+              className="group flex flex-col rounded-xl bg-secondary p-5 text-secondary-foreground outline-none transition-colors duration-150 hover:bg-secondary/80 focus-visible:ring-3 focus-visible:ring-ring/50"
+            >
+              <span className="grid size-10 place-items-center rounded-lg bg-background/70 text-foreground">
+                <FileCheckIcon className="size-5" aria-hidden />
+              </span>
+              <span className="mt-4 font-bold">{CV_CHECK.label}</span>
+              <span className="mt-1 flex-1 text-sm text-secondary-foreground/80">
+                See how hiring systems read your CV for any role here. It&apos;s checked on your device and never uploaded.
+              </span>
+              <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold">
+                Check your CV
+                <ArrowRightIcon className="size-4 transition-transform duration-200 ease-out-quart group-hover:translate-x-0.5" aria-hidden />
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </div>

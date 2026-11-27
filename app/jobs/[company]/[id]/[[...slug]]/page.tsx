@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { CV_CHECK_ENABLED } from "@/lib/features";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
@@ -193,12 +194,14 @@ async function JobView({ params }: Pick<Props, "params">) {
             </a>
           </Button>
           <SaveJobButton job={savable} withLabel />
-          <Button asChild variant="outline" size="lg" className="h-11 rounded-full px-4">
-            <Link href={cvCheckHref}>
-              <FileCheckIcon aria-hidden />
-              Check my CV
-            </Link>
-          </Button>
+          {CV_CHECK_ENABLED && (
+            <Button asChild variant="outline" size="lg" className="h-11 rounded-full px-4">
+              <Link href={cvCheckHref}>
+                <FileCheckIcon aria-hidden />
+                Check my CV
+              </Link>
+            </Button>
+          )}
           <ShareButton name={`${role.title} at ${company.name}`} withLabel />
         </div>
       </header>
@@ -220,18 +223,20 @@ async function JobView({ params }: Pick<Props, "params">) {
         )}
       </section>
 
-      <Link
-        href={cvCheckHref}
-        className="mt-8 flex items-center gap-3 rounded-2xl border p-4 transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none md:hidden"
-      >
-        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary text-secondary-foreground">
-          <FileCheckIcon className="size-5" aria-hidden />
-        </span>
-        <span className="min-w-0">
-          <span className="block font-semibold">Check my CV against this role</span>
-          <span className="block text-sm text-muted-foreground">Free, and your CV stays on your device</span>
-        </span>
-      </Link>
+      {CV_CHECK_ENABLED && (
+        <Link
+          href={cvCheckHref}
+          className="mt-8 flex items-center gap-3 rounded-2xl border p-4 transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none md:hidden"
+        >
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary text-secondary-foreground">
+            <FileCheckIcon className="size-5" aria-hidden />
+          </span>
+          <span className="min-w-0">
+            <span className="block font-semibold">Check my CV against this role</span>
+            <span className="block text-sm text-muted-foreground">Free, and your CV stays on your device</span>
+          </span>
+        </Link>
+      )}
 
       <section aria-labelledby="about-company" className="mt-10 rounded-2xl border p-5">
         <h2 id="about-company" className="text-lg font-bold tracking-tight">
