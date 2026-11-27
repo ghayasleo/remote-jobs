@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { BookmarkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { openSignIn, useProfile } from "@/lib/auth/client";
 import { removeJob, restoreJob, saveJob, useTrackedJob, type SavableJob } from "@/lib/tracker";
 import { TRACK_STATUSES, trackKey } from "@/lib/tracker-model";
 import { cn } from "@/lib/utils";
@@ -11,11 +12,17 @@ import { cn } from "@/lib/utils";
 /** Saves a role to the application tracker, or removes it. */
 export function SaveJobButton({ job, withLabel = false, className }: { job: SavableJob; withLabel?: boolean; className?: string }) {
   const router = useRouter();
+  const profile = useProfile();
   const key = trackKey(job);
   const tracked = useTrackedJob(key);
-  const saved = tracked !== undefined;
+  // Saved jobs belong to an account: signed out, nothing shows as saved.
+  const saved = profile !== null && tracked !== undefined;
 
   const onClick = () => {
+    if (!profile) {
+      openSignIn("Sign in to save jobs and track your applications. It's free.");
+      return;
+    }
     if (tracked) {
       const previous = tracked;
       removeJob(key);
@@ -31,8 +38,8 @@ export function SaveJobButton({ job, withLabel = false, className }: { job: Sava
     }
     toast(`Saved “${job.title}”`, {
       id: `job-${key}`,
-      description: "Track where your application stands in Saved.",
-      action: { label: "Open tracker", onClick: () => router.push("/saved") },
+      description: "Track where your application stands on your dashboard.",
+      action: { label: "Open dashboard", onClick: () => router.push("/dashboard") },
     });
   };
 
@@ -53,7 +60,7 @@ export function SaveJobButton({ job, withLabel = false, className }: { job: Sava
         className={cn("h-11 rounded-full px-4", className)}
       >
         {icon}
-        {tracked ? TRACK_STATUSES[tracked.status] : "Save"}
+        {saved && tracked ? TRACK_STATUSES[tracked.status] : "Save"}
       </Button>
     );
   }

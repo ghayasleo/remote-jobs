@@ -2,7 +2,7 @@ import {
   BanknoteIcon,
   BarChart3Icon,
   BellIcon,
-  BookmarkIcon,
+  LayoutDashboardIcon,
   BotIcon,
   BriefcaseIcon,
   Building2Icon,
@@ -21,7 +21,7 @@ export type NavItem = { href: string; label: string; icon: LucideIcon; descripti
 export const MAIN_ITEMS: NavItem[] = [
   { href: "/jobs", label: "Jobs", icon: BriefcaseIcon },
   { href: "/companies", label: "Companies", icon: Building2Icon },
-  { href: "/saved", label: "Saved", icon: BookmarkIcon },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboardIcon },
 ];
 
 /** Everything else, behind "More" (and in the footer). */

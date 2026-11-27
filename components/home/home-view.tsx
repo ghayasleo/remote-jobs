@@ -382,7 +382,7 @@ function TrackerTile() {
     <div className={cn(tile, "lg:col-span-3")}>
       <h3 className={tileTitle}>Keep track of every application</h3>
       <p className="mt-1.5 text-sm text-muted-foreground">
-        Save roles, move them from Applied to Offer, and keep notes. No account needed; sign in to sync across devices.
+        Save roles, move them from Applied to Offer, and keep notes, all on one dashboard. Sign in with Google to start.
       </p>
       <div className="mt-5 grid grid-cols-3 gap-2" aria-label="An example board">
         {EXAMPLE_BOARD.map(({ status, count }) => (
@@ -399,8 +399,8 @@ function TrackerTile() {
           </div>
         ))}
       </div>
-      <Link href="/saved" className={tileLink}>
-        Open your tracker
+      <Link href="/dashboard" className={tileLink}>
+        Open your dashboard
         <ArrowRightIcon className="size-4" aria-hidden />
       </Link>
     </div>
@@ -475,7 +475,7 @@ const PROMISES = [
   },
   {
     title: "Private by default",
-    text: "Your CV is checked on your device and never uploaded. Signing in is optional, and we never sell your data.",
+    text: "Browsing never needs an account. Your CV is checked on your device and never uploaded, and we never sell your data.",
   },
 ];
 

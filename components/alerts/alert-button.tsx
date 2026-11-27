@@ -7,6 +7,7 @@ import { BellIcon, BellRingIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { openSignIn, useProfile } from "@/lib/auth/client";
 import { createAlert, pushSupport, type DeviceAlert, type PushSupport } from "@/lib/alerts-client";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ export function AlertButton({ query, label, className }: { query: string; label:
   const [frequency, setFrequency] = useState<DeviceAlert["frequency"]>("daily");
   const [busy, setBusy] = useState(false);
   const [support, setSupport] = useState<PushSupport>("supported");
+  const profile = useProfile();
 
   const turnOn = async () => {
     setBusy(true);
@@ -50,6 +52,10 @@ export function AlertButton({ query, label, className }: { query: string; label:
     <Dialog
       open={open}
       onOpenChange={(next) => {
+        if (next && !profile) {
+          openSignIn("Sign in to get alerts when new roles match your search. It's free.");
+          return;
+        }
         if (next) setSupport(pushSupport());
         setOpen(next);
       }}
@@ -97,7 +103,7 @@ export function AlertButton({ query, label, className }: { query: string; label:
               {busy ? "Turning on…" : "Turn on alerts"}
             </Button>
             <p className="text-xs text-muted-foreground">
-              Alerts are tied to this browser; no account needed. Your browser will ask to allow notifications.{" "}
+              Alerts arrive on this device. Your browser will ask to allow notifications.{" "}
               <Link href="/alerts" className="underline underline-offset-2" onClick={() => setOpen(false)}>
                 Manage alerts
               </Link>

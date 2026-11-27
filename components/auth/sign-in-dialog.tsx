@@ -11,7 +11,7 @@ import { loadGoogleIdentity, onOpenSignIn, signInWithCredential } from "@/lib/au
 const CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
 const PERKS = [
-  { icon: BookmarkCheckIcon, text: "Your saved jobs and application tracker on every device" },
+  { icon: BookmarkCheckIcon, text: "Save jobs and companies, and track every application on your dashboard" },
   { icon: BellIcon, text: "Alerts when new roles match what you're looking for" },
   { icon: FileTextIcon, text: "Your CV tools, saved and ready when you come back" },
 ];
@@ -94,7 +94,7 @@ export function SignInDialog() {
         <div className="grid gap-1.5 pr-8">
           <DialogTitle>Sign in to RemoteJobs</DialogTitle>
           <DialogDescription>
-            {reason ?? "Optional. Every job and company stays free to browse without an account."}
+            {reason ?? "Every job and company stays free to browse. Sign in to save them, track your applications and get alerts."}
           </DialogDescription>
         </div>
         <ul className="grid gap-3 py-1">

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { BriefcaseIcon, ChevronDownIcon, DownloadIcon, StickyNoteIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { BriefcaseIcon, ChevronDownIcon, StickyNoteIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { toast } from "sonner";
 import { CompanyLogo } from "@/components/company/company-logo";
 import { RelativeTime } from "@/components/relative-time";
@@ -26,7 +26,7 @@ function StatusSelect({ job }: { job: TrackedJob }) {
       <select
         value={job.status}
         onChange={(event) => setStatus(job.key, event.target.value as TrackStatus)}
-        className="h-9 appearance-none rounded-full border bg-background pr-8 pl-3.5 text-sm font-medium outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:h-10"
+        className="h-8 appearance-none rounded-full border bg-background pr-7 pl-3 text-xs font-semibold outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:h-10"
       >
         {TRACK_STATUS_KEYS.map((status) => (
           <option key={status} value={status}>
@@ -36,14 +36,14 @@ function StatusSelect({ job }: { job: TrackedJob }) {
       </select>
       <ChevronDownIcon
         aria-hidden
-        className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-muted-foreground"
+        className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-muted-foreground"
       />
     </label>
   );
 }
 
-/** One saved job: title and company, then its status, date, note and remove. */
-function TrackedRow({ job }: { job: TrackedJob }) {
+/** One application on the board. */
+function TrackedCard({ job }: { job: TrackedJob }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(job.note);
   const remove = () => {
@@ -54,65 +54,51 @@ function TrackedRow({ job }: { job: TrackedJob }) {
     if (draft !== job.note) setNote(job.key, draft);
     setEditing(false);
   };
-  const when = job.appliedAt ? (
-    <>
-      Applied <RelativeTime iso={job.appliedAt} />
-    </>
-  ) : (
-    <>
-      Saved <RelativeTime iso={job.savedAt} />
-    </>
-  );
-  const actions = (
-    <>
-      <StatusSelect job={job} />
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={job.note ? `Edit the note for ${job.title}` : `Add a note to ${job.title}`}
-        aria-expanded={editing}
-        onClick={() => {
-          setDraft(job.note);
-          setEditing((open) => !open);
-        }}
-        className={cn("size-9 rounded-full", job.note ? "text-foreground" : "text-muted-foreground")}
-      >
-        <StickyNoteIcon className="size-4" aria-hidden />
-      </Button>
-      <Button variant="ghost" size="icon" onClick={remove} aria-label={`Remove ${job.title}`} className="size-9 rounded-full text-muted-foreground">
-        <Trash2Icon className="size-4" aria-hidden />
-      </Button>
-    </>
-  );
 
   return (
-    <li className="relative px-4 py-3.5 transition-colors duration-150 hover:bg-muted/50 has-[a:focus-visible]:bg-muted/50 sm:px-5">
-      <div className="flex items-center gap-3.5">
-        <CompanyLogo name={job.companyName} domain={job.domain} />
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate font-semibold">
-            <Link
-              href={jobPath({ company: job.company, id: job.id, title: job.title })}
-              className="outline-none after:absolute after:inset-0 after:content-[''] focus-visible:underline"
-            >
-              {job.title}
-            </Link>
-          </h3>
-          <p className="truncate text-sm text-muted-foreground">
-            {[job.companyName, job.location].filter(Boolean).join(" · ")}
-            <span className="sm:hidden"> · {when}</span>
-          </p>
-          {job.note && !editing && (
-            <p className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-foreground/80">
-              <StickyNoteIcon className="size-3.5 shrink-0 text-muted-foreground" aria-hidden />
-              <span className="truncate">{job.note}</span>
-            </p>
-          )}
-        </div>
-        <span className="hidden w-32 shrink-0 text-right text-sm text-muted-foreground sm:block">{when}</span>
-        <div className="relative z-10 hidden shrink-0 items-center gap-1 sm:flex">{actions}</div>
+    <li className="relative rounded-2xl border bg-card p-3.5 transition-colors duration-150 hover:border-foreground/20 has-[a:focus-visible]:border-ring">
+      <p className="flex items-center gap-2 text-xs text-muted-foreground">
+        <CompanyLogo name={job.companyName} domain={job.domain} size="xs" />
+        <span className="truncate">
+          <span className="font-semibold text-foreground">{job.companyName}</span>
+          {job.location && ` · ${job.location}`}
+        </span>
+      </p>
+      <h3 className="mt-2 line-clamp-2 leading-snug font-semibold">
+        <Link
+          href={jobPath({ company: job.company, id: job.id, title: job.title })}
+          className="outline-none after:absolute after:inset-0 after:rounded-2xl after:content-['']"
+        >
+          {job.title}
+        </Link>
+      </h3>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {job.appliedAt ? "Applied " : "Saved "}
+        <RelativeTime iso={job.appliedAt ?? job.savedAt} />
+      </p>
+      {job.note && !editing && (
+        <p className="mt-1.5 line-clamp-2 text-sm whitespace-pre-line text-muted-foreground">{job.note}</p>
+      )}
+      <div className="relative z-10 mt-3 flex items-center gap-1">
+        <StatusSelect job={job} />
+        <span className="flex-1" />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={job.note ? `Edit the note for ${job.title}` : `Add a note to ${job.title}`}
+          aria-expanded={editing}
+          onClick={() => {
+            setDraft(job.note);
+            setEditing((open) => !open);
+          }}
+          className={cn("size-8 rounded-full", job.note ? "text-foreground" : "text-muted-foreground")}
+        >
+          <StickyNoteIcon className="size-4" aria-hidden />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={remove} aria-label={`Remove ${job.title}`} className="size-8 rounded-full text-muted-foreground">
+          <Trash2Icon className="size-4" aria-hidden />
+        </Button>
       </div>
-      <div className="relative z-10 mt-2.5 flex items-center gap-1 pl-[3.625rem] sm:hidden">{actions}</div>
       {editing && (
         <textarea
           autoFocus
@@ -127,14 +113,14 @@ function TrackedRow({ job }: { job: TrackedJob }) {
           rows={3}
           placeholder="Who you talked to, next steps, salary they mentioned…"
           aria-label={`Note for ${job.title}`}
-          className="relative z-10 mt-3 w-full resize-y rounded-xl border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 sm:ml-[3.625rem] sm:w-[calc(100%-3.625rem)]"
+          className="relative z-10 mt-2.5 w-full resize-y rounded-xl border bg-background px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
       )}
     </li>
   );
 }
 
-function exportJson(jobs: TrackedJob[]) {
+export function exportTracker(jobs: TrackedJob[]) {
   const blob = new Blob([JSON.stringify(jobs, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -144,7 +130,7 @@ function exportJson(jobs: TrackedJob[]) {
   URL.revokeObjectURL(url);
 }
 
-function ImportButton() {
+export function ImportButton() {
   const input = useRef<HTMLInputElement>(null);
   return (
     <>
@@ -168,7 +154,7 @@ function ImportButton() {
           }
         }}
       />
-      <Button variant="ghost" className="h-10 rounded-full px-3 text-muted-foreground" onClick={() => input.current?.click()}>
+      <Button variant="ghost" className="h-9 rounded-full px-3 text-muted-foreground" onClick={() => input.current?.click()}>
         <UploadIcon aria-hidden />
         Import
       </Button>
@@ -176,87 +162,64 @@ function ImportButton() {
   );
 }
 
-function EmptyTracker() {
-  return (
-    <div className="rounded-2xl border border-dashed px-6 py-14 text-center">
-      <span className="mx-auto grid size-14 place-items-center rounded-full bg-secondary text-secondary-foreground">
-        <BriefcaseIcon className="size-6" aria-hidden />
-      </span>
-      <h2 className="mt-5 text-lg font-semibold">No saved jobs yet</h2>
-      <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">
-        Save any role with its bookmark, then move it from Saved to Applied, Interviewing and Offer as things happen. Add
-        notes as you go.
-      </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Button asChild className="h-11 rounded-full px-5">
-          <Link href="/jobs">Browse remote jobs</Link>
-        </Button>
-        <ImportButton />
-      </div>
-    </div>
-  );
-}
-
-/** Saved jobs and where each application stands, grouped by status. */
+/**
+ * The applications board: one column per status. On wide screens the columns
+ * share the width; on narrower ones they keep a comfortable width and the board
+ * scrolls sideways on its own. The page itself never scrolls sideways.
+ */
 export function TrackerView() {
   const jobs = useTrackedJobs();
-  const [filter, setFilter] = useState<TrackStatus | "all">("all");
-  const counts = Object.fromEntries(TRACK_STATUS_KEYS.map((status) => [status, jobs.filter((job) => job.status === status).length])) as Record<TrackStatus, number>;
-
-  if (jobs.length === 0) return <EmptyTracker />;
-
-  const groups = TRACK_STATUS_KEYS.filter((status) => (filter === "all" || filter === status) && counts[status] > 0);
-  return (
-    <div className="min-w-0 max-w-4xl">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <ul className="-my-1 flex gap-2 overflow-x-auto py-1 [scrollbar-width:none]" aria-label="Show applications by status">
-          {(["all", ...TRACK_STATUS_KEYS] as const).map((status) => {
-            const count = status === "all" ? jobs.length : counts[status];
-            if (status !== "all" && count === 0) return null;
-            return (
-              <li key={status}>
-                <button
-                  type="button"
-                  aria-pressed={filter === status}
-                  onClick={() => setFilter(status)}
-                  className={cn(
-                    "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium whitespace-nowrap transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50 pointer-coarse:h-10",
-                    filter === status ? "border-primary bg-primary text-primary-foreground" : "hover:bg-muted",
-                  )}
-                >
-                  {status === "all" ? "All" : TRACK_STATUSES[status]}
-                  <span className="tabular-nums opacity-75">{count}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <div className="flex gap-1">
-          <Button variant="ghost" className="h-9 rounded-full px-3 text-muted-foreground" onClick={() => exportJson(jobs)}>
-            <DownloadIcon aria-hidden />
-            Export
+  if (jobs.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed px-6 py-12 text-center">
+        <span className="mx-auto grid size-12 place-items-center rounded-full bg-secondary text-secondary-foreground">
+          <BriefcaseIcon className="size-5" aria-hidden />
+        </span>
+        <h3 className="mt-4 font-semibold">No applications yet</h3>
+        <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">
+          Save any role with its bookmark, then move it from Saved to Applied, Interviewing and Offer as things happen.
+        </p>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
+          <Button asChild className="h-10 rounded-full px-5">
+            <Link href="/jobs">Browse remote jobs</Link>
           </Button>
           <ImportButton />
         </div>
       </div>
+    );
+  }
 
-      <div className="mt-6 grid grid-cols-1 gap-6">
-        {groups.map((status) => (
-          <section key={status} aria-labelledby={`status-${status}`}>
-            <h2 id={`status-${status}`} className="mb-2 flex items-baseline gap-2 px-1 text-sm font-bold">
+  return (
+    <div
+      role="region"
+      aria-label="Applications by status"
+      tabIndex={0}
+      className="-mx-4 grid auto-cols-[min(17.5rem,82vw)] grid-flow-col snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-3 outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:-mx-6 sm:scroll-px-6 sm:px-6 lg:auto-cols-[minmax(14rem,1fr)] lg:snap-none [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-border"
+    >
+      {TRACK_STATUS_KEYS.map((status) => {
+        const column = jobs.filter((job) => job.status === status);
+        return (
+          <section
+            key={status}
+            aria-labelledby={`column-${status}`}
+            className="flex min-w-0 snap-start flex-col rounded-2xl bg-muted/60 p-2"
+          >
+            <h3 id={`column-${status}`} className="flex items-baseline justify-between px-2 pt-1 pb-2 text-sm font-bold">
               {TRACK_STATUSES[status]}
-              <span className="font-medium text-muted-foreground tabular-nums">{counts[status]}</span>
-            </h2>
-            <ul className="divide-y overflow-hidden rounded-2xl border">
-              {jobs
-                .filter((job) => job.status === status)
-                .map((job) => (
-                  <TrackedRow key={job.key} job={job} />
+              <span className="text-xs font-medium text-muted-foreground tabular-nums">{column.length}</span>
+            </h3>
+            {column.length > 0 ? (
+              <ul className="grid grid-cols-1 gap-2">
+                {column.map((job) => (
+                  <TrackedCard key={job.key} job={job} />
                 ))}
-            </ul>
+              </ul>
+            ) : (
+              <p className="rounded-xl border border-dashed px-3 py-6 text-center text-xs text-muted-foreground">Nothing here yet</p>
+            )}
           </section>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
