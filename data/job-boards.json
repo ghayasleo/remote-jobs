@@ -2,17 +2,19 @@
   "generatedAt": "2026-11-25T06:19:44.306Z",
   "source": "https://codeload.github.com/remoteintech/remote-jobs/tar.gz/main",
   "counts": {
-    "greenhouse": 90,
+    "greenhouse": 92,
     "lever": 15,
-    "ashby": 41,
+    "ashby": 42,
     "workable": 17,
     "recruitee": 5,
     "smartrecruiters": 4,
-    "personio": 2,
+    "personio": 3,
     "teamtailor": 5,
     "breezy": 2,
     "bamboohr": 4,
     "rippling": 1,
+    "gem": 2,
+    "pinpoint": 2,
     "workday": 0
   },
   "boards": {
@@ -132,6 +134,10 @@
       "provider": "ashby",
       "token": "caremessage"
     },
+    "cartodb": {
+      "provider": "pinpoint",
+      "token": "carto"
+    },
     "casumo": {
       "provider": "teamtailor",
       "token": "thecasumolimited"
@@ -160,6 +166,10 @@
       "provider": "workable",
       "token": "cloudlinux-1"
     },
+    "coforma": {
+      "provider": "pinpoint",
+      "token": "coforma"
+    },
     "coinbase": {
       "provider": "greenhouse",
       "token": "coinbase"
@@ -171,6 +181,10 @@
     "coursera": {
       "provider": "greenhouse",
       "token": "coursera"
+    },
+    "cratedb": {
+      "provider": "personio",
+      "token": "crate-io.jobs.personio.com"
     },
     "customer-io": {
       "provider": "greenhouse",
@@ -268,6 +282,10 @@
       "provider": "greenhouse",
       "token": "fleetio"
     },
+    "formstack": {
+      "provider": "ashby",
+      "token": "intellistack"
+    },
     "four-kitchens": {
       "provider": "bamboohr",
       "token": "fourkitchens"
@@ -328,6 +346,10 @@
       "provider": "recruitee",
       "token": "intent"
     },
+    "intercom": {
+      "provider": "greenhouse",
+      "token": "intercom"
+    },
     "intuition-machines-inc": {
       "provider": "workable",
       "token": "imachines"
@@ -363,6 +385,10 @@
     "labelbox": {
       "provider": "greenhouse",
       "token": "labelbox"
+    },
+    "launch-potato": {
+      "provider": "greenhouse",
+      "token": "launchpotato"
     },
     "linear": {
       "provider": "ashby",
@@ -468,6 +494,10 @@
       "provider": "ashby",
       "token": "nuna"
     },
+    "ocient": {
+      "provider": "gem",
+      "token": "ocient-inc-"
+    },
     "octopus-deploy": {
       "provider": "greenhouse",
       "token": "octopusdeploy"
@@ -563,6 +593,10 @@
     "replit": {
       "provider": "ashby",
       "token": "replit"
+    },
+    "retool": {
+      "provider": "gem",
+      "token": "retool"
     },
     "revenuecat": {
       "provider": "ashby",
