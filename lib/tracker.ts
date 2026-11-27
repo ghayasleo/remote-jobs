@@ -135,6 +135,16 @@ export function setNote(key: string, note: string) {
   update(key, (job) => ({ ...job, note: note.slice(0, NOTE_MAX), updatedAt: now() }));
 }
 
+/** Drops this browser's copy without recording removals: on sign-out, the account keeps it. */
+export function forgetTracked() {
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    return;
+  }
+  window.dispatchEvent(new Event(TRACKER_CHANGE_EVENT));
+}
+
 /** Replaces everything (after a sync, or an import merged by the caller). */
 export function replaceTracked(all: TrackedJob[]) {
   return write(all);

@@ -39,7 +39,7 @@ export function AlertButton({ query, label, className }: { query: string; label:
       setOpen(false);
       toast.success("Alerts are on", {
         description: frequency === "daily" ? "You'll get one notification a day when there are new roles." : "You'll hear about new roles within the hour.",
-        action: { label: "Manage", onClick: () => router.push("/alerts") },
+        action: { label: "Manage", onClick: () => router.push("/dashboard/alerts") },
       });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "That didn't work. Please try again.");
@@ -104,7 +104,7 @@ export function AlertButton({ query, label, className }: { query: string; label:
             </Button>
             <p className="text-xs text-muted-foreground">
               Alerts arrive on this device. Your browser will ask to allow notifications.{" "}
-              <Link href="/alerts" className="underline underline-offset-2" onClick={() => setOpen(false)}>
+              <Link href="/dashboard/alerts" className="underline underline-offset-2" onClick={() => setOpen(false)}>
                 Manage alerts
               </Link>
             </p>

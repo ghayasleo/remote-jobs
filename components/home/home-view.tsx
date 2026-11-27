@@ -399,8 +399,8 @@ function TrackerTile() {
           </div>
         ))}
       </div>
-      <Link href="/dashboard" className={tileLink}>
-        Open your dashboard
+      <Link href="/dashboard/jobs" className={tileLink}>
+        Open your saved jobs
         <ArrowRightIcon className="size-4" aria-hidden />
       </Link>
     </div>

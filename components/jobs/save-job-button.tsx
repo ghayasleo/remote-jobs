@@ -39,7 +39,7 @@ export function SaveJobButton({ job, withLabel = false, className }: { job: Sava
     toast(`Saved “${job.title}”`, {
       id: `job-${key}`,
       description: "Track where your application stands on your dashboard.",
-      action: { label: "Open dashboard", onClick: () => router.push("/dashboard") },
+      action: { label: "View saved jobs", onClick: () => router.push("/dashboard/jobs") },
     });
   };
 

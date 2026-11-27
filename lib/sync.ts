@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useSyncExternalStore } from "react";
-import { useProfile } from "./auth/client";
-import { SAVED_CHANGE_EVENT, applySyncedCompanies, savedChanges, type SavedChange } from "./saved";
-import { TRACKER_CHANGE_EVENT, allTrackedJobs, replaceTracked } from "./tracker";
+import { signOut, useProfile } from "./auth/client";
+import { SAVED_CHANGE_EVENT, applySyncedCompanies, forgetSaved, savedChanges, type SavedChange } from "./saved";
+import { TRACKER_CHANGE_EVENT, allTrackedJobs, forgetTracked, replaceTracked } from "./tracker";
 import { cleanTrackedJob, mergeTracked, type TrackedJob } from "./tracker-model";
 
 // Keeps saved jobs, the tracker and saved companies in step with the
@@ -73,6 +73,22 @@ async function syncNow() {
     }
   })();
   return inFlight;
+}
+
+/**
+ * Signs out, then forgets what's saved in this browser, so the next person to
+ * sign in here doesn't get it. The account keeps it: one last sync goes first,
+ * and if that fails (offline) the copy stays here rather than being lost.
+ */
+export async function signOutAndForget({ deleteAccount = false } = {}) {
+  if (!deleteAccount) await syncNow();
+  const synced = deleteAccount || state.status === "synced";
+  const ok = await signOut({ deleteAccount });
+  if (ok && synced) {
+    forgetTracked();
+    forgetSaved();
+  }
+  return ok;
 }
 
 /** Mounted once in the layout. Does nothing while signed out. */

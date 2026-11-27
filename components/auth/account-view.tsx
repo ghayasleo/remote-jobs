@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOutIcon, Trash2Icon, UserRoundIcon } from "lucide-react";
+import { LogOutIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { openSignIn, signOut, useProfile } from "@/lib/auth/client";
+import { useProfile } from "@/lib/auth/client";
+import { signOutAndForget } from "@/lib/sync";
 import { useHydrated } from "@/lib/use-hydrated";
 import { Avatar } from "./avatar";
 
@@ -26,22 +27,8 @@ export function AccountView() {
       .catch(() => {});
   }, [profile]);
 
-  if (!hydrated) return <div className="h-40" />;
-
-  if (!profile) {
-    return (
-      <div className="rounded-3xl border p-6">
-        <UserRoundIcon className="size-8 text-muted-foreground" aria-hidden />
-        <h2 className="mt-3 text-lg font-bold">You&apos;re not signed in</h2>
-        <p className="mt-1 max-w-[30rem] text-muted-foreground">
-          Signing in is optional. It keeps your saved jobs, application tracker and alerts in sync across your devices.
-        </p>
-        <Button className="mt-5 h-11 rounded-full px-5" onClick={() => openSignIn()}>
-          Sign in with Google
-        </Button>
-      </div>
-    );
-  }
+  // The dashboard asks signed-out visitors to sign in before showing this.
+  if (!hydrated || !profile) return <div className="h-40" />;
 
   return (
     <div className="grid gap-6">
@@ -56,7 +43,8 @@ export function AccountView() {
       <section className="rounded-3xl border p-5">
         <h2 className="font-bold">What&apos;s kept in your account</h2>
         <p className="mt-1 text-muted-foreground">
-          Your saved jobs, your application tracker and your alerts, so they follow you to any device you sign in on. See{" "}
+          Your saved jobs and companies, with their statuses and notes, and your job alerts, so they follow you to any
+          device you sign in on. Signing out removes them from this browser; they stay in your account. See{" "}
           <Link href="/privacy" className="underline underline-offset-2">
             the privacy policy
           </Link>{" "}
@@ -68,7 +56,7 @@ export function AccountView() {
           disabled={busy}
           onClick={async () => {
             setBusy(true);
-            if (await signOut()) toast("Signed out");
+            if (await signOutAndForget()) toast("Signed out");
             setBusy(false);
           }}
         >
@@ -80,7 +68,8 @@ export function AccountView() {
       <section className="rounded-3xl border border-destructive/30 p-5">
         <h2 className="font-bold">Delete your account</h2>
         <p className="mt-1 text-muted-foreground">
-          Removes your account and everything stored with it. Anything saved on this device stays here.
+          Removes your account and everything stored with it, from our servers and from this browser. This can&apos;t
+          be undone.
         </p>
         {confirming ? (
           <div className="mt-4 flex flex-wrap gap-3">
@@ -90,7 +79,7 @@ export function AccountView() {
               disabled={busy}
               onClick={async () => {
                 setBusy(true);
-                const ok = await signOut({ deleteAccount: true });
+                const ok = await signOutAndForget({ deleteAccount: true });
                 setBusy(false);
                 if (ok) {
                   toast("Your account was deleted");

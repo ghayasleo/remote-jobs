@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOutIcon, UserRoundIcon } from "lucide-react";
+import { LayoutDashboardIcon, LogOutIcon, UserRoundIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { openSignIn, signOut, useProfile } from "@/lib/auth/client";
+import { openSignIn, useProfile } from "@/lib/auth/client";
+import { signOutAndForget } from "@/lib/sync";
 import { useHydrated } from "@/lib/use-hydrated";
 import { cn } from "@/lib/utils";
 import { Avatar } from "./avatar";
@@ -57,7 +58,13 @@ export function AccountMenu({ className }: { className?: string }) {
         <DropdownMenuLabel className="truncate px-2 py-1.5">{profile.name ?? "Signed in"}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="rounded-xl px-2 py-2">
-          <Link href="/account">
+          <Link href="/dashboard">
+            <LayoutDashboardIcon aria-hidden />
+            Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="rounded-xl px-2 py-2">
+          <Link href="/dashboard/account">
             <UserRoundIcon aria-hidden />
             Account
           </Link>
@@ -65,7 +72,7 @@ export function AccountMenu({ className }: { className?: string }) {
         <DropdownMenuItem
           className="rounded-xl px-2 py-2"
           onSelect={async () => {
-            if (await signOut()) toast("Signed out");
+            if (await signOutAndForget()) toast("Signed out");
           }}
         >
           <LogOutIcon aria-hidden />
