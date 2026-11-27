@@ -2,6 +2,8 @@
 
 import { FilterChip, FilterGroup, type ActiveFilter, type FilterKind } from "@/components/explore/filters";
 import { CountrySelect } from "@/components/jobs/country-select";
+import { TimeZoneSelect } from "@/components/jobs/time-zone-select";
+import { OVERLAP_HOURS, formatOffset } from "@/lib/timezones";
 import {
   COMPANY_SIZES,
   REMOTE_POLICIES,
@@ -59,6 +61,13 @@ export function JobFilterPanel({ params, setParams }: { params: JobParams; setPa
         />
       </FilterGroup>
 
+      <FilterGroup
+        title="Your time zone"
+        hint={`Roles whose working hours are within about ${OVERLAP_HOURS} hours of yours. Read from what each role says (like “UTC−5 to UTC+1” or “EST”), else from where it hires. Roles that only say “Remote” don’t count.`}
+      >
+        <TimeZoneSelect value={params.tz} onChange={(tz) => setParams({ tz })} className="w-full" />
+      </FilterGroup>
+
       <FilterGroup title="Show only">
         <FilterChip pressed={params.pay} onPressedChange={(pay) => setParams({ pay })}>
           Pay listed
@@ -113,6 +122,7 @@ export function describeJobFilters(params: JobParams, setParams: SetJobParams): 
   filters.push(...list("where", kind("where", "Location"), (value) => JOB_REGIONS[value as keyof typeof JOB_REGIONS]));
   const country = countryFromSlug(params.country);
   if (country) filters.push({ id: "country", label: `Open to ${country.name}`, remove: () => setParams({ country: "" }) });
+  if (params.tz) filters.push({ id: "tz", label: `Hours near ${formatOffset(Number(params.tz))}`, remove: () => setParams({ tz: "" }) });
   if (params.posted) filters.push({ id: "posted", label: POSTED_WITHIN[params.posted], remove: () => setParams({ posted: "" }) });
   if (params.pay) filters.push({ id: "pay", label: "Pay listed", remove: () => setParams({ pay: false }) });
   filters.push(

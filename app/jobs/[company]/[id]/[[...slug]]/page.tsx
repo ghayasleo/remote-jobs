@@ -19,6 +19,7 @@ import { getJob, getRemoteJobs, roleListing } from "@/lib/data/jobs";
 import { JOB_CATEGORIES, jobCategory, jobPath, jobSlug } from "@/lib/jobs";
 import { clip, jobPostingJsonLd } from "@/lib/seo";
 import { similarRoles } from "@/lib/similar";
+import { formatHours, hoursInPosting, roleHours } from "@/lib/timezones";
 import { DEFAULT_OG_IMAGE, OG_BASE, absoluteUrl, jsonLd } from "@/lib/site";
 
 type Props = PageProps<"/jobs/[company]/[id]/[[...slug]]">;
@@ -117,6 +118,9 @@ async function JobView({ params }: Pick<Props, "params">) {
   // Links without the title, or with an old one, go to the current address.
   if (companySlug !== company.slug || slug?.length !== 1 || slug[0] !== jobSlug(role.title)) permanentRedirect(path);
   const facts = [role.location, role.team, role.employmentType].filter(Boolean);
+  // Working hours: what the description asks for, else what the title and locations say.
+  const statedInPosting = detail ? hoursInPosting(postingText(detail.html)) : null;
+  const hours = statedInPosting ?? roleHours(job.locations.length ? job.locations : [role.location], role.title);
   const cvCheckHref = `/cv-check?role=${company.slug}/${encodeURIComponent(role.id)}`;
   const savable = { company: company.slug, companyName: company.name, domain: company.domain, id: role.id, title: role.title, location: role.location };
   const pay = detail?.payText ?? role.salary;
@@ -152,6 +156,7 @@ async function JobView({ params }: Pick<Props, "params">) {
           {facts.map((fact) => (
             <Tag key={fact}>{fact}</Tag>
           ))}
+          {hours && <Tag>Hours: {formatHours(hours)}</Tag>}
         </div>
         {(pay || role.postedAt) && (
           <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">

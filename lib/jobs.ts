@@ -2,6 +2,7 @@
 // role pages and their Google Jobs markup. Pure functions, shared by server
 // and browser.
 
+import { fitsHours, roleHours, type TzRange } from "./timezones";
 import { COMPANY_SIZES, REMOTE_POLICIES, TECHS, type CompanySize, type RemotePolicy, type Tech } from "./data/labels";
 
 export type JobListing = {
@@ -218,6 +219,20 @@ function regionsOf(job: JobListing) {
   return regions;
 }
 
+const hoursCache = new WeakMap<JobListing, TzRange | null>();
+/** A role's working hours, from its title and locations. */
+export function hoursOf(job: JobListing) {
+  if (!hoursCache.has(job)) hoursCache.set(job, roleHours(jobLocations(job), job.title));
+  return hoursCache.get(job) ?? null;
+}
+
+/** A UTC offset from the URL, as a canonical string, or "" when there isn't a valid one. */
+function parseOffset(value: string | null) {
+  if (value === null || value.trim() === "") return "";
+  const offset = Number(value);
+  return Number.isFinite(offset) && offset >= -12 && offset <= 14 ? String(offset) : "";
+}
+
 /* ---------- feed filters (kept in the URL) ---------- */
 
 export const POSTED_WITHIN = { "1d": "Last 24 hours", "7d": "Last 7 days", "30d": "Last 30 days" } as const;
@@ -235,6 +250,8 @@ export type JobParams = {
   posted: PostedWithin;
   /** The country the person lives in (a slug), for roles open to them there. */
   country: string;
+  /** The person's UTC offset ("5", "-8", "5.5"), for roles whose hours are near theirs. */
+  tz: string;
   /** Only roles that publish pay. */
   pay: boolean;
   /** The company's remote policy, size and stack. */
@@ -249,6 +266,7 @@ export const DEFAULT_JOB_PARAMS: JobParams = {
   where: [],
   posted: "",
   country: "",
+  tz: "",
   pay: false,
   policy: [],
   size: [],
@@ -280,6 +298,7 @@ export function parseJobParams(query: string): JobParams {
     where: list("where"),
     posted: posted in POSTED_WITHIN ? (posted as PostedWithin) : "",
     country: countryFromSlug(search.get("country") ?? "") ? search.get("country")! : "",
+    tz: parseOffset(search.get("tz")),
     pay: search.get("pay") === "true",
     policy: list("policy"),
     size: list("size"),
@@ -293,6 +312,7 @@ export function serializeJobParams(params: JobParams): string {
   if (params.q.trim()) search.set("q", params.q.trim());
   for (const key of ["category", "where"] as const) if (params[key].length) search.set(key, params[key].join(","));
   if (params.country) search.set("country", params.country);
+  if (params.tz) search.set("tz", params.tz);
   if (params.posted) search.set("posted", params.posted);
   if (params.pay) search.set("pay", "true");
   for (const key of ["policy", "size", "stack"] as const) if (params[key].length) search.set(key, params[key].join(","));
@@ -306,6 +326,7 @@ export const activeJobFilterCount = (params: JobParams) =>
   params.category.length +
   params.where.length +
   Number(Boolean(params.country)) +
+  Number(Boolean(params.tz)) +
   Number(Boolean(params.posted)) +
   Number(params.pay) +
   params.policy.length +
@@ -326,6 +347,7 @@ export function filterJobs(jobs: JobListing[], params: JobParams, now: number): 
   const queryWords = params.q.toLowerCase().split(/\s+/).filter(Boolean);
   const since = params.posted ? new Date(now - POSTED_DAYS[params.posted] * 86_400_000).toISOString() : null;
   const country = params.country ? countryFromSlug(params.country) : null;
+  const offset = params.tz === "" ? null : Number(params.tz);
   const matches = jobs.filter(
     (job) =>
       queryWords.every((word) => haystack(job).includes(word)) &&
@@ -334,6 +356,7 @@ export function filterJobs(jobs: JobListing[], params: JobParams, now: number): 
       (params.where.length === 0 ||
         regionsOf(job).some((region) => region === "anywhere" || params.where.includes(region))) &&
       (!country || countryMatch(job, country, job.companyRegion) !== null) &&
+      (offset === null || fitsHours(hoursOf(job), offset)) &&
       (!since || (job.postedAt !== null && job.postedAt >= since)) &&
       (!params.pay || job.salary !== null) &&
       (params.policy.length === 0 || (params.policy as string[]).includes(job.companyPolicy ?? "")) &&
