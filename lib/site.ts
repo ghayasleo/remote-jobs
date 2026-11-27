@@ -7,11 +7,12 @@ export const SITE_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 export const SITE_NAME = "Remote Jobs";
 
 /**
- * The site's name in search results, written as the wordmark writes it. Google
- * picks a site name from the WebSite markup, og:site_name and the titles, so
- * all three use this one; "Remote Jobs" is its alternate name.
+ * The site's name in search results. Google picks a site name from the WebSite
+ * markup, og:site_name and the titles, so all three use this one. Google
+ * avoids generic names, so the one-word "RemoteJobs" comes first; "Remote Jobs"
+ * and then the subdomain are its alternate names.
  */
-export const SITE_BRAND = "remotejobs";
+export const SITE_BRAND = "RemoteJobs";
 
 /**
  * Open Graph fields every page shares. A page that sets its own openGraph

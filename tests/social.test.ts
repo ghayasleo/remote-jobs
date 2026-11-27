@@ -147,7 +147,7 @@ describe("planExtraPosts", () => {
   });
 
   it("names the week's new companies on Saturday, and stays quiet otherwise", () => {
-    expect(text(planExtraPosts("2026-11-28", DATA, url)[0])).toContain("New on remotejobs this week: Acme");
+    expect(text(planExtraPosts("2026-11-28", DATA, url)[0])).toContain("New on RemoteJobs this week: Acme");
     expect(planExtraPosts("2026-11-28", { ...DATA, newCompanies: [] }, url)).toEqual([]);
     expect(planExtraPosts("2026-11-24", DATA, url)).toEqual([]);
   });
