@@ -60,6 +60,14 @@ export function SiteFooter() {
               <span className="sr-only"> (opens in a new tab)</span>
             </a>
           </p>
+          <p className="mt-2 flex gap-4 text-sm">
+            <Link href="/privacy" className={linkClass}>
+              Privacy
+            </Link>
+            <Link href="/terms" className={linkClass}>
+              Terms
+            </Link>
+          </p>
           <CookieChoicesButton className={`mt-2 ${linkClass}`} />
         </div>
         <div className="col-span-3 grid grid-cols-3 gap-x-6">

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AccountMenu } from "@/components/auth/account-menu";
 import { Wordmark } from "@/components/brand/logo";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { DesktopNav } from "./nav";
@@ -13,6 +14,7 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <DesktopNav />
           <AnimatedThemeToggler />
+          <AccountMenu />
         </div>
       </div>
     </header>

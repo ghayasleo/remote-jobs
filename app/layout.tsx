@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTags } from "@/components/analytics/google-tags";
+import { SignInDialog } from "@/components/auth/sign-in-dialog";
 import { OfflineNotice, ServiceWorker } from "@/components/shell/connectivity";
 import { BottomNav } from "@/components/shell/nav";
 import { NavigationTracker } from "@/components/shell/navigation";
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               mobileOffset={{ bottom: "calc(4.75rem + env(safe-area-inset-bottom))" }}
             />
             <GoogleTags />
+            <SignInDialog />
           </TooltipProvider>
         </ThemeProvider>
         <ServiceWorker />
