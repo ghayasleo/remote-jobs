@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getCompany, getCompanyIndex } from "@/lib/data/companies";
-import { getBoard, getOpenRoles } from "@/lib/data/job-boards";
+import { getBoard } from "@/lib/data/job-boards";
 import { label, regionLabels, remotePolicyLabels } from "@/lib/data/labels";
 import { OG, OG_SIZE, OgChip, OgHorizonSun, OgWordmark, ogClip, ogFonts, ogText } from "@/lib/og";
 
@@ -29,15 +29,17 @@ async function logoDataUrl(domain: string | null) {
   }
 }
 
-/** The card shown when a company page is shared in chats and social apps. */
+/**
+ * The card shown when a company page is shared in chats and social apps. It
+ * shows nothing that changes hourly (like role counts), so it's rendered once
+ * and kept until the company's profile changes.
+ */
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const company = await getCompany(slug);
-  const board = getBoard(slug);
-  const [roles, logo] = await Promise.all([board ? getOpenRoles(board) : null, logoDataUrl(company?.domain ?? null)]);
+  const hasBoard = getBoard(slug) !== null;
+  const logo = await logoDataUrl(company?.domain ?? null);
   const name = ogText(company?.name ?? "Remote Jobs");
-  const hiring = roles?.total ?? 0;
-  const remote = roles?.remote ?? 0;
   const blurb = company?.blurb ? ogClip(company.blurb, 118) : null;
 
   return new ImageResponse(
@@ -95,11 +97,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         </div>
 
         <div style={{ display: "flex", gap: 12 }}>
-          {hiring > 0 && (
-            <OgChip tone="sun">
-              {`Hiring · ${remote > 0 ? `${remote} remote` : hiring} role${(remote || hiring) === 1 ? "" : "s"}`}
-            </OgChip>
-          )}
+          {hasBoard && <OgChip tone="sun">Live open roles</OgChip>}
           {company && <OgChip>{label(regionLabels, company.region) || "Remote"}</OgChip>}
           {company?.remotePolicy && <OgChip>{label(remotePolicyLabels, company.remotePolicy)}</OgChip>}
         </div>
