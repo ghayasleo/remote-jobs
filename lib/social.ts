@@ -1,4 +1,5 @@
 import type { JobListing } from "@/lib/jobs";
+import { SITE_BRAND } from "@/lib/site";
 
 // The daily "new remote roles" post on Bluesky. Pure formatting here;
 // sending (and the link card's image) lives in app/api/cron/social/route.ts.
@@ -298,7 +299,7 @@ export function planExtraPosts(date: string, data: SocialData, url: (path: strin
       {
         kind: "new-companies",
         segments: [
-          `New on remotejobs this week: ${and.format(more > 0 ? [...named, `${more} more`] : named)}, ${
+          `New on ${SITE_BRAND} this week: ${and.format(more > 0 ? [...named, `${more} more`] : named)}, ${
             data.newCompanies.length === 1 ? "a remote-friendly tech company" : "remote-friendly tech companies"
           } now on the list.\n\n`,
           { link: url("/new") },
