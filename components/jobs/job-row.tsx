@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Tag } from "@/components/company/chips";
 import { CompanyLogo } from "@/components/company/company-logo";
 import { RelativeTime } from "@/components/relative-time";
+import { SaveJobButton } from "./save-job-button";
 import { JOB_CATEGORIES, jobLocations, jobPath, type JobListing } from "@/lib/jobs";
 
 /** "Remote Canada +2 more" for a role posted once per location. */
@@ -46,6 +47,10 @@ export function JobRow({ job, showCompany = true }: { job: JobListing; showCompa
           )}
         </div>
       </div>
+      <SaveJobButton
+        job={{ company: job.company, companyName: job.companyName, domain: job.domain, id: job.id, title: job.title, location: locationSummary(jobLocations(job)) }}
+        className="relative z-10 -mt-1.5 -mr-2 shrink-0"
+      />
     </li>
   );
 }
