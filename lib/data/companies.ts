@@ -1,81 +1,23 @@
 import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
-import { gunzipSync } from "node:zlib";
-import { getBoard } from "./job-boards";
-import { parseCompanyFile, toListItem, type CompanyListItem, type CompanyProfile } from "./parse";
-import { mergeDuplicateCompanies } from "./same-company";
-import { readTar } from "./tar";
+import { toListItem, type CompanyListItem, type CompanyProfile } from "./parse";
+import { readSnapshot, type Snapshot } from "./snapshot";
 
-// All company data comes from remoteintech/remote-jobs. The whole repo is
-// downloaded as one tarball (~2.6 MB, no token needed): one request instead of
-// one per company.
-const REPO = "remoteintech/remote-jobs";
-const BRANCH = "main";
-const TARBALL_URL = `https://codeload.github.com/${REPO}/tar.gz/${BRANCH}`;
-export const UPSTREAM_REPO_URL = `https://github.com/${REPO}`;
-export const upstreamFileUrl = (slug: string) =>
-  `${UPSTREAM_REPO_URL}/blob/${BRANCH}/src/companies/${slug}.md`;
+export { UPSTREAM_REPO_URL, upstreamFileUrl } from "./company-archive";
 
-const COMPANY_FILE = /^[^/]+\/src\/companies\/([^/]+)\.md$/;
 const VALID_SLUG = /^[a-z0-9-]+$/i;
 
-type Archive = Map<string, CompanyProfile>;
+// The profiles by slug, built once per snapshot rather than once per lookup.
+const bySlug = new WeakMap<Snapshot, Map<string, CompanyProfile>>();
 
-const DOWNLOAD_ATTEMPTS = 3;
-
-/**
- * The unzipped tarball, retried with backoff so a network blip doesn't fail a
- * build. It skips Next's fetch cache: the download takes about a second, every
- * build gets today's list, and a corrupted copy saved by an earlier build can't
- * fail every build after it. The parsed list is memoized below instead.
- */
-async function fetchTarball(attempt = 1): Promise<Buffer> {
-  try {
-    const response = await fetch(TARBALL_URL, { signal: AbortSignal.timeout(30_000), cache: "no-store" });
-    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-    return gunzipSync(Buffer.from(await response.arrayBuffer()));
-  } catch (error) {
-    if (attempt >= DOWNLOAD_ATTEMPTS) {
-      throw new Error(`Downloading ${TARBALL_URL} failed after ${attempt} attempts`, { cause: error });
-    }
-    await new Promise((resolve) => setTimeout(resolve, attempt * 2_000));
-    return fetchTarball(attempt + 1);
+async function loadArchive(): Promise<Map<string, CompanyProfile>> {
+  const snapshot = await readSnapshot();
+  let companies = bySlug.get(snapshot);
+  if (!companies) {
+    companies = new Map(snapshot.companies.map((company) => [company.slug, company]));
+    bySlug.set(snapshot, companies);
   }
-}
-
-async function downloadArchive(): Promise<Archive> {
-  // Read and parse in one go: few awaits keep React's dev-only async tracking happy.
-  const tar = await fetchTarball();
-
-  const companies: Archive = new Map();
-  readTar(tar, (path, content) => {
-    const slug = COMPANY_FILE.exec(path)?.[1];
-    if (!slug) return;
-    const company = parseCompanyFile(slug, content.toString("utf8"));
-    if (company) companies.set(slug, company);
-  });
-  if (companies.size === 0) throw new Error(`No company files found in ${TARBALL_URL}`);
-  // The list sometimes has one company twice (O'Reilly Media and O'Reilly Online Learning): show it once.
-  mergeDuplicateCompanies(companies, (slug) => getBoard(slug) !== null);
-  return companies;
-}
-
-// The parsed archive, kept once per server process (or build worker) and
-// refreshed hourly; the cached functions below decide how long their own
-// results live. Only the finished archive is shared, never a pending download:
-// a "use cache" function that waits on a promise another one started can hang
-// (development mode reports it as a deadlock). Making the archive itself a
-// cached function isn't an option either: every cache hit hands back a fresh
-// copy of all the profiles, and two thousand pages of those exhaust the
-// build's memory.
-const ARCHIVE_TTL_MS = 60 * 60 * 1000;
-let archive: { companies: Archive; loadedAt: number } | null = null;
-
-async function loadArchive(): Promise<Archive> {
-  if (archive && Date.now() - archive.loadedAt < ARCHIVE_TTL_MS) return archive.companies;
-  const companies = await downloadArchive();
-  archive = { companies, loadedAt: Date.now() };
   return companies;
 }
 

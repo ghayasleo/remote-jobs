@@ -9,6 +9,10 @@
   },
   "crons": [
     {
+      "path": "/api/cron/snapshot",
+      "schedule": "5 * * * *"
+    },
+    {
       "path": "/api/indexnow",
       "schedule": "0 7 * * *"
     },
