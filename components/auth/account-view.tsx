@@ -3,20 +3,26 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogOutIcon, Trash2Icon } from "lucide-react";
+import { BellIcon, BriefcaseIcon, Building2Icon, ChevronRightIcon, LogOutIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/lib/auth/client";
+import { confirmAction } from "@/lib/confirm";
+import { useSavedSlugs } from "@/lib/saved";
 import { signOutAndForget } from "@/lib/sync";
+import { useTrackedJobs } from "@/lib/tracker";
 import { useHydrated } from "@/lib/use-hydrated";
 import { Avatar } from "./avatar";
+
+const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
 export function AccountView() {
   const hydrated = useHydrated();
   const profile = useProfile();
   const router = useRouter();
+  const jobs = useTrackedJobs().length;
+  const companies = useSavedSlugs().length;
   const [email, setEmail] = useState<string | null>(null);
-  const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -30,79 +36,100 @@ export function AccountView() {
   // The dashboard asks signed-out visitors to sign in before showing this.
   if (!hydrated || !profile) return <div className="h-40" />;
 
-  return (
-    <div className="grid gap-6">
-      <section className="flex items-center gap-4 rounded-3xl border p-5">
-        <Avatar profile={profile} className="size-14 text-lg" />
-        <div className="min-w-0">
-          <p className="truncate text-lg font-bold">{profile.name ?? "Signed in"}</p>
-          <p className="truncate text-muted-foreground">{email ?? "Signed in with Google"}</p>
-        </div>
-      </section>
+  const signOut = async () => {
+    setBusy(true);
+    if (await signOutAndForget()) toast("Signed out");
+    setBusy(false);
+  };
 
-      <section className="rounded-3xl border p-5">
-        <h2 className="font-bold">What&apos;s kept in your account</h2>
-        <p className="mt-1 text-muted-foreground">
-          Your saved jobs and companies, with their statuses and notes, and your job alerts, so they follow you to any
-          device you sign in on. Signing out removes them from this browser; they stay in your account. See{" "}
-          <Link href="/privacy" className="underline underline-offset-2">
-            the privacy policy
-          </Link>{" "}
-          for the details.
-        </p>
-        <Button
-          variant="outline"
-          className="mt-4 h-11 rounded-full px-5"
-          disabled={busy}
-          onClick={async () => {
-            setBusy(true);
-            if (await signOutAndForget()) toast("Signed out");
-            setBusy(false);
-          }}
-        >
+  const deleteAccount = async () => {
+    const ok = await confirmAction({
+      title: "Delete your account?",
+      description: "Your account, saved jobs and companies, notes and job alerts will be deleted for good. This can't be undone.",
+      confirmLabel: "Delete everything",
+      cancelLabel: "Keep my account",
+      destructive: true,
+    });
+    if (!ok) return;
+    setBusy(true);
+    const deleted = await signOutAndForget({ deleteAccount: true });
+    setBusy(false);
+    if (deleted) {
+      toast("Your account was deleted");
+      router.push("/");
+    } else {
+      toast.error("That didn't work. Please try again.");
+    }
+  };
+
+  const kept = [
+    { href: "/dashboard/jobs", icon: BriefcaseIcon, label: "Saved jobs", detail: `${plural(jobs, "job", "jobs")}, with statuses and notes` },
+    { href: "/dashboard/companies", icon: Building2Icon, label: "Saved companies", detail: plural(companies, "company", "companies") },
+    { href: "/dashboard/alerts", icon: BellIcon, label: "Job alerts", detail: "The searches you get notified about" },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 gap-4">
+      <section className="flex flex-wrap items-center gap-x-5 gap-y-4 rounded-3xl border bg-card p-5 sm:p-6">
+        <Avatar profile={profile} className="size-16 text-xl" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xl font-bold tracking-tight">{profile.name ?? "Signed in"}</p>
+          <p className="truncate text-muted-foreground">{email ?? "Signed in with Google"}</p>
+          {email && <p className="mt-0.5 text-sm text-muted-foreground">Signed in with Google</p>}
+        </div>
+        <Button variant="outline" className="h-11 w-full rounded-full px-5 sm:w-auto" disabled={busy} onClick={signOut}>
           <LogOutIcon aria-hidden />
           Sign out
         </Button>
       </section>
 
-      <section className="rounded-3xl border border-destructive/30 p-5">
-        <h2 className="font-bold">Delete your account</h2>
-        <p className="mt-1 text-muted-foreground">
-          Removes your account and everything stored with it, from our servers and from this browser. This can&apos;t
-          be undone.
-        </p>
-        {confirming ? (
-          <div className="mt-4 flex flex-wrap gap-3">
-            <Button
-              variant="destructive"
-              className="h-11 rounded-full px-5"
-              disabled={busy}
-              onClick={async () => {
-                setBusy(true);
-                const ok = await signOutAndForget({ deleteAccount: true });
-                setBusy(false);
-                if (ok) {
-                  toast("Your account was deleted");
-                  router.push("/");
-                } else {
-                  toast.error("That didn't work. Please try again.");
-                }
-              }}
-            >
-              <Trash2Icon aria-hidden />
-              Yes, delete everything
-            </Button>
-            <Button variant="ghost" className="h-11 rounded-full px-5" onClick={() => setConfirming(false)}>
-              Keep my account
-            </Button>
-          </div>
-        ) : (
-          <Button variant="destructive" className="mt-4 h-11 rounded-full px-5" onClick={() => setConfirming(true)}>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-[3fr_2fr]">
+        <section className="rounded-3xl border bg-card p-5 sm:p-6">
+          <h2 className="text-lg font-bold">What&apos;s kept in your account</h2>
+          <p className="mt-1 text-muted-foreground">
+            So it follows you to every device you sign in on. Signing out removes it from this browser; it stays in your
+            account.
+          </p>
+          <ul className="mt-4 divide-y overflow-hidden rounded-2xl border">
+            {kept.map(({ href, icon: Icon, label, detail }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className="flex items-center gap-3 px-4 py-3 outline-none transition-colors duration-150 hover:bg-muted/50 focus-visible:bg-muted/50"
+                >
+                  <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-secondary-foreground">
+                    <Icon className="size-4" aria-hidden />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold">{label}</span>
+                    <span className="block truncate text-sm text-muted-foreground">{detail}</span>
+                  </span>
+                  <ChevronRightIcon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm text-muted-foreground">
+            See{" "}
+            <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+              the privacy policy
+            </Link>{" "}
+            for exactly what&apos;s stored and why.
+          </p>
+        </section>
+
+        <section className="flex flex-col rounded-3xl border border-destructive/30 bg-card p-5 sm:p-6">
+          <h2 className="text-lg font-bold">Delete your account</h2>
+          <p className="mt-1 flex-1 text-muted-foreground">
+            Deletes your account and everything stored with it, from our servers and from this browser. This can&apos;t be
+            undone.
+          </p>
+          <Button variant="destructive" className="mt-5 h-11 self-start rounded-full px-5" disabled={busy} onClick={deleteAccount}>
             <Trash2Icon aria-hidden />
             Delete account
           </Button>
-        )}
-      </section>
+        </section>
+      </div>
     </div>
   );
 }

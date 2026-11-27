@@ -8,7 +8,7 @@ export default function SavedCompaniesPage() {
   return (
     <>
       <ScreenHeading title="Saved companies" className="mb-1.5" />
-      <div className="-mx-4 max-w-[calc(48rem+3rem)] sm:-mx-6">
+      <div className="-mx-4 sm:-mx-6">
         <SavedCompanies embedded />
       </div>
     </>

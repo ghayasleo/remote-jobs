@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -65,10 +65,37 @@ const TABS = [
 function DashboardTabs() {
   const pathname = usePathname();
   const list = useRef<HTMLUListElement>(null);
+  const bar = useRef<HTMLLIElement>(null);
   const counts: Partial<Record<(typeof TABS)[number]["href"], number>> = {
     "/dashboard/jobs": useTrackedJobs().length,
     "/dashboard/companies": useSavedSlugs().length,
   };
+
+  // The line under the current tab slides to the next one. It's placed
+  // before the first paint and only animates from then on.
+  useLayoutEffect(() => {
+    const tabs = list.current;
+    const line = bar.current;
+    if (!tabs || !line) return;
+    const place = () => {
+      const current = tabs.querySelector<HTMLElement>('[aria-current="page"]');
+      if (!current) {
+        line.style.opacity = "0";
+        return;
+      }
+      line.style.width = `${current.offsetWidth - 24}px`;
+      line.style.transform = `translateX(${current.offsetLeft + 12}px)`;
+      line.style.opacity = "1";
+    };
+    place();
+    const frame = requestAnimationFrame(() => (line.dataset.ready = "true"));
+    const observer = new ResizeObserver(place);
+    observer.observe(tabs);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [pathname]);
 
   // On a phone the tabs scroll sideways; keep the current one in view.
   useEffect(() => {
@@ -76,10 +103,13 @@ function DashboardTabs() {
   }, [pathname]);
 
   return (
-    <nav aria-label="Dashboard" className="-mx-4 border-b px-1 sm:mx-0 sm:px-0">
+    <nav
+      aria-label="Dashboard"
+      className="relative -mx-4 px-1 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-border after:content-[''] sm:mx-0 sm:px-0"
+    >
       <ul
         ref={list}
-        className="flex scroll-px-3 overflow-x-auto [scrollbar-width:none] sm:-mx-3 [&::-webkit-scrollbar]:hidden"
+        className="relative z-10 flex scroll-px-3 overflow-x-auto [scrollbar-width:none] sm:-mx-3 [&::-webkit-scrollbar]:hidden"
       >
         {TABS.map(({ href, label, icon: Icon }) => {
           const active = href === "/dashboard" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
@@ -90,9 +120,8 @@ function DashboardTabs() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex h-12 items-center gap-2 rounded-lg px-3 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors duration-150 outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
-                  active &&
-                    "text-foreground after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:rounded-full after:bg-foreground after:content-['']",
+                  "relative flex h-12 items-center gap-2 rounded-lg px-3 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors duration-200 outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:ring-inset",
+                  active && "text-foreground",
                 )}
               >
                 <Icon className="size-4" aria-hidden />
@@ -106,6 +135,11 @@ function DashboardTabs() {
             </li>
           );
         })}
+        <li
+          ref={bar}
+          aria-hidden
+          className="pointer-events-none absolute bottom-0 left-0 h-0.5 rounded-full bg-primary opacity-0 data-[ready=true]:transition-[transform,width] data-[ready=true]:duration-300 data-[ready=true]:ease-out-quart motion-reduce:transition-none"
+        />
       </ul>
     </nav>
   );

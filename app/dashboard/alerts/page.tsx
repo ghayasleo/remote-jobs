@@ -11,9 +11,7 @@ export default function JobAlertsPage() {
         title="Job alerts"
         detail="Notifications on this device when new roles match a search. Set one up from any search on Jobs."
       />
-      <div className="max-w-3xl">
-        <AlertsView />
-      </div>
+      <AlertsView />
     </>
   );
 }

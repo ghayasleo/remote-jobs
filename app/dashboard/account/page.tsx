@@ -8,9 +8,7 @@ export default function AccountPage() {
   return (
     <>
       <ScreenHeading title="Account" />
-      <div className="max-w-2xl">
-        <AccountView />
-      </div>
+      <AccountView />
     </>
   );
 }

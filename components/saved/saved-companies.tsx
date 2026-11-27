@@ -8,6 +8,7 @@ import { CompanyRow } from "@/components/company/company-row";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { isRecent, type ExploreCompany } from "@/lib/explore";
+import { confirmAction } from "@/lib/confirm";
 import { replaceSaved, useSavedSlugs } from "@/lib/saved";
 import { retryExploreData, useExploreData, useExploreDataFailed } from "@/lib/use-explore-data";
 import { useHydrated } from "@/lib/use-hydrated";
@@ -28,7 +29,14 @@ export function SavedCompanies({ embedded = false }: { embedded?: boolean }) {
   const hiringCount = saved.filter((company) => company.slug in hiring).length;
   const ready = hydrated && (slugs.length === 0 || data !== null);
 
-  const clearAll = () => {
+  const clearAll = async () => {
+    const ok = await confirmAction({
+      title: slugs.length === 1 ? "Remove your saved company?" : `Remove all ${slugs.length} saved companies?`,
+      description: "Your saved companies list will be empty, on every device you sign in on.",
+      confirmLabel: "Remove all",
+      destructive: true,
+    });
+    if (!ok) return;
     const previous = slugs;
     replaceSaved([]);
     toast(`Cleared ${previous.length} saved ${previous.length === 1 ? "company" : "companies"}`, {
@@ -56,7 +64,7 @@ export function SavedCompanies({ embedded = false }: { embedded?: boolean }) {
                 .
               </>
             ) : (
-              "Your shortlist, kept on this device."
+              "Your shortlist, synced to your account."
             )}
           </p>
         </div>
@@ -79,7 +87,13 @@ export function SavedCompanies({ embedded = false }: { embedded?: boolean }) {
       ) : saved.length === 0 ? (
         removedUpstream === 0 && <EmptySaved />
       ) : (
-        <ul className="divide-y border-y sm:mx-6 sm:rounded-2xl sm:border">
+        <ul
+          className={
+            embedded
+              ? "mx-4 grid grid-cols-1 gap-3 sm:mx-6 lg:grid-cols-2 [&>li]:rounded-2xl [&>li]:border"
+              : "divide-y border-y sm:mx-6 sm:rounded-2xl sm:border"
+          }
+        >
           {saved.map((company) => (
             <CompanyRow
               key={company.slug}
@@ -133,7 +147,7 @@ function EmptySaved() {
       <h2 className="mt-5 text-lg font-semibold">Nothing saved yet</h2>
       <p className="mx-auto mt-1.5 max-w-sm text-sm text-muted-foreground">
         Tap the <BookmarkIcon className="inline size-4 align-[-0.15em]" aria-label="bookmark" /> on any company to keep
-        it here. Your list stays on this device and works offline.
+        it here. Your list follows you to every device you sign in on.
       </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button asChild className="h-11 rounded-full px-5">

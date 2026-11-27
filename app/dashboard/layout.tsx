@@ -6,9 +6,9 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  // Wider than the reading pages: the saved jobs board needs the room.
+  // The same width as the site header, so the two line up.
   return (
-    <div className="mx-auto max-w-[90rem] px-4 pt-2 pb-12 sm:px-6">
+    <div className="mx-auto max-w-6xl px-4 pt-2 pb-12 sm:px-6">
       <DashboardFrame>{children}</DashboardFrame>
     </div>
   );
