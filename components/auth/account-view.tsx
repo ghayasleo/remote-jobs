@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BellIcon, BriefcaseIcon, Building2Icon, ChevronRightIcon, LogOutIcon, Trash2Icon } from "lucide-react";
+import { BellIcon, BotIcon, BriefcaseIcon, Building2Icon, ChevronRightIcon, FileTextIcon, LogOutIcon, Trash2Icon, UnplugIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useProfile } from "@/lib/auth/client";
 import { confirmAction } from "@/lib/confirm";
+import { ACCOUNT_MCP_ENABLED, CV_MAKER_ENABLED } from "@/lib/features";
 import { useSavedSlugs } from "@/lib/saved";
 import { signOutAndForget } from "@/lib/sync";
 import { useTrackedJobs } from "@/lib/tracker";
@@ -45,7 +46,7 @@ export function AccountView() {
   const deleteAccount = async () => {
     const ok = await confirmAction({
       title: "Delete your account?",
-      description: "Your account, saved jobs and companies, notes and job alerts will be deleted for good. This can't be undone.",
+      description: `Your account, saved jobs and companies, notes${CV_MAKER_ENABLED ? ", CVs" : ""} and job alerts will be deleted for good. This can't be undone.`,
       confirmLabel: "Delete everything",
       cancelLabel: "Keep my account",
       destructive: true,
@@ -62,9 +63,25 @@ export function AccountView() {
     }
   };
 
+  const disconnect = async () => {
+    const ok = await confirmAction({
+      title: "Disconnect all AI apps?",
+      description: "Every app using your account through the RemoteJobs MCP server, like Claude, is signed out at once. To use one again, connect it again.",
+      confirmLabel: "Disconnect all",
+      destructive: true,
+    });
+    if (!ok) return;
+    setBusy(true);
+    const response = await fetch("/api/oauth/disconnect", { method: "POST" }).catch(() => null);
+    setBusy(false);
+    if (response?.ok) toast("All apps were disconnected");
+    else toast.error("That didn't work. Please try again.");
+  };
+
   const kept = [
     { href: "/dashboard/jobs", icon: BriefcaseIcon, label: "Saved jobs", detail: `${plural(jobs, "job", "jobs")}, with statuses and notes` },
     { href: "/dashboard/companies", icon: Building2Icon, label: "Saved companies", detail: plural(companies, "company", "companies") },
+    ...(CV_MAKER_ENABLED ? [{ href: "/dashboard/cv", icon: FileTextIcon, label: "CVs", detail: "Your main CV and its tailored copies" }] : []),
     { href: "/dashboard/alerts", icon: BellIcon, label: "Job alerts", detail: "The searches you get notified about" },
   ];
 
@@ -119,17 +136,34 @@ export function AccountView() {
           </p>
         </section>
 
-        <section className="flex flex-col rounded-3xl border border-destructive/30 bg-card p-5 sm:p-6">
-          <h2 className="text-lg font-bold">Delete your account</h2>
-          <p className="mt-1 flex-1 text-muted-foreground">
-            Deletes your account and everything stored with it, from our servers and from this browser. This can&apos;t be
-            undone.
-          </p>
-          <Button variant="destructive" className="mt-5 h-11 self-start rounded-full px-5" disabled={busy} onClick={deleteAccount}>
-            <Trash2Icon aria-hidden />
-            Delete account
-          </Button>
-        </section>
+        <div className="grid content-start gap-4">
+          {ACCOUNT_MCP_ENABLED && (
+            <section className="rounded-3xl border bg-card p-5 sm:p-6">
+              <h2 className="flex items-center gap-2 text-lg font-bold">
+                <BotIcon className="size-5 text-muted-foreground" aria-hidden />
+                AI apps
+              </h2>
+              <p className="mt-1 text-muted-foreground">
+                Apps you let use your account, like Claude, through the RemoteJobs MCP server. Disconnecting signs all of them out.
+              </p>
+              <Button variant="outline" className="mt-5 h-11 rounded-full px-5" disabled={busy} onClick={disconnect}>
+                <UnplugIcon aria-hidden />
+                Disconnect all apps
+              </Button>
+            </section>
+          )}
+          <section className="flex flex-col rounded-3xl border border-destructive/30 bg-card p-5 sm:p-6">
+            <h2 className="text-lg font-bold">Delete your account</h2>
+            <p className="mt-1 flex-1 text-muted-foreground">
+              Deletes your account and everything stored with it, from our servers and from this browser. This can&apos;t be
+              undone.
+            </p>
+            <Button variant="destructive" className="mt-5 h-11 self-start rounded-full px-5" disabled={busy} onClick={deleteAccount}>
+              <Trash2Icon aria-hidden />
+              Delete account
+            </Button>
+          </section>
+        </div>
       </div>
     </div>
   );

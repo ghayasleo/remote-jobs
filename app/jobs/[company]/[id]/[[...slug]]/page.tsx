@@ -1,5 +1,6 @@
 import { Suspense } from "react";
-import { CV_CHECK_ENABLED } from "@/lib/features";
+import { TailorCvButton } from "@/components/cv-maker/tailor-button";
+import { CV_CHECK_ENABLED, CV_MAKER_ENABLED } from "@/lib/features";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect, redirect } from "next/navigation";
@@ -194,6 +195,7 @@ async function JobView({ params }: Pick<Props, "params">) {
             </a>
           </Button>
           <SaveJobButton job={savable} withLabel />
+          {CV_MAKER_ENABLED && <TailorCvButton jobKey={`${company.slug}/${role.id}`} />}
           {CV_CHECK_ENABLED && (
             <Button asChild variant="outline" size="lg" className="h-11 rounded-full px-4">
               <Link href={cvCheckHref}>
