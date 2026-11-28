@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   DndContext,
   DragOverlay,
@@ -21,7 +22,7 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { BriefcaseIcon, CalendarIcon, CircleIcon, EllipsisIcon, PlusIcon, StickyNoteIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { BriefcaseIcon, CalendarIcon, CircleIcon, EllipsisIcon, FileTextIcon, PlusIcon, StickyNoteIcon, Trash2Icon, UploadIcon } from "lucide-react";
 import { toast } from "sonner";
 import { CompanyLogo } from "@/components/company/company-logo";
 import { confirmUnsaveJob } from "@/components/jobs/save-job-button";
@@ -37,6 +38,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { tailorCvFor } from "@/lib/cv-maker/client";
+import { CV_MAKER_ENABLED } from "@/lib/features";
 import { jobPath } from "@/lib/jobs";
 import { allTrackedJobs, moveJob, removeJob, replaceTracked, restoreJob, setNote, setStatus, useTrackedJobs } from "@/lib/tracker";
 import {
@@ -100,6 +103,7 @@ const keepFromDrag = {
 
 /** Move, note and remove. Actions run once the menu has closed, so focus can go where they need it. */
 function CardMenu({ job, onNote, onRemove }: { job: TrackedJob; onNote: () => void; onRemove: () => void }) {
+  const router = useRouter();
   const pending = useRef<(() => void) | null>(null);
   return (
     <DropdownMenu>
@@ -132,6 +136,12 @@ function CardMenu({ job, onNote, onRemove }: { job: TrackedJob; onNote: () => vo
           ))}
         </DropdownMenuRadioGroup>
         <DropdownMenuSeparator />
+        {CV_MAKER_ENABLED && (
+          <DropdownMenuItem className="rounded-lg px-2 py-1.5" onSelect={() => (pending.current = () => void tailorCvFor(job.key, (href) => router.push(href)))}>
+            <FileTextIcon aria-hidden />
+            Tailor my CV
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem className="rounded-lg px-2 py-1.5" onSelect={() => (pending.current = onNote)}>
           <StickyNoteIcon aria-hidden />
           {job.note ? "Edit note" : "Add a note"}

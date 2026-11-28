@@ -6,6 +6,14 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
 
+  turbopack: {
+    resolveAlias: {
+      // The CV maker's LaTeX engine optionally imports blake3-wasm, whose
+      // WebAssembly import doesn't bundle; a stub makes it use its built-in hash.
+      "blake3-wasm/browser.js": "./lib/cv-maker/no-blake3.js",
+    },
+  },
+
   experimental: {
     // Offline navigations wait and retry instead of failing; see useOffline().
     useOffline: true,
@@ -23,6 +31,10 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
+      // The CV maker is development only for now (lib/features.ts). Its page
+      // sits inside the dashboard's client frame, where notFound() can't set a
+      // 404, so production sends it back to the dashboard before it renders.
+      ...(process.env.NODE_ENV === "development" ? [] : [{ source: "/dashboard/cv", destination: "/dashboard", permanent: false }]),
       // The company list moved from / to /companies when / became the home
       // page. Links with its filters (e.g. /?hiring=true) still land on it.
       ...["q", "region", "policy", "stack", "size", "hiring", "recent", "sort"].map((key) => ({

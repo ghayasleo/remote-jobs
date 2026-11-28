@@ -6,6 +6,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleTags } from "@/components/analytics/google-tags";
 import { SignInDialog } from "@/components/auth/sign-in-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { DevAutoLogin } from "@/components/auth/dev-auto-login";
 import { AccountSync } from "@/lib/sync";
 import { OfflineNotice, ServiceWorker } from "@/components/shell/connectivity";
 import { BottomNav } from "@/components/shell/nav";
@@ -89,6 +90,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <GoogleTags />
             <SignInDialog />
             <ConfirmDialog />
+            {/* Development only: a test user stays signed in on localhost. */}
+            {process.env.NODE_ENV === "development" && process.env.NEXT_PUBLIC_DEV_LOGIN === "1" && <DevAutoLogin />}
             <AccountSync />
           </TooltipProvider>
         </ThemeProvider>

@@ -7,6 +7,7 @@ import {
   BellIcon,
   BookmarkCheckIcon,
   BriefcaseIcon,
+  FileTextIcon,
   Building2Icon,
   KanbanSquareIcon,
   LayoutDashboardIcon,
@@ -16,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { openSignIn, useProfile } from "@/lib/auth/client";
 import { useSavedSlugs } from "@/lib/saved";
 import { useTrackedJobs } from "@/lib/tracker";
+import { CV_MAKER_ENABLED } from "@/lib/features";
 import { useHydrated } from "@/lib/use-hydrated";
 import { cn } from "@/lib/utils";
 
@@ -58,6 +60,8 @@ const TABS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboardIcon },
   { href: "/dashboard/jobs", label: "Saved jobs", icon: BriefcaseIcon },
   { href: "/dashboard/companies", label: "Saved companies", icon: Building2Icon },
+  // The CV maker is development only for now (see lib/features.ts).
+  ...(CV_MAKER_ENABLED ? [{ href: "/dashboard/cv", label: "CV", icon: FileTextIcon } as const] : []),
   { href: "/dashboard/alerts", label: "Job alerts", icon: BellIcon },
   { href: "/dashboard/account", label: "Account", icon: UserRoundIcon },
 ] as const;
